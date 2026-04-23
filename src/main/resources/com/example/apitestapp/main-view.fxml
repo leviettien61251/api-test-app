@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -12,25 +11,22 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apitestapp.MainController">
     <left>
         <VBox maxWidth="420" minWidth="300" prefWidth="300" spacing="4" styleClass="sidebar">
             <padding>
                 <Insets bottom="20" left="12" right="12" top="20" />
             </padding>
 
-            <Button fx:id="btnHome" maxWidth="Infinity" styleClass="nav-button" text="Collection" />
+            <Button fx:id="btnCollections" maxWidth="Infinity" onAction="#navigateCollections" styleClass="nav-button" text="Collection" />
 
-            <Button fx:id="btnProfile" maxWidth="Infinity" styleClass="nav-button" text="Environment" />
+            <Button fx:id="btnEnvironments" maxWidth="Infinity" onAction="#navigateEnvironments" styleClass="nav-button" text="Environment" />
 
-            <Button fx:id="btnSettings" maxWidth="Infinity" styleClass="nav-button" text="History" />
+            <Button fx:id="btnHistory" maxWidth="Infinity" onAction="#navigateHistory" styleClass="nav-button" text="History" />
         </VBox>
     </left>
     <center>
-        <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <children>
-            <ButtonBar prefHeight="40.0" prefWidth="200.0" />
-         </children></StackPane>
+        <StackPane fx:id="contentArea" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
     </center>
     <top>
         <VBox prefHeight="90.0" prefWidth="100.0" BorderPane.alignment="CENTER">
@@ -51,16 +47,16 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <Label alignment="BASELINE_CENTER" prefHeight="27.0" prefWidth="300.0" text="API Tester" textAlignment="CENTER" GridPane.rowIndex="1">
+                        <Label fx:id="logo" alignment="BASELINE_CENTER" prefHeight="27.0" prefWidth="300.0" text="API Tester" textAlignment="CENTER" GridPane.rowIndex="1">
                             <font>
                                 <Font name="System Bold" size="18.0" />
                             </font>
                         </Label>
-                <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="140.0" text="Dashboard" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Button mnemonicParsing="false" prefWidth="140.0" text="Testcase" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                  <Button mnemonicParsing="false" prefWidth="140.0" text="Request" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                  <Button mnemonicParsing="false" prefWidth="140.0" text="Report" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="140.0" text="Profile" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+                        <Button fx:id="btnDashboard" mnemonicParsing="false" onAction="#navigateDashboard" prefHeight="25.0" prefWidth="140.0" text="Dashboard" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Button fx:id="btnTestcase" mnemonicParsing="false" onAction="#navigateTestcases" prefWidth="140.0" text="Testcase" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <Button fx:id="btnRequest" mnemonicParsing="false" onAction="#navigateRequests" prefWidth="140.0" text="Request" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <Button fx:id="btnReport" mnemonicParsing="false" onAction="#navigateReports" prefWidth="140.0" text="Report" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                        <Button fx:id="btnProfile" mnemonicParsing="false" onAction="#navigateProfile" prefHeight="25.0" prefWidth="140.0" text="Profile" GridPane.columnIndex="6" GridPane.rowIndex="1" />
                     </children>
                 </GridPane>
             </children>

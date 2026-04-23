@@ -5,5 +5,6 @@ module com.example.apitestapp {
 
 
     opens com.example.apitestapp to javafx.fxml;
+    opens com.example.apitestapp.controllers to javafx.fxml;
     exports com.example.apitestapp;
 }
