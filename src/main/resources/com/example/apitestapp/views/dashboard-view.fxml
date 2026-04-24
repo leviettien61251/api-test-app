@@ -7,7 +7,7 @@
 
 <AnchorPane prefHeight="990.0" prefWidth="1620.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apitestapp.controllers.DashboardController">
    <children>
-      <Label layoutX="14.0" layoutY="14.0" prefHeight="60.0" prefWidth="189.0" text="Dashboard Screen">
+      <Label layoutX="14.0" layoutY="14.0" prefHeight="60.0" prefWidth="189.0" text="Dashboard">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
