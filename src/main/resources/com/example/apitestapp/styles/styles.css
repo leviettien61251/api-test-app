@@ -18,13 +18,13 @@
 }
 
 .nav-button:hover {
-    -fx-background-color: rgb(243,244,246);
+    -fx-background-color: rgb(243, 244, 246);
     -fx-text-fill: #000;
 }
 
 .nav-button-active {
-    -fx-background-color: rgb(219,234,254);
-    -fx-text-fill: rgb(21,93,252);
+    -fx-background-color: rgb(219, 234, 254);
+    -fx-text-fill: rgb(21, 93, 252);
 }
 
 .content-area {

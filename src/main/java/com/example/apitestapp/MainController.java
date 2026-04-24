@@ -16,13 +16,12 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
+    private final Map<String, Node> viewCache = new HashMap<>();
     @FXML
     private StackPane contentArea;
     @FXML
-    private Button btnDashboard, btnTestcase, btnRequest, btnReport, btnCollections, btnEnvironments, btnHistory;
-
+    private Button btnDashboard, btnTestcase, btnRequest, btnReport, btnCollections, btnEnvironments, btnHistory, btnProfile;
     private Button activeButton;
-    private final Map<String, Node> viewCache = new HashMap<>();
 
     /**
      * Called to initialize a controller after its root element has been
@@ -45,22 +44,22 @@ public class MainController implements Initializable {
 
     @FXML
     private void navigateTestcases() {
-        navigateTo("views/dashboard-view.fxml", btnDashboard);
+        navigateTo("views/testcase-view.fxml", btnTestcase);
     }
 
     @FXML
     private void navigateRequests() {
-        navigateTo("views/dashboard-view.fxml", btnDashboard);
+        navigateTo("views/request-view.fxml", btnRequest);
     }
 
     @FXML
     private void navigateReports() {
-        navigateTo("views/dashboard-view.fxml", btnDashboard);
+        navigateTo("views/report-view.fxml", btnReport);
     }
 
     @FXML
     private void navigateProfile() {
-        navigateTo("views/dashboard-view.fxml", btnDashboard);
+        navigateTo("views/profile-view.fxml", btnProfile);
     }
 
     @FXML
@@ -70,12 +69,12 @@ public class MainController implements Initializable {
 
     @FXML
     private void navigateEnvironments() {
-        navigateTo("views/dashboard-view.fxml", btnDashboard);
+        navigateTo("views/environments-view.fxml", btnEnvironments);
     }
 
     @FXML
     private void navigateHistory() {
-        navigateTo("views/dashboard-view.fxml", btnDashboard);
+        navigateTo("views/history-view.fxml", btnHistory);
     }
 
     private void navigateTo(String fxmlPath, Button button) {
