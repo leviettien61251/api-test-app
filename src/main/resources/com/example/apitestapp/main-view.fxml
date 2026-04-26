@@ -40,10 +40,10 @@
             <children>
                 <HBox alignment="CENTER_LEFT" minHeight="72.0" prefHeight="72.0" spacing="10.0" styleClass="header">
                     <children>
-                        <ToggleButton onAction="#navigateDashboard" selected="true" styleClass="header-nav-item" text="Dashboard" toggleGroup="$headerGroup" />
-                        <ToggleButton onAction="#navigateTestcases" styleClass="header-nav-item" text="Testcase" toggleGroup="$headerGroup" />
-                        <ToggleButton onAction="#navigateRequests" styleClass="header-nav-item" text="Request" toggleGroup="$headerGroup" />
-                        <ToggleButton onAction="#navigateReports" styleClass="header-nav-item" text="Report" toggleGroup="$headerGroup" />
+                        <ToggleButton fx:id="btnDashboard" onAction="#navigateDashboard" selected="true" styleClass="header-nav-item" text="Dashboard" toggleGroup="$headerGroup" />
+                        <ToggleButton fx:id="btnTestcase" onAction="#navigateTestcases" styleClass="header-nav-item" text="Testcase" toggleGroup="$headerGroup" />
+                        <ToggleButton fx:id="btnRequest" onAction="#navigateRequests" styleClass="header-nav-item" text="Request" toggleGroup="$headerGroup" />
+                        <ToggleButton fx:id="btnReport" onAction="#navigateReports" styleClass="header-nav-item" text="Report" toggleGroup="$headerGroup" />
 
                         <HBox HBox.hgrow="ALWAYS" /> <ToggleButton fx:id="btnProfile" onAction="#navigateProfile" styleClass="header-nav-item" text="👤 User: Sơn" toggleGroup="$headerGroup"  />
                     </children>

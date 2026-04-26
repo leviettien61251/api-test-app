@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
@@ -100,9 +101,9 @@ public class MainController implements Initializable {
             contentArea.getChildren().setAll(view);
             fade.play();
 
-            // Kích hoạt trạng thái "đang chọn" cho nút bấm
+            // Cập nhật trạng thái "đang chọn" cho nút bấm và thay đổi màu sắc
             if (button != null) {
-                button.setSelected(true);
+                setActiveButton(button);
             }
 
         } catch (IOException e) {
@@ -111,5 +112,21 @@ public class MainController implements Initializable {
         } catch (NullPointerException e) {
             System.err.println("Đường dẫn file FXML bị sai: " + fxmlPath);
         }
+
+    }
+
+    private void setActiveButton(ToggleButton button) {
+        // Deselect all buttons then select the active one
+        btnDashboard.setSelected(false);
+        btnTestcase.setSelected(false);
+        btnRequest.setSelected(false);
+        btnReport.setSelected(false);
+        btnCollections.setSelected(false);
+        btnEnvironments.setSelected(false);
+        btnHistory.setSelected(false);
+        btnProfile.setSelected(false);
+        
+        // Set the clicked button as selected to apply CSS styling
+        button.setSelected(true);
     }
 }
