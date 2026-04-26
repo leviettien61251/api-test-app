@@ -2,6 +2,7 @@ module com.example.apitestapp {
     requires javafx.controls;
     requires javafx.fxml;
     requires atlantafx.base;
+    requires java.sql;
 
 
     opens com.example.apitestapp to javafx.fxml;
