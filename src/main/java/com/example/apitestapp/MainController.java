@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
@@ -17,26 +17,24 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
     private final Map<String, Node> viewCache = new HashMap<>();
+
     @FXML
     private StackPane contentArea;
-    @FXML
-    private Button btnDashboard, btnTestcase, btnRequest, btnReport, btnCollections, btnEnvironments, btnHistory, btnProfile;
-    private Button activeButton;
 
-    /**
-     * Called to initialize a controller after its root element has been
-     * completely processed.
-     *
-     * @param location  The location used to resolve relative paths for the root object, or
-     *                  {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
-     *                  the root object was not localized.
-     */
+    // Khai báo đầy đủ các ToggleButton để điều khiển trạng thái "lún" (selected)
+    @FXML
+    private ToggleButton btnDashboard, btnTestcase, btnRequest, btnReport;
+
+    @FXML
+    private ToggleButton btnCollections, btnEnvironments, btnHistory, btnProfile;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Mặc định nạp Dashboard khi ứng dụng khởi chạy
         navigateTo("views/dashboard-view.fxml", btnDashboard);
     }
 
+    // Các hàm chuyển đổi View cho Header
     @FXML
     private void navigateDashboard() {
         navigateTo("views/dashboard-view.fxml", btnDashboard);
@@ -57,11 +55,7 @@ public class MainController implements Initializable {
         navigateTo("views/report-view.fxml", btnReport);
     }
 
-    @FXML
-    private void navigateProfile() {
-        navigateTo("views/profile-view.fxml", btnProfile);
-    }
-
+    // Các hàm chuyển đổi View cho Sidebar
     @FXML
     private void navigateCollections() {
         navigateTo("views/collections-view.fxml", btnCollections);
@@ -77,34 +71,45 @@ public class MainController implements Initializable {
         navigateTo("views/history-view.fxml", btnHistory);
     }
 
-    private void navigateTo(String fxmlPath, Button button) {
+    @FXML
+    private void navigateProfile() {
+        navigateTo("views/profile-view.fxml", btnProfile);
+    }
+
+    /**
+     * Hàm dùng chung để nạp file FXML vào vùng nội dung chính
+     * @param fxmlPath Đường dẫn file fxml tính từ thư mục resources
+     * @param button Nút được nhấn để cập nhật trạng thái hiển thị
+     */
+    private void navigateTo(String fxmlPath, ToggleButton button) {
         try {
+            // Sử dụng Cache để tránh việc nạp lại file FXML nhiều lần gây lag
             if (!viewCache.containsKey(fxmlPath)) {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource(fxmlPath)
-                );
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
                 Node view = loader.load();
                 viewCache.put(fxmlPath, view);
             }
 
             Node view = viewCache.get(fxmlPath);
-            FadeTransition fade = new FadeTransition(Duration.millis(200), view);
+
+            // Tạo hiệu ứng mờ dần (Fade) khi đổi trang cho chuyên nghiệp
+            FadeTransition fade = new FadeTransition(Duration.millis(250), view);
             fade.setFromValue(0);
             fade.setToValue(1);
+
             contentArea.getChildren().setAll(view);
             fade.play();
 
-            setActive(button);
+            // Kích hoạt trạng thái "đang chọn" cho nút bấm
+            if (button != null) {
+                button.setSelected(true);
+            }
 
         } catch (IOException e) {
+            System.err.println("Không tìm thấy file FXML: " + fxmlPath);
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            System.err.println("Đường dẫn file FXML bị sai: " + fxmlPath);
         }
-    }
-
-    private void setActive(Button btn) {
-        if (activeButton != null)
-            activeButton.getStyleClass().remove("nav-button-active");
-        activeButton = btn;
-        btn.getStyleClass().add("nav-button-active");
     }
 }

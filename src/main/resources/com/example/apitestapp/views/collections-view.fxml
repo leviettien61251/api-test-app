@@ -1,16 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26"
-            fx:controller="com.example.apitestapp.controllers.CollectionsController">
-    <children>
-        <Label layoutX="14.0" layoutY="14.0" prefHeight="60.0" prefWidth="189.0" text="Collections">
-            <font>
-                <Font name="System Bold" size="18.0"/>
-            </font>
-        </Label>
-    </children>
-</AnchorPane>
+
+
+<SplitPane dividerPositions="0.33" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apitestapp.controllers.CollectionsController">
+    <items>
+        <VBox spacing="10.0" styleClass="sidebar-white">
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
+            <children>
+                <Label text="COLLECTIONS / DANH SÁCH BỘ SƯU TẬP" wrapText="true">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-primary" text="+ New Collection" />
+
+                <HBox spacing="10.0">
+                    <children>
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-secondary" text="📥Import" HBox.hgrow="ALWAYS" />
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-secondary" text="🔍Search" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+
+                <TreeView fx:id="collectionTree" showRoot="false" VBox.vgrow="ALWAYS" styleClass="custom-tree-view" />
+            </children>
+        </VBox>
+
+        <ScrollPane fitToWidth="true" styleClass="content-area">
+            <content>
+                <VBox spacing="20.0">
+                    <padding>
+                        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                    </padding>
+                    <children>
+                        <Label text="CHI TIẾT COLLECTION / REQUESTS">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+
+                        <VBox spacing="10.0" styleClass="card-white">
+                            <children>
+                                <HBox spacing="10.0">
+                                    <Label styleClass="text-muted" text="Collection:" />
+                                    <Label fx:id="lblSelectedName" styleClass="text-bold" text="Customer API" />
+                                </HBox>
+                                <HBox spacing="10.0">
+                                    <Label styleClass="text-muted" text="Base URL:" />
+                                    <Label text="https://api.hospital.com" />
+                                </HBox>
+                                <HBox spacing="10.0">
+                                    <Label styleClass="text-muted" text="Auth:" />
+                                    <Label text="Bearer Token" />
+                                </HBox>
+                            </children>
+                            <padding>
+                                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                            </padding>
+                        </VBox>
+
+                        <Label text="Requests in Collection">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+
+                        <VBox fx:id="requestListContainer" spacing="10.0" />
+
+                        <Label text="COLLECTION ACTIONS">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+
+                        <HBox spacing="10.0" styleClass="card-white">
+                            <children>
+                                <Button mnemonicParsing="false" styleClass="btn-success" text="Run Collection" />
+                                <Button mnemonicParsing="false" styleClass="btn-primary" text="Generate Testcases" />
+                                <Button mnemonicParsing="false" styleClass="btn-secondary" text="Export" />
+                                <Button mnemonicParsing="false" styleClass="btn-danger" text="Delete" />
+                            </children>
+                            <padding>
+                                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                            </padding>
+                        </HBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </items>
+</SplitPane>
