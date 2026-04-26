@@ -1,6 +1,8 @@
 package com.example.apitestapp.controllers;
 
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,8 +17,15 @@ public class ProfileController implements Initializable {
      * @param resources The resources used to localize the root object, or {@code null} if
      *                  the root object was not localized.
      */
+
+    @FXML
+    private ComboBox<String> roleComboBox;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("ProfileController initialized.");
+        roleComboBox.getItems().addAll("Tester", "Admin");
+
+        // 2. Chọn giá trị mặc định (để nó hiện chữ Tester ngay khi mới vào)
+        roleComboBox.setValue("Tester");
     }
 }

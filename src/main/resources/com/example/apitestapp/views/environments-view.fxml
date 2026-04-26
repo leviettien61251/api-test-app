@@ -1,17 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
-            fx:controller="com.example.apitestapp.controllers.EnvironmentsController"
-            prefHeight="400.0" prefWidth="600.0">
+
+<HBox prefHeight="600.0" prefWidth="1000.0" spacing="0" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apitestapp.controllers.EnvironmentsController">
     <children>
-        <Label layoutX="14.0" layoutY="14.0" prefHeight="60.0" prefWidth="189.0" text="Environments">
-            <font>
-                <Font name="System Bold" size="18.0"/>
-            </font>
-        </Label>
+        <VBox prefWidth="320.0" spacing="15.0" styleClass="sidebar">
+            <padding>
+                <Insets bottom="20.0" left="15.0" right="15.0" top="20.0" />
+            </padding>
+            <children>
+                <Label text="ENVIRONMENTS/DANH SÁCH BIẾN ">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+
+                <VBox spacing="10.0">
+                    <children>
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-new" text="+ New Environment" />
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-secondary" text="📥Import" HBox.hgrow="ALWAYS" />
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-secondary" text="🔍Search" HBox.hgrow="ALWAYS" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <ListView fx:id="envListView" VBox.vgrow="ALWAYS" styleClass="env-list" />
+            </children>
+        </VBox>
+
+        <VBox spacing="20.0" styleClass="content-area" HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+            <children>
+                <Label fx:id="lblHeader" text="CHI TIẾT ENVIRONMENT">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Label>
+
+                <VBox spacing="15.0" styleClass="card" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <children>
+                                <Label text="Environment:" textFill="#666666" />
+                                <Label fx:id="lblSelectedEnv" text="Staging">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </HBox>
+
+                        <Label text="VARIABLES" textFill="#444444" />
+
+                        <TableView fx:id="variableTable" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colKey" prefWidth="180.0" text="KEY" />
+                                <TableColumn fx:id="colValue" prefWidth="250.0" text="VALUE" />
+                                <TableColumn fx:id="colType" prefWidth="100.0" text="TYPE" />
+                                <TableColumn fx:id="colEnabled" prefWidth="80.0" text="ENABLED" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                    </children>
+                </VBox>
+
+                <HBox spacing="10.0" alignment="CENTER_LEFT">
+                    <children>
+                        <Button mnemonicParsing="false" styleClass="btn-save" text="Save Changes" />
+                        <Button mnemonicParsing="false" styleClass="btn-action" text="Duplicate" />
+                        <Button mnemonicParsing="false" styleClass="btn-delete" text="Delete" />
+                        <Button mnemonicParsing="false" styleClass="btn-action" text="Export" />
+
+                        <Button mnemonicParsing="false" styleClass="btn-active" text="Set Active" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
     </children>
-</AnchorPane>
+</HBox>
