@@ -1,6 +1,7 @@
 package com.example.apitestapp.controllers;
 
 import com.example.apitestapp.models.Person;
+import com.example.apitestapp.models.Role;
 import com.example.apitestapp.services.DashboardService;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -64,7 +65,6 @@ public class DashboardController implements Initializable {
         Person person = new Person();
         dashboardService.savePerson(person);
         System.out.println("Person saved successfully.");
-
     }
 
 }
