@@ -1,17 +1,297 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
-            fx:controller="com.example.apitestapp.controllers.RequestController"
-            prefHeight="400.0" prefWidth="600.0">
-    <children>
-        <Label layoutX="14.0" layoutY="14.0" prefHeight="60.0" prefWidth="189.0" text="Request">
-            <font>
-                <Font name="System Bold" size="18.0"/>
-            </font>
-        </Label>
-    </children>
-</AnchorPane>
+
+<SplitPane dividerPositions="0.3" prefHeight="700.0" prefWidth="1000.0" stylesheets="@../styles/styles.css"  xmlns="http://javafx.com/javafx/17" fx:controller="com.example.apitestapp.controllers.RequestController" xmlns:fx="http://javafx.com/fxml/1">
+    <items>
+        <!-- Left Panel: Testcase List -->
+        <VBox spacing="15.0" styleClass="left-panel">
+            <children>
+                <Label styleClass="header-text" text="TESTCASE LIST" />
+
+                <VBox spacing="8.0">
+                    <children>
+                        <Label styleClass="label-form" text="Base URL" />
+                        <TextField promptText="https://api.example.com" styleClass="input-field" />
+                    </children>
+                </VBox>
+
+                <HBox spacing="10.0">
+                    <children>
+                        <Button maxWidth="1.7976931348623157E308" styleClass="btn-run-all" text="▶ Run All" HBox.hgrow="ALWAYS" />
+                        <Button maxWidth="1.7976931348623157E308" styleClass="btn-run-selected" text="Run Selected" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+
+                <Button maxWidth="1.7976931348623157E308" styleClass="btn-secondary" text="Save Run" />
+
+                <VBox spacing="8.0">
+                    <children>
+                        <Label styleClass="label-form" text="Mode" />
+                        <ComboBox fx:id="methodComboBox1" maxWidth="1.7976931348623157E308" promptText="All" />
+                        <Label styleClass="label-form" text="Alert" />
+                        <ComboBox fx:id="methodComboBox2" maxWidth="1.7976931348623157E308" promptText="Stop on fail" />
+                    </children>
+                </VBox>
+
+                <Separator />
+
+                <ListView fx:id="testcaseListView" styleClass="tc-list" VBox.vgrow="ALWAYS" />
+            </children>
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
+        </VBox>
+
+        <!-- Right Panel: Request & Result -->
+        <ScrollPane fitToWidth="true" styleClass="right-panel">
+            <content>
+                <VBox spacing="20.0">
+                    <children>
+                        <Label styleClass="header-text" text="REQUEST / CẤU HÌNH TEST" />
+
+                        <!-- Request Bar -->
+                        <HBox spacing="10.0" styleClass="card">
+                            <children>
+                                <ComboBox fx:id="methodComboBox"  prefWidth="100.0" promptText="GET" />
+                                <TextField HBox.hgrow="ALWAYS" promptText="Enter request URL" styleClass="input-field" />
+                                <Button styleClass="btn-send" text="➤ Send" />
+                            </children>
+                            <padding>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                            </padding>
+                        </HBox>
+
+                        <!-- Configuration Tabs -->
+                        <TabPane minHeight="350.0" tabClosingPolicy="UNAVAILABLE">
+                            <tabs>
+                                <Tab text="Params">
+                                    <content>
+                                        <VBox spacing="10.0" style="-fx-padding: 10 0 0 0;">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 0 5 0 5;">
+                                                    <children>
+                                                        <Label prefWidth="150.0" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Key" />
+                                                        <Label prefWidth="150.0" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Value" />
+                                                        <Label HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Description" />
+                                                        <Button styleClass="btn-link" text="Bulk Edit" />
+                                                    </children>
+                                                </HBox>
+                                                <VBox spacing="5.0">
+                                                    <children>
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                            <children>
+                                                                <TextField prefWidth="150.0" text="from" />
+                                                                <TextField prefWidth="150.0" text="gateA" />
+                                                                <TextField HBox.hgrow="ALWAYS" promptText="Description" />
+                                                                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="🗑" textFill="#e74c3c" />
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                            <children>
+                                                                <TextField prefWidth="150.0" text="to" />
+                                                                <TextField prefWidth="150.0" text="cardiology" />
+                                                                <TextField HBox.hgrow="ALWAYS" promptText="Description" />
+                                                                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="🗑" textFill="#e74c3c" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+                                                <Button styleClass="btn-link" text="+ Add Param" />
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </Tab>
+
+
+
+                                <Tab text="Auth">
+                                    <content>
+                                        <VBox spacing="15.0" style="-fx-padding: 15;">
+                                            <children>
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Auth Type" />
+                                                <ComboBox fx:id="authTypeComboBox" maxWidth="300.0" promptText="No Auth" />
+                                                <Separator />
+
+                                                <!-- Đặt fx:id cho VBox này để đổ giao diện vào -->
+                                                <VBox fx:id="authConfigContainer" spacing="10.0">
+                                                    <!-- Nội dung thay đổi sẽ nằm ở đây -->
+                                                </VBox>
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </Tab>
+
+
+
+                                <Tab text="Headers">
+                                    <content>
+                                        <VBox spacing="10.0" style="-fx-padding: 10 0 0 0;">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 0 5 0 5;">
+                                                    <children>
+                                                        <Region prefWidth="25.0" />
+                                                        <Label prefWidth="150.0" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Key" />
+                                                        <Label prefWidth="150.0" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Value" />
+                                                        <Label HBox.hgrow="ALWAYS" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Description" />
+                                                        <Button styleClass="btn-link" text="Bulk Edit" />
+                                                    </children>
+                                                </HBox>
+                                                <VBox spacing="5.0">
+                                                    <children>
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                            <children>
+
+                                                                <TextField prefWidth="150.0" text="Authorization" />
+                                                                <TextField prefWidth="150.0" text="Bearer ..." />
+                                                                <TextField HBox.hgrow="ALWAYS" promptText="Description" />
+                                                                <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="🗑" textFill="#e74c3c" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+                                                <Button styleClass="btn-link" text="+ Add Header" />
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </Tab>
+
+
+                                <Tab text="Body">
+                                    <content>
+                                        <VBox spacing="10.0" style="-fx-padding: 10 0 0 0;">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="8.0" style="-fx-padding: 0 10 0 10;">
+                                                    <children>
+                                                        <!-- Dùng ToggleButton để giữ trạng thái đang chọn -->
+                                                        <ToggleButton fx:id="rawBtn" selected="true" styleClass="body-mode-btn" text="Raw" />
+                                                        <ToggleButton fx:id="formDataBtn" styleClass="body-mode-btn" text="Form-Data" />
+
+                                                        <Region prefWidth="20.0" />
+
+                                                        <!-- ComboBox này chỉ hiện khi chọn Raw -->
+                                                        <ComboBox fx:id="rawTypeComboBox" prefWidth="120.0" visible="true" />
+                                                    </children>
+                                                </HBox>
+
+                                                <!-- Container chứa nội dung thay đổi (TextArea hoặc Table) -->
+                                                <VBox fx:id="bodyContentContainer" VBox.vgrow="ALWAYS">
+                                                    <children>
+                                                        <TextArea fx:id="bodyTextArea" prefHeight="200.0" styleClass="text-area-mono" text="{&#10;  &quot;field&quot;: &quot;value&quot;&#10;}" VBox.vgrow="ALWAYS" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </Tab>
+
+                                <Tab text="Scripts">
+                                    <content>
+                                        <VBox spacing="15.0" style="-fx-padding: 10 0 0 0;">
+                                            <children>
+                                                <VBox spacing="5.0">
+                                                    <children>
+                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Pre-request Script:" />
+                                                        <TextArea prefHeight="100.0" styleClass="text-area-mono" text="// Pre-request script" />
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="5.0">
+                                                    <children>
+                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Test Script:" />
+                                                        <TextArea prefHeight="100.0" styleClass="text-area-mono" text="// Test script" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </Tab>
+
+
+                                <Tab text="Tests">
+                                    <content>
+                                        <VBox spacing="8.0" style="-fx-padding: 10 0 0 0;">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" prefHeight="35.0" style="-fx-background-color: #f3faf5; -fx-background-radius: 5; -fx-padding: 0 10 0 10; -fx-border-color: #e6f4ea; -fx-border-radius: 5;">
+                                                    <children>
+                                                        <Label style="-fx-text-fill: #1e8e3e; -fx-font-weight: bold;" text="[PASS] " />
+                                                        <Label style="-fx-text-fill: #1e8e3e;" text="Status code is 200" />
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" prefHeight="35.0" style="-fx-background-color: #fce8e6; -fx-background-radius: 5; -fx-padding: 0 10 0 10; -fx-border-color: #fad2cf; -fx-border-radius: 5;">
+                                                    <children>
+                                                        <Label style="-fx-text-fill: #d93025; -fx-font-weight: bold;" text="[FAIL] " />
+                                                        <Label style="-fx-text-fill: #d93025;" text="Response time &lt; 500ms" />
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </Tab>
+                            </tabs>
+                        </TabPane>
+
+                        <!-- Response Section -->
+                        <VBox spacing="10.0" styleClass="card">
+                            <children>
+                                <Label styleClass="header-text" text="KẾT QUẢ PHẢN HỒI" />
+                                <HBox spacing="20.0">
+                                    <children>
+                                        <Label text="Status:">
+                                            <graphic><Label style="-fx-text-fill: #16a34a; -fx-font-weight: bold;" text="200 OK" /></graphic>
+                                        </Label>
+                                        <Label text="Time: 154ms" />
+                                    </children>
+                                </HBox>
+                                <!-- Tìm đến phần Response Section trong file của bạn và thay thế cụm TabPane này -->
+                                <TabPane styleClass="response-tabs" tabClosingPolicy="UNAVAILABLE">
+                                    <tabs>
+                                        <Tab text="Body">
+                                            <content>
+                                                <TextArea editable="false" prefHeight="200.0" styleClass="response-body" text="{&#10;  &quot;status&quot;: &quot;success&quot;,&#10;  &quot;data&quot;: {&#10;    &quot;route&quot;: [&quot;gate-a&quot;, &quot;building-2&quot;],&#10;    &quot;distance&quot;: 245&#10;  }&#10;}" />
+                                            </content>
+                                        </Tab>
+
+                                        <!-- Cập nhật Tab Headers -->
+                                        <Tab text="Headers">
+                                            <content>
+                                                <TableView fx:id="headersTableView" prefHeight="200.0">
+                                                    <columns>
+                                                        <TableColumn fx:id="headerKeyCol" prefWidth="200.0" text="Key" />
+                                                        <TableColumn fx:id="headerValueCol" prefWidth="400.0" text="Value" />
+                                                    </columns>
+                                                </TableView>
+                                            </content>
+                                        </Tab>
+
+                                        <!-- Cập nhật Tab Cookies -->
+                                        <Tab text="Cookies">
+                                            <content>
+                                                <TableView fx:id="cookiesTableView" prefHeight="200.0">
+                                                    <columns>
+                                                        <TableColumn fx:id="cookieNameCol" prefWidth="150.0" text="Name" />
+                                                        <TableColumn fx:id="cookieValueCol" prefWidth="250.0" text="Value" />
+                                                        <TableColumn fx:id="cookieDomainCol" prefWidth="150.0" text="Domain" />
+                                                        <TableColumn fx:id="cookiePathCol" prefWidth="100.0" text="Path" />
+                                                    </columns>
+                                                </TableView>
+                                            </content>
+                                        </Tab>
+                                    </tabs>
+                                </TabPane>
+                            </children>
+                            <padding>
+                                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                            </padding>
+                        </VBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </items>
+</SplitPane>
