@@ -320,6 +320,31 @@
     -fx-text-fill: #1d4ed8;
     -fx-font-weight: bold;
 }
+/* Trạng thái bình thường */
+.env-item {
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-transition: all 0.2s ease;
+}
+
+/* Hiệu ứng khi di chuột qua (Hover) */
+.env-item:hover {
+    -fx-background-color: #f5f5f5;
+}
+
+/* Hiệu ứng "CHÌM XUỐNG" khi được CHỌN (Selected) */
+.env-item-selected {
+    -fx-background-color: #e7f1ff; /* Màu xanh nhạt */
+    -fx-border-color: transparent transparent transparent #0d6efd; /* Vạch xanh bên trái */
+    -fx-border-width: 0 0 0 4;
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 1, 1); /* Tạo cảm giác chìm */
+}
+
+/* Đổi màu chữ cho đẹp khi được chọn */
+.env-item-selected Label {
+    -fx-text-fill: #0d6efd;
+    -fx-font-weight: bold;
+}
 
 
 
@@ -529,4 +554,227 @@
     -fx-background-color: white;
     -fx-background-radius: 8;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);
+}
+
+
+
+/*testcase*/
+
+/* Tổng thể */
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #f9fafb;
+}
+
+.header-text {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f2937;
+}
+
+.sub-header {
+    -fx-font-weight: bold;
+    -fx-text-fill: #374151;
+}
+
+/* Card layout */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 8;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);
+}
+
+/* Buttons */
+.btn-primary {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+.btn-primary:hover { -fx-background-color: #1d4ed8; }
+
+.btn-success {
+    -fx-background-color: #16a34a;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+.btn-success:hover { -fx-background-color: #15803d; }
+
+.btn-danger {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: white;
+}
+
+.btn-outline {
+    -fx-background-color: #f3f4f6;
+    -fx-text-fill: #374151;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 4;
+}
+
+.btn-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2563eb;
+    -fx-underline: true;
+}
+
+/* Form controls */
+.text-field, .combo-box, .text-area {
+    -fx-background-color: white;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 4;
+    -fx-padding: 5;
+}
+
+.text-area-mono {
+    -fx-font-family: "Consolas", monospace;
+}
+
+/* Left Panel & TreeView */
+.left-panel {
+    -fx-background-color: white;
+}
+
+.suite-tree {
+    -fx-background-color: transparent;
+}
+
+.suite-tree .tree-cell {
+    -fx-padding: 5 0 5 5;
+}
+
+.body-mode-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #757575;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.body-mode-btn:selected {
+    -fx-text-fill: #2196f3;
+    -fx-border-color: transparent transparent #2196f3 transparent;
+    -fx-border-width: 0 0 2 0;
+}
+
+.body-mode-btn:hover {
+    -fx-background-color: #f5f5f5;
+}
+
+
+
+
+/*REQUEST*/
+/* Tổng thể */
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #f8fafc;
+}
+
+/* Panel bên trái */
+.left-panel {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 0 1 0 0;
+}
+
+.header-text {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.label-form {
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+}
+
+/* Buttons */
+.btn-run-all {
+    -fx-background-color: #16a34a;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+.btn-run-all:hover { -fx-background-color: #15803d; }
+
+.btn-run-selected {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.btn-send {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+}
+
+.btn-secondary {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #475569;
+}
+
+.btn-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2563eb;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+/* Card style */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+/* Input & TextArea */
+.input-field {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4;
+}
+
+.text-area-mono {
+    -fx-font-family: "Consolas", monospace;
+    -fx-font-size: 12px;
+}
+
+.response-body {
+    -fx-font-family: "Consolas", monospace;
+    -fx-background-color: #f1f5f9;
+    -fx-control-inner-background: #f1f5f9;
+}
+
+/* Test Results */
+.test-pass {
+    -fx-text-fill: #16a34a;
+    -fx-background-color: #f0fdf4;
+    -fx-padding: 5;
+    -fx-background-radius: 4;
+}
+
+.test-fail {
+    -fx-text-fill: #dc2626;
+    -fx-background-color: #fef2f2;
+    -fx-padding: 5;
+    -fx-background-radius: 4;
+}
+
+/* TabPane Styling */
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-opacity: 0;
+}
+
+.tab {
+    -fx-background-color: transparent;
+}
+
+.tab:selected {
+    -fx-border-color: #2563eb;
+    -fx-border-width: 0 0 2 0;
 }

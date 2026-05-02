@@ -12,7 +12,7 @@
                 <Insets bottom="20.0" left="15.0" right="15.0" top="20.0" />
             </padding>
             <children>
-                <Label text="ENVIRONMENTS/DANH SÁCH BIẾN ">
+                <Label text="ENVIRONMENTS/DANH SÁCH BIẾN">
                     <font>
                         <Font name="System Bold" size="16.0" />
                     </font>
@@ -23,16 +23,57 @@
                         <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-new" text="+ New Environment" />
                         <HBox spacing="10.0">
                             <children>
-                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-secondary" text="📥Import" HBox.hgrow="ALWAYS" />
-                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-secondary" text="🔍Search" HBox.hgrow="ALWAYS" />
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-secondary" text="📥 Import" HBox.hgrow="ALWAYS" />
+                                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-secondary" text="🔍 Search" HBox.hgrow="ALWAYS" />
                             </children>
                         </HBox>
                     </children>
                 </VBox>
 
-                <ListView fx:id="envListView" VBox.vgrow="ALWAYS" styleClass="env-list" />
+
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox spacing="5.0">
+                            <children>
+                                <HBox fx:id="envLocal" onMouseClicked="#onEnvironmentClick" alignment="CENTER_LEFT" spacing="10" styleClass="env-item">
+                                    <children>
+                                        <Label text="Local" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                                        <Label text="⋮" style="-fx-text-fill: #999;" />
+                                    </children>
+                                    <padding><Insets bottom="12" left="15" right="15" top="12" /></padding>
+                                </HBox>
+
+                                <HBox fx:id="envDev" onMouseClicked="#onEnvironmentClick" alignment="CENTER_LEFT" spacing="10" styleClass="env-item">
+                                    <children>
+                                        <Label text="Dev" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                                        <Label text="⋮" style="-fx-text-fill: #999;" />
+                                    </children>
+                                    <padding><Insets bottom="12" left="15" right="15" top="12" /></padding>
+                                </HBox>
+
+                                <HBox fx:id="envStaging" onMouseClicked="#onEnvironmentClick" alignment="CENTER_LEFT" spacing="10" styleClass="env-item">
+                                    <children>
+                                        <Label text="Staging" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                                        <Label text="Active" styleClass="badge-active" />
+                                        <Label text="⋮" style="-fx-text-fill: #999;" />
+                                    </children>
+                                    <padding><Insets bottom="12" left="15" right="15" top="12" /></padding>
+                                </HBox>
+
+                                <HBox fx:id="envProduction" onMouseClicked="#onEnvironmentClick" alignment="CENTER_LEFT" spacing="10" styleClass="env-item">
+                                    <children>
+                                        <Label text="Production" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                                        <Label text="⋮" style="-fx-text-fill: #999;" />
+                                    </children>
+                                    <padding><Insets bottom="12" left="15" right="15" top="12" /></padding>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
             </children>
         </VBox>
+
 
         <VBox spacing="20.0" styleClass="content-area" HBox.hgrow="ALWAYS">
             <padding>
@@ -83,7 +124,6 @@
                         <Button mnemonicParsing="false" styleClass="btn-action" text="Duplicate" />
                         <Button mnemonicParsing="false" styleClass="btn-delete" text="Delete" />
                         <Button mnemonicParsing="false" styleClass="btn-action" text="Export" />
-
                         <Button mnemonicParsing="false" styleClass="btn-active" text="Set Active" />
                     </children>
                 </HBox>
