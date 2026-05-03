@@ -210,29 +210,90 @@ public class RequestController implements Initializable {
     }
 
     @FXML
+    private String onChangeRequestMethod() {
+//        System.out.println(methodComboBox.getValue()+"aaaaaa");
+        return methodComboBox.getValue();
+    }
+
+    @FXML
     private void sentRequest() {
         btnSendRequest.setOnAction(event -> {
 
             System.out.println("Url: " + txtRequestURL.getText());
-            try {
-                String result = run(txtRequestURL.getText());
-                responseBodyTextArea.setText(result);
-                System.out.println("Result; " + result);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            String method = onChangeRequestMethod();
+            if (method.matches("GET")) {
+                try {
+                    String result = get(txtRequestURL.getText());
+                    responseBodyTextArea.setText(result);
+                    System.out.println("Result; " + result);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
+            if (method.matches("POST")) {
+                try {
+                    String result = post(txtRequestURL.getText());
+                    responseBodyTextArea.setText(result);
+                    System.out.println("Result; " + result);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (method.matches("PUT")) {
+                try {
+                    String result = put(txtRequestURL.getText());
+                    responseBodyTextArea.setText(result);
+                    System.out.println("Result; " + result);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (method.matches("PATCH")) {
+                try {
+                    String result = patch(txtRequestURL.getText());
+                    responseBodyTextArea.setText(result);
+                    System.out.println("Result; " + result);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (method.matches("DELETE")) {
+                try {
+                    String result = delete(txtRequestURL.getText());
+                    responseBodyTextArea.setText(result);
+                    System.out.println("Result; " + result);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
 
         });
     }
 
-    private String run(String url) throws IOException {
+    private String get(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
-
                 .build();
 
         try (Response res = client.newCall(request).execute()) {
             return res.body().string();
         }
+    }
+
+    private String post(String url) throws IOException {
+        return "post";
+    }
+
+    private String put(String url) throws IOException {
+        return "put";
+    }
+
+    private String patch(String url) throws IOException {
+        return "patch";
+    }
+
+    private String delete(String url) throws IOException {
+        return "delete";
     }
 }

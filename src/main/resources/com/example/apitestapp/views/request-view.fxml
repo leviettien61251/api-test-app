@@ -70,7 +70,7 @@
                         <!-- Request Bar -->
                         <HBox spacing="10.0" styleClass="card">
                             <children>
-                                <ComboBox fx:id="methodComboBox" prefWidth="100.0" promptText="GET" />
+                                <ComboBox fx:id="methodComboBox" prefWidth="100.0" promptText="GET" onAction="#onChangeRequestMethod"/>
                                 <TextField fx:id="txtRequestURL" promptText="Enter request URL" styleClass="input-field" HBox.hgrow="ALWAYS" />
                                 <Button fx:id="btnSendRequest" onAction="#sentRequest" styleClass="btn-send" text="➤ Send" />
                             </children>
