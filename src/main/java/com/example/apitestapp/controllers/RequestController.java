@@ -1,5 +1,6 @@
 package com.example.apitestapp.controllers;
 
+import com.example.apitestapp.config.AppRunConfig;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -18,6 +19,10 @@ public class RequestController implements Initializable {
     @FXML private ComboBox<String> methodComboBox;
     @FXML private ComboBox<String> methodComboBox1;
     @FXML private ComboBox<String> methodComboBox2;
+    @FXML private TextField baseUrlField;
+    @FXML private Button runAllButton;
+    @FXML private Button runSelectedButton;
+    @FXML private Button saveRunButton;
 
     // --- Các thành phần Auth Tab ---
     @FXML private ComboBox<String> authTypeComboBox;
@@ -45,11 +50,20 @@ public class RequestController implements Initializable {
     }
 
     private void initGeneralControls() {
+        baseUrlField.setText(AppRunConfig.getBaseUrl());
+        baseUrlField.setEditable(!AppRunConfig.isConfigured());
+
         methodComboBox.getItems().addAll("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS");
         methodComboBox.setValue("GET");
 
         methodComboBox1.getItems().addAll("ALL", "SINGLE");
         methodComboBox2.getItems().addAll("Stop on fail", "Continue");
+        methodComboBox1.setValue(AppRunConfig.getRunMode());
+        methodComboBox2.setValue(AppRunConfig.getAlertMode());
+
+        runAllButton.setDisable(false);
+        runSelectedButton.setDisable(false);
+        saveRunButton.setDisable(false);
     }
 
     // --- LOGIC TAB AUTH (Giống Postman) ---

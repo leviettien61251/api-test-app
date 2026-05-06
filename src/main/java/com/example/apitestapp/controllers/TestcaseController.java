@@ -1,5 +1,6 @@
 package com.example.apitestapp.controllers;
 
+import com.example.apitestapp.config.AppRunConfig;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -18,6 +19,7 @@ public class TestcaseController implements Initializable {
     @FXML private TreeView<String> testSuiteTree;
     @FXML private ComboBox<String> moduleComboBox;
     @FXML private ComboBox<String> methodComboBox;
+    @FXML private TextField baseUrlField;
 
     // --- Các thành phần Auth Tab ---
     @FXML private ComboBox<String> authTypeComboBox;
@@ -36,8 +38,14 @@ public class TestcaseController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initTreeView();
         initComboBoxes();
+        initDefaultConfig();
         initAuthTab();
         initBodyTab();
+    }
+
+    private void initDefaultConfig() {
+        baseUrlField.setText(AppRunConfig.getBaseUrl());
+        baseUrlField.setEditable(!AppRunConfig.isConfigured());
     }
 
     private void initTreeView() {

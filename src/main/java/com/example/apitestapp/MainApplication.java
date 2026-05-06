@@ -10,11 +10,14 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class MainApplication extends Application {
+    private static Stage primaryStage;
+    private static Scene scene;
+
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("main-view.fxml"));
-        Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root);
+        primaryStage = stage;
+        Parent root = loadRoot("login-view.fxml");
+        scene = new Scene(root);
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
         String CSS_PATH = "/com/example/apitestapp/styles/styles.css";
         java.net.URL cssUrl = getClass().getResource(CSS_PATH);
@@ -22,12 +25,36 @@ public class MainApplication extends Application {
             throw new IllegalStateException("Stylesheet not found: " + CSS_PATH);
         }
         scene.getStylesheets().add(cssUrl.toExternalForm());
-        stage.setTitle("Main");
+        stage.setTitle("API Test App");
         stage.setMinWidth(960);
         stage.setMinHeight(640);
         stage.setScene(scene);
         stage.sizeToScene();
         stage.centerOnScreen();
         stage.show();
+    }
+
+    private static Parent loadRoot(String fxmlName) throws IOException {
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(fxmlName));
+        return loader.load();
+    }
+
+    public static void showMainView() {
+        setRootSafely("main-view.fxml");
+    }
+
+    public static void showLoginView() {
+        setRootSafely("login-view.fxml");
+    }
+
+    private static void setRootSafely(String fxmlName) {
+        try {
+            Parent root = loadRoot(fxmlName);
+            scene.setRoot(root);
+            primaryStage.sizeToScene();
+            primaryStage.centerOnScreen();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load FXML: " + fxmlName, e);
+        }
     }
 }

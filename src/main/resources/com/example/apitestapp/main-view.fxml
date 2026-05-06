@@ -2,6 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
@@ -45,7 +47,13 @@
                         <ToggleButton fx:id="btnRequest" onAction="#navigateRequests" styleClass="header-nav-item" text="Request" toggleGroup="$headerGroup" />
                         <ToggleButton fx:id="btnReport" onAction="#navigateReports" styleClass="header-nav-item" text="Report" toggleGroup="$headerGroup" />
 
-                        <HBox HBox.hgrow="ALWAYS" /> <ToggleButton fx:id="btnProfile" onAction="#navigateProfile" styleClass="header-nav-item" text="👤 User: Sơn" toggleGroup="$headerGroup"  />
+                        <HBox HBox.hgrow="ALWAYS" />
+                        <MenuButton fx:id="userMenuButton" styleClass="user-menu" text="👤 User">
+                            <items>
+                                <MenuItem onAction="#navigateProfile" text="👤 Thông tin cá nhân" />
+                                <MenuItem onAction="#handleLogout" text="⎋ Đăng xuất" />
+                            </items>
+                        </MenuButton>
                     </children>
                     <padding>
                         <Insets left="20.0" right="20.0" />

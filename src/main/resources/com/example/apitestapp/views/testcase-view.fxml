@@ -36,6 +36,8 @@
                             <children>
                                 <Label styleClass="label-form" text="Tên testcase:" />
                                 <TextField promptText="Nhập tên testcase" text="TC03 - Tìm đường đến khoa Tim mạch" />
+                                <Label styleClass="label-form" text="Base URL mặc định:" />
+                                <TextField fx:id="baseUrlField" editable="false" promptText="http://localhost:8080" />
                                 <Label styleClass="label-form" text="Module:" />
                                 <ComboBox fx:id="moduleComboBox" maxWidth="1.7976931348623157E308" promptText="Chọn module" />
                             </children>
