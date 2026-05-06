@@ -15,18 +15,18 @@
                 <VBox spacing="8.0">
                     <children>
                         <Label styleClass="label-form" text="Base URL" />
-                        <TextField promptText="https://api.example.com" styleClass="input-field" />
+                        <TextField fx:id="baseUrlField" promptText="https://api.example.com" styleClass="input-field" />
                     </children>
                 </VBox>
 
                 <HBox spacing="10.0">
                     <children>
-                        <Button maxWidth="1.7976931348623157E308" styleClass="btn-run-all" text="▶ Run All" HBox.hgrow="ALWAYS" />
-                        <Button maxWidth="1.7976931348623157E308" styleClass="btn-run-selected" text="Run Selected" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="runAllButton" maxWidth="1.7976931348623157E308" styleClass="btn-run-all" text="▶ Run All" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="runSelectedButton" maxWidth="1.7976931348623157E308" styleClass="btn-run-selected" text="Run Selected" HBox.hgrow="ALWAYS" />
                     </children>
                 </HBox>
 
-                <Button maxWidth="1.7976931348623157E308" styleClass="btn-secondary" text="Save Run" />
+                <Button fx:id="saveRunButton" maxWidth="1.7976931348623157E308" styleClass="btn-secondary" text="Save Run" />
 
                 <VBox spacing="8.0">
                     <children>
