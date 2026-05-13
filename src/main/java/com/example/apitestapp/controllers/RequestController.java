@@ -3,190 +3,289 @@ package com.example.apitestapp.controllers;
 import com.example.apitestapp.config.AppRunConfig;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import okhttp3.*;
+import javafx.concurrent.Task;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class RequestController implements Initializable {
 
-    // --- ComboBox chính ---
+    // --- FXML Controls ---
     @FXML private ComboBox<String> methodComboBox;
     @FXML private ComboBox<String> methodComboBox1;
     @FXML private ComboBox<String> methodComboBox2;
     @FXML private TextField baseUrlField;
+    @FXML private TextField urlField;
+    @FXML private Button sendButton;
     @FXML private Button runAllButton;
     @FXML private Button runSelectedButton;
     @FXML private Button saveRunButton;
 
-    // --- Các thành phần Auth Tab ---
     @FXML private ComboBox<String> authTypeComboBox;
     @FXML private VBox authConfigContainer;
 
-    // --- Các thành phần Body Tab ---
     @FXML private ToggleButton rawBtn;
     @FXML private ToggleButton formDataBtn;
     @FXML private ComboBox<String> rawTypeComboBox;
     @FXML private VBox bodyContentContainer;
     @FXML private TextArea bodyTextArea;
 
+    @FXML private Label statusLabel;
+    @FXML private Label timeLabel;
+    @FXML private TextArea responseBodyTextArea;
+    @FXML private TableView<HeaderModel> headersTableView;
+    @FXML private TableColumn<HeaderModel, String> headerKeyCol;
+    @FXML private TableColumn<HeaderModel, String> headerValueCol;
+
     private ToggleGroup bodyGroup;
+    private final OkHttpClient client = new OkHttpClient();
 
-
-
+    // Model để hiển thị Headers trong TableView
+    public static class HeaderModel {
+        private final String key;
+        private final String value;
+        public HeaderModel(String key, String value) { this.key = key; this.value = value; }
+        public String getKey() { return key; }
+        public String getValue() { return value; }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("RequestController initialized.");
-
         initGeneralControls();
         initAuthTab();
         initBodyTab();
+        initResponseTable();
+
+        // Gán sự kiện cho nút Send
+        sendButton.setOnAction(e -> handleSendRequest());
     }
 
     private void initGeneralControls() {
-        baseUrlField.setText(AppRunConfig.getBaseUrl());
-        baseUrlField.setEditable(!AppRunConfig.isConfigured());
-
-        methodComboBox.getItems().addAll("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS");
-        methodComboBox.setValue("GET");
+        String configuredBaseUrl = AppRunConfig.getBaseUrl();
+        baseUrlField.setText(configuredBaseUrl == null || configuredBaseUrl.isBlank()
+                ? AppRunConfig.DEFAULT_BASE_URL
+                : configuredBaseUrl);
+        methodComboBox.getItems().addAll("GET", "POST", "PUT", "DELETE", "PATCH");
+        methodComboBox.setValue("POST");
+        urlField.setText("/api/v1/signup");
 
         methodComboBox1.getItems().addAll("ALL", "SINGLE");
         methodComboBox2.getItems().addAll("Stop on fail", "Continue");
         methodComboBox1.setValue(AppRunConfig.getRunMode());
         methodComboBox2.setValue(AppRunConfig.getAlertMode());
-
-        runAllButton.setDisable(false);
-        runSelectedButton.setDisable(false);
-        saveRunButton.setDisable(false);
     }
 
-    // --- LOGIC TAB AUTH (Giống Postman) ---
+    private void initResponseTable() {
+        headerKeyCol.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("key"));
+        headerValueCol.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("value"));
+    }
+
+    private void handleSendRequest() {
+        String requestUrl = resolveRequestUrl();
+        if (requestUrl.isEmpty()) {
+            statusLabel.setText("URL trống!");
+            return;
+        }
+
+        String method = methodComboBox.getValue();
+        String bodyText = bodyTextArea.getText();
+        MediaType mediaType = MediaType.parse(resolveMediaType());
+
+        sendButton.setDisable(true);
+        statusLabel.setText("Đang gửi...");
+        responseBodyTextArea.clear();
+
+        long startTime = System.currentTimeMillis();
+
+        Task<Response> task = new Task<>() {
+            @Override
+            protected Response call() throws Exception {
+                Request.Builder builder = new Request.Builder()
+                        .url(requestUrl)
+                        .header("Accept", "*/*");
+
+                if (!method.equals("GET") && !method.equals("DELETE")) {
+                    RequestBody body = RequestBody.create(bodyText, mediaType);
+                    builder.method(method, body);
+                } else {
+                    builder.method(method, null);
+                }
+
+                return client.newCall(builder.build()).execute();
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            Response response = task.getValue();
+            long duration = System.currentTimeMillis() - startTime;
+            timeLabel.setText("Time: " + duration + "ms");
+            updateStatus(response.code(), response.message());
+
+            try {
+                String respBody = response.body() != null ? response.body().string() : "";
+                responseBodyTextArea.setText(formatJson(respBody));
+
+                headersTableView.getItems().clear();
+                response.headers().forEach(pair -> {
+                    headersTableView.getItems().add(new HeaderModel(pair.getFirst(), pair.getSecond()));
+                });
+            } catch (IOException ex) {
+                responseBodyTextArea.setText("Lỗi: " + ex.getMessage());
+            } finally {
+                response.close();
+                sendButton.setDisable(false);
+            }
+        });
+
+        task.setOnFailed(e -> {
+            sendButton.setDisable(false);
+            statusLabel.setText("Lỗi kết nối");
+            statusLabel.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
+            responseBodyTextArea.setText(task.getException().getMessage());
+        });
+
+        new Thread(task).start();
+    }
+
+    private void updateStatus(int code, String message) {
+        statusLabel.setText(code + " " + message);
+        if (code >= 200 && code < 300) {
+            statusLabel.setStyle("-fx-text-fill: #16a34a; -fx-font-weight: bold;");
+        } else {
+            statusLabel.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
+        }
+    }
+
+    private String formatJson(String json) {
+        if (json == null || json.isBlank()) {
+            return "";
+        }
+
+        String trimmed = json.trim();
+        if (!(trimmed.startsWith("{") || trimmed.startsWith("["))) {
+            return json;
+        }
+
+        StringBuilder formatted = new StringBuilder();
+        int indent = 0;
+        boolean inString = false;
+        boolean escaped = false;
+
+        for (int i = 0; i < trimmed.length(); i++) {
+            char current = trimmed.charAt(i);
+
+            if (escaped) {
+                formatted.append(current);
+                escaped = false;
+                continue;
+            }
+            if (current == '\\') {
+                formatted.append(current);
+                escaped = true;
+                continue;
+            }
+            if (current == '"') {
+                formatted.append(current);
+                inString = !inString;
+                continue;
+            }
+            if (inString) {
+                formatted.append(current);
+                continue;
+            }
+
+            switch (current) {
+                case '{', '[' -> {
+                    formatted.append(current).append('\n');
+                    indent++;
+                    appendIndent(formatted, indent);
+                }
+                case '}', ']' -> {
+                    formatted.append('\n');
+                    indent = Math.max(0, indent - 1);
+                    appendIndent(formatted, indent);
+                    formatted.append(current);
+                }
+                case ',' -> {
+                    formatted.append(current).append('\n');
+                    appendIndent(formatted, indent);
+                }
+                case ':' -> formatted.append(": ");
+                default -> {
+                    if (!Character.isWhitespace(current)) {
+                        formatted.append(current);
+                    }
+                }
+            }
+        }
+
+        return formatted.toString();
+    }
+
+    private void appendIndent(StringBuilder builder, int indent) {
+        builder.append("  ".repeat(Math.max(0, indent)));
+    }
+
+    private String resolveRequestUrl() {
+        String enteredUrl = urlField.getText();
+        if (enteredUrl == null || enteredUrl.trim().isEmpty()) {
+            return "";
+        }
+
+        String trimmedUrl = enteredUrl.trim();
+        if (trimmedUrl.startsWith("http://") || trimmedUrl.startsWith("https://")) {
+            return trimmedUrl;
+        }
+
+        String baseUrl = AppRunConfig.normalizeBaseUrl(baseUrlField.getText());
+        if (trimmedUrl.startsWith("/")) {
+            return baseUrl + trimmedUrl;
+        }
+        return baseUrl + "/" + trimmedUrl;
+    }
+
+    private String resolveMediaType() {
+        String rawType = rawTypeComboBox.getValue();
+        if ("Text".equals(rawType)) {
+            return "text/plain; charset=utf-8";
+        }
+        if ("XML".equals(rawType)) {
+            return "application/xml; charset=utf-8";
+        }
+        return "application/json; charset=utf-8";
+    }
+
+    // --- Các hàm khởi tạo UI (Giữ nguyên từ code cũ của bạn) ---
     private void initAuthTab() {
         authTypeComboBox.getItems().addAll("No Auth", "Basic Auth", "Bearer Token");
         authTypeComboBox.setValue("No Auth");
-
-        authTypeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            updateAuthUI(newVal);
-        });
+        authTypeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> updateAuthUI(newVal));
     }
 
     private void updateAuthUI(String authType) {
         authConfigContainer.getChildren().clear();
-        if (authType == null || authType.equals("No Auth")) return;
-
-        authConfigContainer.setSpacing(8.0);
-
-        if (authType.equals("Basic Auth")) {
-            renderBasicAuth();
-        } else if (authType.equals("Bearer Token")) {
-            renderBearerToken();
+        if ("Basic Auth".equals(authType)) {
+            authConfigContainer.getChildren().addAll(new Label("Username"), new TextField(), new Label("Password"), new PasswordField());
+        } else if ("Bearer Token".equals(authType)) {
+            authConfigContainer.getChildren().addAll(new Label("Token"), new TextField());
         }
     }
 
-    private void renderBasicAuth() {
-        authConfigContainer.getChildren().addAll(
-                new Label("Username"), createStyledTextField("Enter username"),
-                new Label("Password"), createStyledPasswordField("Enter password")
-        );
-    }
-
-    private void renderBearerToken() {
-        authConfigContainer.getChildren().addAll(
-                new Label("Token"), createStyledTextField("Enter token")
-        );
-    }
-
-    // --- LOGIC TAB BODY (Raw vs Form-Data) ---
     private void initBodyTab() {
         bodyGroup = new ToggleGroup();
         rawBtn.setToggleGroup(bodyGroup);
         formDataBtn.setToggleGroup(bodyGroup);
-
-        rawTypeComboBox.getItems().addAll("JSON", "Text", "JavaScript", "HTML", "XML");
+        rawBtn.setSelected(true);
+        rawTypeComboBox.getItems().addAll("JSON", "Text", "XML");
         rawTypeComboBox.setValue("JSON");
-
-        // Sự kiện khi nhấn nút Raw
-        rawBtn.setOnAction(e -> {
-            rawTypeComboBox.setVisible(true);
-            showRawBody();
-        });
-
-        // Sự kiện khi nhấn nút Form-Data
-        formDataBtn.setOnAction(e -> {
-            rawTypeComboBox.setVisible(false);
-            showFormDataBody();
-        });
-    }
-
-    private void showRawBody() {
-        bodyContentContainer.getChildren().clear();
-        bodyContentContainer.getChildren().add(bodyTextArea);
-    }
-
-    private void showFormDataBody() {
-        bodyContentContainer.getChildren().clear();
-
-        // Tạo bảng Form-data giả lập
-        VBox tableContainer = new VBox();
-
-        // Header row
-        HBox header = new HBox(10);
-        header.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 8; -fx-border-color: #dee2e6; -fx-border-width: 0 0 1 0;");
-        Label kH = new Label("Key"); kH.setPrefWidth(150); kH.setStyle("-fx-font-weight: bold;");
-        Label vH = new Label("Value"); vH.setPrefWidth(150); vH.setStyle("-fx-font-weight: bold;");
-        header.getChildren().addAll(new Region(), kH, vH, new Label("Description"));
-
-        VBox rows = new VBox(5);
-        rows.getChildren().add(createFormDataRow()); // Dòng đầu tiên
-
-        Button addBtn = new Button("+ Add Row");
-        addBtn.getStyleClass().add("btn-link");
-        addBtn.setOnAction(e -> rows.getChildren().add(createFormDataRow()));
-
-        bodyContentContainer.getChildren().addAll(header, rows, addBtn);
-    }
-
-    private HBox createFormDataRow() {
-        HBox row = new HBox(10);
-        row.setAlignment(Pos.CENTER_LEFT);
-        row.setStyle("-fx-padding: 5;");
-
-        CheckBox cb = new CheckBox(); cb.setSelected(true);
-        TextField k = new TextField(); k.setPromptText("Key"); k.setPrefWidth(150);
-        TextField v = new TextField(); v.setPromptText("Value"); v.setPrefWidth(150);
-        TextField d = new TextField(); d.setPromptText("Description");
-        HBox.setHgrow(d, Priority.ALWAYS);
-
-        Button del = new Button("🗑");
-        del.setStyle("-fx-text-fill: #e74c3c; -fx-background-color: transparent; -fx-cursor: hand;");
-        del.setOnAction(e -> {
-            if (((VBox)row.getParent()).getChildren().size() > 1) {
-                ((VBox)row.getParent()).getChildren().remove(row);
-            }
-        });
-
-        row.getChildren().addAll(cb, k, v, d, del);
-        return row;
-    }
-
-    // Helper methods tạo UI nhanh
-    private TextField createStyledTextField(String prompt) {
-        TextField f = new TextField();
-        f.setPromptText(prompt);
-        f.getStyleClass().add("input-field");
-        return f;
-    }
-
-    private PasswordField createStyledPasswordField(String prompt) {
-        PasswordField f = new PasswordField();
-        f.setPromptText(prompt);
-        f.getStyleClass().add("input-field");
-        return f;
+        bodyTextArea.setText("""
+                {
+                  "phoneNumber": "09811111",
+                  "password": "truongson123"
+                }""");
     }
 }
