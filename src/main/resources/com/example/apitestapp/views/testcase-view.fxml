@@ -30,7 +30,7 @@
                                 </HBox>
                                 <Label text="Auth: Bearer Token (chưa cấu hình)" textFill="#7f8c8d" />
                                 <Label style="-fx-font-weight: bold;" text="Body (JSON)" />
-                                <TextArea fx:id="bodyTextArea" editable="false" prefHeight="80.0" style="-fx-font-family: 'Courier New'; -fx-control-inner-background: #2d3436; -fx-text-fill: #ecf0f1;" text="{&#10;  &quot;phonenumber&quot;: &quot;098xxxxxxx&quot;,&#10;  &quot;password&quot;: &quot;Aa@12345&quot;&#10;}" />
+                                <TextArea fx:id="bodyTextArea" editable="false" prefHeight="80.0" style="-fx-font-family: 'Courier New'; -fx-control-inner-background: #2d3436; -fx-text-fill: #000;" text="{&#10;  &quot;phonenumber&quot;: &quot;098xxxxxxx&quot;,&#10;  &quot;password&quot;: &quot;Aa@12345&quot;&#10;}" />
                             </children>
                         </VBox>
 

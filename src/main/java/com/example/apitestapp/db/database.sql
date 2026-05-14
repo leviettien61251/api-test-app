@@ -3,7 +3,8 @@ values ('admin', 'this is admin role'),
        ('tester', 'this is tester role');
 
 insert into users(role_id, full_name, phone, email, password)
-values ('2', 'TESTER 1', '0980000001', 'tester1@tester.com', 'tester1@tester.com'),
+values ('2', 'TESTER 2', '0980000003', 'a', 'a'),
+       ('2', 'TESTER 1', '0980000001', 'tester1@tester.com', 'tester1@tester.com'),
        ('1', 'ADMIN 1', '0980000002', 'admin1@tester.com', 'SuperSecurePassword123@');
 
 insert into client_machines(user_id, machine_name, os_name, os_version, ip_address, cpu_info, ram_info, hostname)
@@ -13,7 +14,8 @@ SELECT *
 FROM roles;
 SELECT *
 FROM users;
-select * from client_machines;
+select *
+from client_machines;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ============================================
