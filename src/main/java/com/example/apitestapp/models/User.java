@@ -12,10 +12,18 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Role {
+public class User {
 
-    private Integer id;
-    private String name;           // admin, tester, viewer
-    private String description;
+    private String id;
+    private Integer roleId;
+    private String fullName;
+    private String phoneNumber;
+    private String email;
+    private String password;
+
+    @Builder.Default
+    private Boolean isActive = true;
+
     private Date createdAt;
+    private Date updatedAt;
 }

@@ -12,10 +12,17 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Role {
+public class EnvironmentVariable {
 
     private Integer id;
-    private String name;           // admin, tester, viewer
+    private Integer collectionId;
+    private String key;
+    private String value;
+
+    @Builder.Default
+    private Boolean isSecret = false;   // true nếu là token, password...
+
     private String description;
     private Date createdAt;
+    private Date updatedAt;
 }
