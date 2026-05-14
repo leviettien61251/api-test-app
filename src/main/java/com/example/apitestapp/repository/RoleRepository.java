@@ -1,4 +1,4 @@
 package com.example.apitestapp.repository;
 
-public interface RoleRepository{
+public interface RoleRepository {
 }

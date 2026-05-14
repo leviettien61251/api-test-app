@@ -13,8 +13,10 @@ import java.util.ResourceBundle;
 
 public class EnvironmentsController implements Initializable {
 
-    @FXML private Label lblSelectedEnv;
-    @FXML private HBox envLocal, envDev, envStaging, envProduction;
+    @FXML
+    private Label lblSelectedEnv;
+    @FXML
+    private HBox envLocal, envDev, envStaging, envProduction;
 
     private List<HBox> allEnvItems;
 

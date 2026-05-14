@@ -92,12 +92,12 @@ public class ClientMachine {
         return isActive;
     }
 
-    public boolean isActive() {
-        return Boolean.TRUE.equals(isActive);
-    }
-
     public void setIsActive(Boolean active) {
         isActive = active;
+    }
+
+    public boolean isActive() {
+        return Boolean.TRUE.equals(isActive);
     }
 
     public Date getCreatedAt() {

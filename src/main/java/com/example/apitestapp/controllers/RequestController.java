@@ -1,12 +1,12 @@
 package com.example.apitestapp.controllers;
 
 import com.example.apitestapp.config.AppRunConfig;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import okhttp3.*;
-import javafx.concurrent.Task;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,44 +14,53 @@ import java.util.ResourceBundle;
 
 public class RequestController implements Initializable {
 
-    // --- FXML Controls ---
-    @FXML private ComboBox<String> methodComboBox;
-    @FXML private ComboBox<String> methodComboBox1;
-    @FXML private ComboBox<String> methodComboBox2;
-    @FXML private TextField baseUrlField;
-    @FXML private TextField urlField;
-    @FXML private Button sendButton;
-    @FXML private Button runAllButton;
-    @FXML private Button runSelectedButton;
-    @FXML private Button saveRunButton;
-
-    @FXML private ComboBox<String> authTypeComboBox;
-    @FXML private VBox authConfigContainer;
-
-    @FXML private ToggleButton rawBtn;
-    @FXML private ToggleButton formDataBtn;
-    @FXML private ComboBox<String> rawTypeComboBox;
-    @FXML private VBox bodyContentContainer;
-    @FXML private TextArea bodyTextArea;
-
-    @FXML private Label statusLabel;
-    @FXML private Label timeLabel;
-    @FXML private TextArea responseBodyTextArea;
-    @FXML private TableView<HeaderModel> headersTableView;
-    @FXML private TableColumn<HeaderModel, String> headerKeyCol;
-    @FXML private TableColumn<HeaderModel, String> headerValueCol;
-
-    private ToggleGroup bodyGroup;
     private final OkHttpClient client = new OkHttpClient();
-
-    // Model để hiển thị Headers trong TableView
-    public static class HeaderModel {
-        private final String key;
-        private final String value;
-        public HeaderModel(String key, String value) { this.key = key; this.value = value; }
-        public String getKey() { return key; }
-        public String getValue() { return value; }
-    }
+    // --- FXML Controls ---
+    @FXML
+    private ComboBox<String> methodComboBox;
+    @FXML
+    private ComboBox<String> methodComboBox1;
+    @FXML
+    private ComboBox<String> methodComboBox2;
+    @FXML
+    private TextField baseUrlField;
+    @FXML
+    private TextField urlField;
+    @FXML
+    private Button sendButton;
+    @FXML
+    private Button runAllButton;
+    @FXML
+    private Button runSelectedButton;
+    @FXML
+    private Button saveRunButton;
+    @FXML
+    private ComboBox<String> authTypeComboBox;
+    @FXML
+    private VBox authConfigContainer;
+    @FXML
+    private ToggleButton rawBtn;
+    @FXML
+    private ToggleButton formDataBtn;
+    @FXML
+    private ComboBox<String> rawTypeComboBox;
+    @FXML
+    private VBox bodyContentContainer;
+    @FXML
+    private TextArea bodyTextArea;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private Label timeLabel;
+    @FXML
+    private TextArea responseBodyTextArea;
+    @FXML
+    private TableView<HeaderModel> headersTableView;
+    @FXML
+    private TableColumn<HeaderModel, String> headerKeyCol;
+    @FXML
+    private TableColumn<HeaderModel, String> headerValueCol;
+    private ToggleGroup bodyGroup;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -287,5 +296,24 @@ public class RequestController implements Initializable {
                   "phoneNumber": "09811111",
                   "password": "truongson123"
                 }""");
+    }
+
+    // Model để hiển thị Headers trong TableView
+    public static class HeaderModel {
+        private final String key;
+        private final String value;
+
+        public HeaderModel(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 }

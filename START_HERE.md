@@ -5,9 +5,12 @@
 Your **7-test signup API test system** is complete and ready to use!
 
 ### What Is This?
-A professional test automation suite that makes real HTTP calls to `http://localhost:8080/api/v1/signup` and validates response codes.
+
+A professional test automation suite that makes real HTTP calls to `http://localhost:8080/api/v1/signup` and validates
+response codes.
 
 ### What Can It Test?
+
 ✅ Valid user registration (Scenario 1, 7)
 ✅ Duplicate user detection (Scenario 2)
 ✅ Missing field validation (Scenario 3)
@@ -18,21 +21,22 @@ A professional test automation suite that makes real HTTP calls to `http://local
 
 ## 📋 The 7 Test Cases
 
-| # | Test Name | Phone | Password | Expected | Goal |
-|---|-----------|-------|----------|----------|------|
-| 1 | Valid registration | 84901234567 | Password@123 | 1000 | ✅ Register new user |
-| 2 | Duplicate user | 84901234567 | Password@123 | 2001 | ✅ Reject duplicate |
-| 3 | Missing password | 84901234567 | (empty) | 3006 | ✅ Require password |
-| 4 | Invalid phone | 123 | Password@123 | 3007 | ✅ Validate phone format |
-| 5 | Bad phone (dup) | invalid | Password@123 | 3007 | ✅ Validate format |
-| 6 | Weak password | 84901234567 | 123 | 3008 | ✅ Enforce strong password |
-| 7 | Special chars | 84909876543 | P@ssw0rd!#$% | 1000 | ✅ Accept special chars |
+| # | Test Name          | Phone       | Password     | Expected | Goal                      |
+|---|--------------------|-------------|--------------|----------|---------------------------|
+| 1 | Valid registration | 84901234567 | Password@123 | 1000     | ✅ Register new user       |
+| 2 | Duplicate user     | 84901234567 | Password@123 | 2001     | ✅ Reject duplicate        |
+| 3 | Missing password   | 84901234567 | (empty)      | 3006     | ✅ Require password        |
+| 4 | Invalid phone      | 123         | Password@123 | 3007     | ✅ Validate phone format   |
+| 5 | Bad phone (dup)    | invalid     | Password@123 | 3007     | ✅ Validate format         |
+| 6 | Weak password      | 84901234567 | 123          | 3008     | ✅ Enforce strong password |
+| 7 | Special chars      | 84909876543 | P@ssw0rd!#$% | 1000     | ✅ Accept special chars    |
 
 ---
 
 ## 🎯 What Was Built
 
 ### Code (5 files)
+
 ```
 NEW:
 ✅ SignupTestData.java         - Test data model
@@ -45,6 +49,7 @@ MODIFIED:
 ```
 
 ### Documentation (10 files)
+
 ```
 ✅ README.md                   - Main overview
 ✅ QUICK_REFERENCE.md          - Quick lookup (use this!)
@@ -63,17 +68,20 @@ MODIFIED:
 ## ⚡ Get Running in 2 Minutes
 
 ### Step 1: Build (30 seconds)
+
 ```bash
 cd C:\Users\Admin\OneDrive\Documents\GitHub\api-test-app
 mvn clean compile
 ```
 
 ### Step 2: Run (30 seconds)
+
 ```bash
 mvn javafx:run
 ```
 
 ### Step 3: Test (60 seconds)
+
 1. Look for Collections tree on left side
 2. Click: **Collections → Auth Module → POST /api/v1/signup**
 3. See 7 tests load in the table
@@ -113,18 +121,22 @@ Display final summary
 ## 🎓 Which Documentation to Read?
 
 ### "I just want to run the tests" (5 minutes)
+
 → **README.md** - Quick start section
 → **QUICK_REFERENCE.md** - Test flow section
 
 ### "I want to understand the tests" (15 minutes)
+
 → **TEST_CASES_DOCUMENTATION.md** - All scenarios explained
 → **TEST_EXECUTION_EXAMPLES.md** - Example outputs
 
 ### "I need to understand the code" (30 minutes)
+
 → **ARCHITECTURE.md** - System design
 → **IMPLEMENTATION_SUMMARY.md** - Code structure
 
 ### "I'm deploying to production" (45 minutes)
+
 → **DEPLOYMENT_CHECKLIST.md** - Pre-deployment checks
 → **FINAL_REPORT.md** - Completion verification
 
@@ -145,6 +157,7 @@ Before running tests:
 ## 🔍 What to Expect
 
 ### UI Layout
+
 ```
 ┌─────────────────────────────────────────┐
 │ Collections Tree  │  Test Case Table    │
@@ -166,6 +179,7 @@ Before running tests:
 ```
 
 ### Expected Result
+
 ```
 ✅ Scenario 1 - Valid phone, not yet registered
   Code: 1000, HTTP: 200, Message: OK
@@ -196,34 +210,39 @@ Summary: Pass: 7 | Fail: 0 | Total: 7
 ## ❌ If Something Fails
 
 ### "Connection refused"
+
 → Start backend API on localhost:8080
 
 ### "Tests not loading"
+
 → Click "POST /api/v1/signup" in Collections tree
 
 ### "Test returns wrong code"
+
 → Check API implementation returns correct code field
 → Check response format is JSON
 
 ### "See other issues"
+
 → Check **QUICK_REFERENCE.md** Troubleshooting section
 
 ---
 
 ## 📚 Documentation Quick Links
 
-| Document | Purpose | Time |
-|----------|---------|------|
-| **README.md** | Overview | 5 min |
-| **QUICK_REFERENCE.md** | Quick lookup | 5 min |
-| **TEST_CASES_DOCUMENTATION.md** | Test details | 10 min |
-| **TEST_EXECUTION_EXAMPLES.md** | Example outputs | 10 min |
-| **ARCHITECTURE.md** | System design | 15 min |
-| **COMPLETION_SUMMARY.md** | Implementation | 10 min |
-| **DEPLOYMENT_CHECKLIST.md** | Pre-deploy | 15 min |
-| **FINAL_REPORT.md** | Sign-off | 10 min |
+| Document                        | Purpose         | Time   |
+|---------------------------------|-----------------|--------|
+| **README.md**                   | Overview        | 5 min  |
+| **QUICK_REFERENCE.md**          | Quick lookup    | 5 min  |
+| **TEST_CASES_DOCUMENTATION.md** | Test details    | 10 min |
+| **TEST_EXECUTION_EXAMPLES.md**  | Example outputs | 10 min |
+| **ARCHITECTURE.md**             | System design   | 15 min |
+| **COMPLETION_SUMMARY.md**       | Implementation  | 10 min |
+| **DEPLOYMENT_CHECKLIST.md**     | Pre-deploy      | 15 min |
+| **FINAL_REPORT.md**             | Sign-off        | 10 min |
 
 **Recommended reading order**:
+
 1. This file (START_HERE.md) - 5 minutes
 2. README.md - 5 minutes
 3. QUICK_REFERENCE.md - 5 minutes
@@ -276,20 +295,21 @@ mvn javafx:run
 
 ## 📊 What You Get
 
-| Item | Count | Details |
-|------|-------|---------|
-| Test Scenarios | 7 | All success/failure paths covered |
-| Java Files | 3 | New service classes |
-| Modified Files | 2 | Controller + config |
-| Documentation | 10 | 60+ KB of guides |
-| Response Codes | 5 | 1000, 2001, 3006, 3007, 3008 |
-| Expected Pass Rate | 100% | All tests validate correctly |
+| Item               | Count | Details                           |
+|--------------------|-------|-----------------------------------|
+| Test Scenarios     | 7     | All success/failure paths covered |
+| Java Files         | 3     | New service classes               |
+| Modified Files     | 2     | Controller + config               |
+| Documentation      | 10    | 60+ KB of guides                  |
+| Response Codes     | 5     | 1000, 2001, 3006, 3007, 3008      |
+| Expected Pass Rate | 100%  | All tests validate correctly      |
 
 ---
 
 ## 🎯 Next Steps
 
 ### Immediate (Today)
+
 1. ✅ Read this file (5 minutes)
 2. ✅ Read README.md (5 minutes)
 3. ✅ Build and run application (2 minutes)
@@ -297,12 +317,14 @@ mvn javafx:run
 5. ✅ Verify all 7 tests pass
 
 ### This Week
+
 1. Review ARCHITECTURE.md to understand design
 2. Share README.md with your team
 3. Integrate into your CI/CD pipeline
 4. Test against your actual backend
 
 ### This Month
+
 1. Extend with additional scenarios if needed
 2. Add performance tracking
 3. Generate test reports
@@ -313,6 +335,7 @@ mvn javafx:run
 ## ✨ That's It!
 
 Your signup API test system is:
+
 - ✅ Complete
 - ✅ Tested
 - ✅ Documented
@@ -325,27 +348,34 @@ Your signup API test system is:
 ## 🚀 Step-by-Step Instructions
 
 ### Step 1: Build (30 seconds)
+
 ```bash
 cd C:\Users\Admin\OneDrive\Documents\GitHub\api-test-app
 mvn clean compile
 ```
+
 ✅ Check: No errors in console
 
 ### Step 2: Run (30 seconds)
+
 ```bash
 mvn javafx:run
 ```
+
 ✅ Check: Application window opens with UI
 
 ### Step 3: Load Tests (15 seconds)
+
 Click in tree: **Collections → Auth Module → POST /api/v1/signup**
 ✅ Check: See 7 tests load in table
 
 ### Step 4: Execute (1 minute)
+
 Click button: **"Run All"**
 ✅ Check: Tests start executing (shows ⏳ Đang test...)
 
 ### Step 5: View Results (30 seconds)
+
 Wait for completion
 ✅ Check: See ✅ PASS for all 7 tests
 
@@ -388,6 +418,7 @@ Read other docs as needed
 ## ✅ Success Indicators
 
 You'll know it's working when:
+
 - ✅ Application window opens
 - ✅ Collections tree shows "POST /api/v1/signup"
 - ✅ 7 test cases load in the table
@@ -402,6 +433,7 @@ You'll know it's working when:
 **You have a complete, production-ready signup API test system!**
 
 It:
+
 - ✅ Tests 7 scenarios
 - ✅ Makes real API calls
 - ✅ Validates response codes

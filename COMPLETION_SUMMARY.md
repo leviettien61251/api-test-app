@@ -1,90 +1,96 @@
 # ✅ Signup API Test Cases - Implementation Complete
 
 ## Summary
-Successfully implemented 7 comprehensive test cases for the signup API endpoint `http://localhost:8080/api/v1/signup` with real HTTP API calls integration.
+
+Successfully implemented 7 comprehensive test cases for the signup API endpoint `http://localhost:8080/api/v1/signup`
+with real HTTP API calls integration.
 
 ---
 
 ## 📋 Test Cases Implemented
 
-| # | Scenario | Phone | Password | Expected Code | Type |
-|---|----------|-------|----------|----------------|------|
-| 1 | Valid data, not yet registered | 84901234567 | Password@123 | 1000 | ✅ SUCCESS |
-| 2 | Valid data, already registered | 84901234567 | Password@123 | 2001 | ❌ FAILURE |
-| 3 | Valid phone, no password | 84901234567 | (empty) | 3006 | ❌ FAILURE |
-| 4 | Invalid phone, has password | 123 | Password@123 | 3007 | ❌ FAILURE |
-| 5 | Invalid phone, already registered | invalid | Password@123 | 3007 | ❌ FAILURE |
-| 6 | Invalid password (too short) | 84901234567 | 123 | 3008 | ❌ FAILURE |
-| 7 | Valid with special characters | 84909876543 | P@ssw0rd!#$% | 1000 | ✅ SUCCESS |
+| # | Scenario                          | Phone       | Password     | Expected Code | Type      |
+|---|-----------------------------------|-------------|--------------|---------------|-----------|
+| 1 | Valid data, not yet registered    | 84901234567 | Password@123 | 1000          | ✅ SUCCESS |
+| 2 | Valid data, already registered    | 84901234567 | Password@123 | 2001          | ❌ FAILURE |
+| 3 | Valid phone, no password          | 84901234567 | (empty)      | 3006          | ❌ FAILURE |
+| 4 | Invalid phone, has password       | 123         | Password@123 | 3007          | ❌ FAILURE |
+| 5 | Invalid phone, already registered | invalid     | Password@123 | 3007          | ❌ FAILURE |
+| 6 | Invalid password (too short)      | 84901234567 | 123          | 3008          | ❌ FAILURE |
+| 7 | Valid with special characters     | 84909876543 | P@ssw0rd!#$% | 1000          | ✅ SUCCESS |
 
 ---
 
 ## 🔧 Files Created
 
 ### Service Classes
+
 1. **SignupTestData.java**
-   - Model class for test scenario data
-   - Uses Lombok @Data, @Builder, @NoArgsConstructor, @AllArgsConstructor
-   - Fields: scenario, phone, password, expectedCode, expectedStatus, description
+    - Model class for test scenario data
+    - Uses Lombok @Data, @Builder, @NoArgsConstructor, @AllArgsConstructor
+    - Fields: scenario, phone, password, expectedCode, expectedStatus, description
 
 2. **SignupTestScenarios.java**
-   - Service providing all 7 predefined test scenarios
-   - Static method: `getSignupScenarios()` returns `List<SignupTestData>`
-   - Easy to extend with new scenarios
+    - Service providing all 7 predefined test scenarios
+    - Static method: `getSignupScenarios()` returns `List<SignupTestData>`
+    - Easy to extend with new scenarios
 
 3. **ApiTestService.java**
-   - HTTP client for calling signup API
-   - Uses OkHttp3 for reliable HTTP communication
-   - Uses Gson for JSON serialization/deserialization
-   - Inner class: `ApiResponse` with response code parsing
-   - Features:
-     - 10-second timeout for all operations
-     - JSON response code extraction
-     - Comprehensive error handling
-     - Fluent builder pattern
+    - HTTP client for calling signup API
+    - Uses OkHttp3 for reliable HTTP communication
+    - Uses Gson for JSON serialization/deserialization
+    - Inner class: `ApiResponse` with response code parsing
+    - Features:
+        - 10-second timeout for all operations
+        - JSON response code extraction
+        - Comprehensive error handling
+        - Fluent builder pattern
 
 ### Modified Files
+
 4. **TestcaseController.java**
-   - Added ApiTestService initialization
-   - Implemented `handleApiSelection()` to load signup test scenarios
-   - Updated `runTests()` to call actual API instead of simulation
-   - Added `callActualApi()` method with response validation
-   - Extended TestCaseModel with phone/password fields
-   - Results show response codes, HTTP status, and messages
+    - Added ApiTestService initialization
+    - Implemented `handleApiSelection()` to load signup test scenarios
+    - Updated `runTests()` to call actual API instead of simulation
+    - Added `callActualApi()` method with response validation
+    - Extended TestCaseModel with phone/password fields
+    - Results show response codes, HTTP status, and messages
 
 5. **pom.xml**
-   - Added Gson dependency (v2.10.1) for JSON processing
+    - Added Gson dependency (v2.10.1) for JSON processing
 
 ### Documentation Files
+
 6. **TEST_CASES_DOCUMENTATION.md** (4.8 KB)
-   - Complete documentation of all 7 test scenarios
-   - Expected response codes and meanings
-   - How to run tests from GUI
-   - Request/response format examples
+    - Complete documentation of all 7 test scenarios
+    - Expected response codes and meanings
+    - How to run tests from GUI
+    - Request/response format examples
 
 7. **IMPLEMENTATION_SUMMARY.md** (4.6 KB)
-   - Implementation overview
-   - Feature summary
-   - File locations
-   - Technical stack details
+    - Implementation overview
+    - Feature summary
+    - File locations
+    - Technical stack details
 
 8. **TEST_EXECUTION_EXAMPLES.md** (5.3 KB)
-   - Real example outputs for each scenario
-   - Expected JSON responses
-   - Complete test run summary
-   - Response code mappings
+    - Real example outputs for each scenario
+    - Expected JSON responses
+    - Complete test run summary
+    - Response code mappings
 
 9. **QUICK_REFERENCE.md** (5.5 KB)
-   - At-a-glance test scenario summary
-   - Quick method reference
-   - Troubleshooting guide
-   - Configuration details
+    - At-a-glance test scenario summary
+    - Quick method reference
+    - Troubleshooting guide
+    - Configuration details
 
 ---
 
 ## 🎯 Key Features
 
 ### API Integration
+
 - ✅ Real HTTP POST calls to `http://localhost:8080/api/v1/signup`
 - ✅ JSON request body construction
 - ✅ Response code extraction from JSON responses
@@ -92,6 +98,7 @@ Successfully implemented 7 comprehensive test cases for the signup API endpoint 
 - ✅ Error handling and timeout management
 
 ### Test Execution
+
 - ✅ Sequential test execution (default)
 - ✅ Stop-on-failure option
 - ✅ Run selected tests
@@ -100,6 +107,7 @@ Successfully implemented 7 comprehensive test cases for the signup API endpoint 
 - ✅ Detailed logging with response details
 
 ### Test Coverage
+
 - ✅ Valid registration scenario
 - ✅ Duplicate user detection
 - ✅ Missing required field validation
@@ -112,12 +120,14 @@ Successfully implemented 7 comprehensive test cases for the signup API endpoint 
 ## 💻 How to Use
 
 ### Prerequisites
+
 1. Java 21 JDK installed
 2. Maven installed
 3. Backend API running on `http://localhost:8080`
 4. Database prepared for testing
 
 ### Build & Run
+
 ```bash
 # Compile project
 mvn clean compile
@@ -131,6 +141,7 @@ java -jar target/api-test-app-1.0-SNAPSHOT-shaded.jar
 ```
 
 ### Testing Steps
+
 1. Launch the application
 2. Navigate to: Collections → Auth Module → POST /api/v1/signup
 3. Review tests loaded in the table (7 scenarios)
@@ -142,13 +153,13 @@ java -jar target/api-test-app-1.0-SNAPSHOT-shaded.jar
 
 ## 📊 Response Codes
 
-| Code | HTTP | Meaning | Scenario |
-|------|------|---------|----------|
-| 1000 | 200 | Registration successful | 1, 7 |
-| 2001 | 400 | User already registered | 2 |
-| 3006 | 422 | Missing password | 3 |
-| 3007 | 422 | Invalid phone format | 4, 5 |
-| 3008 | 422 | Weak password | 6 |
+| Code | HTTP | Meaning                 | Scenario |
+|------|------|-------------------------|----------|
+| 1000 | 200  | Registration successful | 1, 7     |
+| 2001 | 400  | User already registered | 2        |
+| 3006 | 422  | Missing password        | 3        |
+| 3007 | 422  | Invalid phone format    | 4, 5     |
+| 3008 | 422  | Weak password           | 6        |
 
 ---
 
@@ -163,6 +174,7 @@ java -jar target/api-test-app-1.0-SNAPSHOT-shaded.jar
 ```
 
 Already available:
+
 - OkHttp3 (for HTTP calls)
 - JavaFX (for UI)
 - Lombok (for data classes)
@@ -172,6 +184,7 @@ Already available:
 ## 📝 Code Examples
 
 ### Running a Test
+
 ```java
 ApiTestService service = new ApiTestService();
 ApiTestService.ApiResponse response = service.callSignupApi("84901234567", "Password@123");
@@ -182,6 +195,7 @@ String message = response.getStatusMessage();  // "OK"
 ```
 
 ### Getting All Scenarios
+
 ```java
 List<SignupTestData> tests = SignupTestScenarios.getSignupScenarios();
 // Returns 7 test scenarios
@@ -256,15 +270,19 @@ api-test-app/
 ### Common Issues & Solutions
 
 **Issue**: Connection refused error
+
 - **Solution**: Ensure backend API is running on localhost:8080
 
 **Issue**: JSON parsing error
+
 - **Solution**: Check API response format matches expected structure
 
 **Issue**: Tests not loading
+
 - **Solution**: Click "POST /api/v1/signup" in Collections tree
 
 **Issue**: All tests fail
+
 - **Solution**: Verify API implementation returns correct response codes
 
 ---
@@ -281,6 +299,7 @@ api-test-app/
 ## ✨ Conclusion
 
 The signup API test cases are now fully integrated into your test application with:
+
 - Real HTTP API calls (not simulations)
 - 7 comprehensive test scenarios
 - Proper response code validation

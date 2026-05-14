@@ -4,55 +4,73 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
-<SplitPane dividerPositions="0.2, 0.75" prefHeight="750.0" prefWidth="1200.0" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apitestapp.controllers.TestcaseController">
+<SplitPane xmlns:fx="http://javafx.com/fxml/1" dividerPositions="0.2, 0.75" prefHeight="750.0" prefWidth="1200.0"
+           stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/17"
+           fx:controller="com.example.apitestapp.controllers.TestcaseController">
     <items>
 
         <VBox spacing="10.0" styleClass="left-panel">
             <children>
-                <Label styleClass="header-text" text="COLLECTIONS" />
-                <TreeView fx:id="testSuiteTree" showRoot="false" VBox.vgrow="ALWAYS" />
+                <Label styleClass="header-text" text="COLLECTIONS"/>
+                <TreeView fx:id="testSuiteTree" showRoot="false" VBox.vgrow="ALWAYS"/>
             </children>
-            <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0" /></padding>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </padding>
         </VBox>
         <ScrollPane fitToWidth="true">
             <content>
                 <VBox spacing="15.0">
-                    <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                    </padding>
                     <children>
                         <VBox spacing="10.0" styleClass="card">
                             <children>
                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                    <Label style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 3 10; -fx-background-radius: 15;" text="POST">
-                                        <font><Font name="System Bold" size="12.0" /></font>
+                                    <Label style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 3 10; -fx-background-radius: 15;"
+                                           text="POST">
+                                        <font>
+                                            <Font name="System Bold" size="12.0"/>
+                                        </font>
                                     </Label>
-                                    <TextField fx:id="baseUrlField" editable="false" style="-fx-background-color: #f1f2f6;" text="http://localhost:8080/api/v1/signup" HBox.hgrow="ALWAYS" />
+                                    <TextField fx:id="baseUrlField" editable="false"
+                                               style="-fx-background-color: #f1f2f6;"
+                                               text="http://localhost:8080/api/v1/signup" HBox.hgrow="ALWAYS"/>
                                 </HBox>
-                                <Label text="Auth: Bearer Token (chưa cấu hình)" textFill="#7f8c8d" />
-                                <Label style="-fx-font-weight: bold;" text="Body (JSON)" />
-                                <TextArea fx:id="bodyTextArea" editable="false" prefHeight="80.0" style="-fx-font-family: 'Courier New'; -fx-control-inner-background: #2d3436; -fx-text-fill: #000;" text="{&#10;  &quot;phonenumber&quot;: &quot;098xxxxxxx&quot;,&#10;  &quot;password&quot;: &quot;Aa@12345&quot;&#10;}" />
+                                <Label text="Auth: Bearer Token (chưa cấu hình)" textFill="#7f8c8d"/>
+                                <Label style="-fx-font-weight: bold;" text="Body (JSON)"/>
+                                <TextArea fx:id="bodyTextArea" editable="false" prefHeight="80.0"
+                                          style="-fx-font-family: 'Courier New'; -fx-control-inner-background: #2d3436; -fx-text-fill: #000;"
+                                          text="{&#10;  &quot;phonenumber&quot;: &quot;098xxxxxxx&quot;,&#10;  &quot;password&quot;: &quot;Aa@12345&quot;&#10;}"/>
                             </children>
                         </VBox>
 
                         <VBox spacing="15.0" styleClass="card">
                             <children>
-                                <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="TEST SUITE: Signup API Test Suite" />
+                                <Label style="-fx-font-size: 16px; -fx-font-weight: bold;"
+                                       text="TEST SUITE: Signup API Test Suite"/>
                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                    <Button fx:id="runAllBtn" onAction="#handleRunAll" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="▶ Run All" />
-                                    <Button fx:id="runSelectedBtn" onAction="#handleRunSelected" style="-fx-background-color: #2980b9; -fx-text-fill: white;" text="▶ Run Selected" />
-                                    <Button fx:id="stopBtn"  style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="■ Stop" />
-                                    <ComboBox fx:id="executionModeCombo" prefWidth="150.0" promptText="Lần lượt" />
-                                    <ComboBox fx:id="stopConditionCombo" prefWidth="180.0" promptText="Chế độ dừng" />
+                                    <Button fx:id="runAllBtn" onAction="#handleRunAll"
+                                            style="-fx-background-color: #27ae60; -fx-text-fill: white;"
+                                            text="▶ Run All"/>
+                                    <Button fx:id="runSelectedBtn" onAction="#handleRunSelected"
+                                            style="-fx-background-color: #2980b9; -fx-text-fill: white;"
+                                            text="▶ Run Selected"/>
+                                    <Button fx:id="stopBtn" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"
+                                            text="■ Stop"/>
+                                    <ComboBox fx:id="executionModeCombo" prefWidth="150.0" promptText="Lần lượt"/>
+                                    <ComboBox fx:id="stopConditionCombo" prefWidth="180.0" promptText="Chế độ dừng"/>
                                 </HBox>
 
                                 <TableView fx:id="testCaseTable" prefHeight="350.0">
                                     <columns>
-                                        <TableColumn fx:id="colCheck" prefWidth="40.0" text="X" />
-                                        <TableColumn fx:id="colName" prefWidth="200.0" text="Testcase" />
-                                        <TableColumn fx:id="colInput" prefWidth="120.0" text="Phone" />
-                                        <TableColumn fx:id="colExpected" prefWidth="120.0" text="Mong đợi" />
-                                        <TableColumn fx:id="colStatus" prefWidth="80.0" text="HTTP" />
-                                        <TableColumn fx:id="colResult" prefWidth="100.0" text="Kết quả" />
+                                        <TableColumn fx:id="colCheck" prefWidth="40.0" text="X"/>
+                                        <TableColumn fx:id="colName" prefWidth="200.0" text="Testcase"/>
+                                        <TableColumn fx:id="colInput" prefWidth="120.0" text="Phone"/>
+                                        <TableColumn fx:id="colExpected" prefWidth="120.0" text="Mong đợi"/>
+                                        <TableColumn fx:id="colStatus" prefWidth="80.0" text="HTTP"/>
+                                        <TableColumn fx:id="colResult" prefWidth="100.0" text="Kết quả"/>
                                     </columns>
                                 </TableView>
                             </children>
@@ -63,17 +81,20 @@
         </ScrollPane>
 
         <VBox spacing="10.0" styleClass="right-panel">
-            <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0" /></padding>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </padding>
             <children>
-                <Label style="-fx-font-weight: bold;" text="📋 KẾT QUẢ THỰC THI" />
-                <ListView fx:id="resultLogList" VBox.vgrow="ALWAYS" />
-                <VBox fx:id="summaryBox" spacing="5.0" style="-fx-background-color: #f1f2f6; -fx-padding: 10; -fx-background-radius: 5;">
+                <Label style="-fx-font-weight: bold;" text="📋 KẾT QUẢ THỰC THI"/>
+                <ListView fx:id="resultLogList" VBox.vgrow="ALWAYS"/>
+                <VBox fx:id="summaryBox" spacing="5.0"
+                      style="-fx-background-color: #f1f2f6; -fx-padding: 10; -fx-background-radius: 5;">
                     <children>
-                        <Label style="-fx-font-weight: bold;" text="📊 TỔNG KẾT" />
-                        <Label fx:id="summaryText" text="Chưa có dữ liệu" />
+                        <Label style="-fx-font-weight: bold;" text="📊 TỔNG KẾT"/>
+                        <Label fx:id="summaryText" text="Chưa có dữ liệu"/>
                     </children>
                 </VBox>
-                <Button fx:id="saveReportBtn" maxWidth="Infinity" styleClass="btn-primary" text="💾 Lưu báo cáo" />
+                <Button fx:id="saveReportBtn" maxWidth="Infinity" styleClass="btn-primary" text="💾 Lưu báo cáo"/>
             </children>
         </VBox>
     </items>
