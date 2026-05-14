@@ -12,10 +12,20 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Role {
+public class Collection {
 
     private Integer id;
-    private String name;           // admin, tester, viewer
+    private String userId;
+    private String name;
     private String description;
+    private String icon;           // Emoji hoặc icon name
+
+    @Builder.Default
+    private Integer sortOrder = 0;
+
+    @Builder.Default
+    private Boolean isActive = true;
+
     private Date createdAt;
+    private Date updatedAt;
 }

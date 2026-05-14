@@ -1,13 +1,35 @@
 package com.example.apitestapp.config;
 
+import com.example.apitestapp.models.User;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public final class AppSession {
+public class AppSession {
+    private static AppSession instance;
+
+    private User currentUser;
+
+
     private static final StringProperty username = new SimpleStringProperty("Sơn");
     private static final StringProperty role = new SimpleStringProperty("Tester");
 
+
     private AppSession() {
+    }
+
+    public static AppSession getInstance() {
+        if (instance == null) {
+            instance = new AppSession();
+        }
+        return instance;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
     }
 
     public static StringProperty usernameProperty() {

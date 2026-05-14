@@ -12,10 +12,21 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Role {
+public class Folder {
 
     private Integer id;
-    private String name;           // admin, tester, viewer
+    private Integer collectionId;
+    private Integer parentFolderId;  // null nếu là folder gốc
+
+    private String name;
     private String description;
+
+    @Builder.Default
+    private Integer sortOrder = 0;
+
+    @Builder.Default
+    private Boolean isActive = true;
+
     private Date createdAt;
+    private Date updatedAt;
 }
