@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SignupTestData {
     private String scenario;
-    private String phone;
+    private String phoneNumber;
     private String password;
     private String expectedCode;
     private String expectedStatus;
