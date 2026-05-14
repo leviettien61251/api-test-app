@@ -1,0 +1,97 @@
+================================================================================
+SIGNUP API TEST - USAGE GUIDE
+================================================================================
+
+ISSUE FIXED:
+1. ✓ Fixed null phone being sent - now sends body correctly
+2. ✓ Body TextArea is now editable - modify request data before testing
+3. ✓ Endpoint URL field is now editable - change API endpoint dynamically
+
+================================================================================
+HOW TO USE
+================================================================================
+
+1. LOAD TESTS
+   - Click: Collections → Auth Module → POST /api/v1/signup
+   - 7 test cases load in the table
+
+2. CUSTOMIZE ENDPOINT (Optional)
+   - Edit the URL field (baseUrlField)
+   - Default: http://localhost:8080/api/v1/signup
+   - Can change to any endpoint
+
+3. CUSTOMIZE REQUEST BODY (Optional)
+   - Edit the Body TextArea
+   - Leave empty to auto-generate from test case data
+   - Or provide your own JSON body
+
+4. RUN TESTS
+   - Click "Run All" or select specific tests
+   - Backend receives proper JSON body with phone and password
+
+================================================================================
+EXAMPLES
+================================================================================
+
+DEFAULT BEHAVIOR:
+- URL: http://localhost:8080/api/v1/signup
+- Body: {"phone": "84901234567", "password": "Password@123"}
+- Each test case auto-generates its own body
+
+CUSTOM BODY EXAMPLE:
+- Edit TextArea to: {"phone": "84901234567", "password": "CustomPass@123"}
+- All tests will use this custom body
+- Leave empty to go back to auto-generation
+
+CUSTOM ENDPOINT EXAMPLE:
+- Change URL to: http://localhost:8080/api/v2/register
+- Or: http://localhost:8080/auth/signup
+- System extracts /path and uses it with base URL
+
+================================================================================
+REQUEST BODY PRIORITY
+================================================================================
+
+1st Priority: Text in Body TextArea (if not empty)
+2nd Priority: Auto-generated from test case (phone + password)
+
+================================================================================
+ENDPOINT EXTRACTION
+================================================================================
+
+Full URL: http://localhost:8080/api/v1/signup
+→ Extracts: /api/v1/signup
+→ Sends POST to that path
+
+Partial path: /api/v2/register
+→ Uses: /api/v2/register
+→ Sends POST to that path
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+ISSUE: "sign up request for phone: null"
+FIX: Body is now properly serialized. Check your custom body syntax.
+
+ISSUE: Request not reaching backend
+FIX: Verify endpoint URL in baseUrlField is correct
+
+ISSUE: Body shows as modified but test uses old data
+FIX: Click in bodyTextArea after modifying, then run test
+
+ISSUE: Want to reset to defaults
+FIX: Delete all text in body TextArea
+    Delete endpoint and re-select API from tree
+
+================================================================================
+TIPS
+================================================================================
+
+• Body TextArea supports multi-line JSON
+• URL field auto-extracts /path from full URL
+• All changes take effect immediately on next test run
+• Backend logs will show received JSON body
+• Check Result Log for actual request details sent
+
+================================================================================

@@ -1,81 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Priority?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<VBox spacing="12.0" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apitestapp.controllers.TestcaseController">
-    <padding>
-        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-    </padding>
+<SplitPane dividerPositions="0.2, 0.75" prefHeight="750.0" prefWidth="1200.0" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apitestapp.controllers.TestcaseController">
+    <items>
 
-    <children>
-        <Label styleClass="page-title" text="Signup API Test (Viettel)" />
-
-        <VBox spacing="10.0" styleClass="card">
+        <VBox spacing="10.0" styleClass="left-panel">
             <children>
-                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label styleClass="header-text" text="COLLECTIONS" />
+                <TreeView fx:id="testSuiteTree" showRoot="false" VBox.vgrow="ALWAYS" />
+            </children>
+            <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0" /></padding>
+        </VBox>
+        <ScrollPane fitToWidth="true">
+            <content>
+                <VBox spacing="15.0">
+                    <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                     <children>
-                        <Label text="Endpoint" />
-                        <TextField fx:id="endpointField" HBox.hgrow="ALWAYS" />
-                        <Label text="Timeout (s)" />
-                        <TextField fx:id="timeoutField" prefWidth="80.0" />
-                    </children>
-                </HBox>
+                        <VBox spacing="10.0" styleClass="card">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <Label style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 3 10; -fx-background-radius: 15;" text="POST">
+                                        <font><Font name="System Bold" size="12.0" /></font>
+                                    </Label>
+                                    <TextField fx:id="baseUrlField" editable="false" style="-fx-background-color: #f1f2f6;" text="http://localhost:8080/api/v1/signup" HBox.hgrow="ALWAYS" />
+                                </HBox>
+                                <Label text="Auth: Bearer Token (chưa cấu hình)" textFill="#7f8c8d" />
+                                <Label style="-fx-font-weight: bold;" text="Body (JSON)" />
+                                <TextArea fx:id="bodyTextArea" editable="false" prefHeight="80.0" style="-fx-font-family: 'Courier New'; -fx-control-inner-background: #2d3436; -fx-text-fill: #ecf0f1;" text="{&#10;  &quot;phonenumber&quot;: &quot;098xxxxxxx&quot;,&#10;  &quot;password&quot;: &quot;Aa@12345&quot;&#10;}" />
+                            </children>
+                        </VBox>
 
-                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                    <children>
-                        <Label text="Phone key" />
-                        <TextField fx:id="phoneKeyField" prefWidth="140.0" text="phonenumber" />
-                        <Label text="Password key" />
-                        <TextField fx:id="passwordKeyField" prefWidth="140.0" text="password" />
-                        <Label text="Content-Type" />
-                        <ComboBox fx:id="contentTypeCombo" prefWidth="220.0" />
-                    </children>
-                </HBox>
+                        <VBox spacing="15.0" styleClass="card">
+                            <children>
+                                <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="TEST SUITE: Signup API Test Suite" />
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <Button fx:id="runAllBtn" onAction="#handleRunAll" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="▶ Run All" />
+                                    <Button fx:id="runSelectedBtn" onAction="#handleRunSelected" style="-fx-background-color: #2980b9; -fx-text-fill: white;" text="▶ Run Selected" />
+                                    <Button fx:id="stopBtn"  style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="■ Stop" />
+                                    <ComboBox fx:id="executionModeCombo" prefWidth="150.0" promptText="Lần lượt" />
+                                    <ComboBox fx:id="stopConditionCombo" prefWidth="180.0" promptText="Chế độ dừng" />
+                                </HBox>
 
-                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                    <children>
-                        <ComboBox fx:id="testcasePicker" prefWidth="520.0" />
-                        <Button onAction="#handleRunSelected" styleClass="btn-primary" text="Run Selected" />
-                        <Button onAction="#handleRunAll" styleClass="btn-success" text="Run All" />
-                        <Button onAction="#handleClearResults" styleClass="btn-outline" text="Clear Results" />
+                                <TableView fx:id="testCaseTable" prefHeight="350.0">
+                                    <columns>
+                                        <TableColumn fx:id="colCheck" prefWidth="40.0" text="X" />
+                                        <TableColumn fx:id="colName" prefWidth="200.0" text="Testcase" />
+                                        <TableColumn fx:id="colInput" prefWidth="120.0" text="Phone" />
+                                        <TableColumn fx:id="colExpected" prefWidth="120.0" text="Mong đợi" />
+                                        <TableColumn fx:id="colStatus" prefWidth="80.0" text="HTTP" />
+                                        <TableColumn fx:id="colResult" prefWidth="100.0" text="Kết quả" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
                     </children>
-                </HBox>
+                </VBox>
+            </content>
+        </ScrollPane>
+
+        <VBox spacing="10.0" styleClass="right-panel">
+            <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0" /></padding>
+            <children>
+                <Label style="-fx-font-weight: bold;" text="📋 KẾT QUẢ THỰC THI" />
+                <ListView fx:id="resultLogList" VBox.vgrow="ALWAYS" />
+                <VBox fx:id="summaryBox" spacing="5.0" style="-fx-background-color: #f1f2f6; -fx-padding: 10; -fx-background-radius: 5;">
+                    <children>
+                        <Label style="-fx-font-weight: bold;" text="📊 TỔNG KẾT" />
+                        <Label fx:id="summaryText" text="Chưa có dữ liệu" />
+                    </children>
+                </VBox>
+                <Button fx:id="saveReportBtn" maxWidth="Infinity" styleClass="btn-primary" text="💾 Lưu báo cáo" />
             </children>
         </VBox>
-
-        <VBox spacing="8.0" styleClass="card">
-            <children>
-                <Label text="Params (query) - format: key=value, moi dong 1 cap" />
-                <TextArea fx:id="paramsArea" prefHeight="70.0" promptText="source=manual&#10;lang=vi" wrapText="true" />
-                <Label text="Body (raw) - de trong neu muon dung data testcase tu dong" />
-                <TextArea fx:id="bodyArea" prefHeight="110.0" promptText="{&#10;  &quot;phonenumber&quot;: &quot;098xxxxxxx&quot;,&#10;  &quot;password&quot;: &quot;Aa@12345&quot;&#10;}" wrapText="true" />
-            </children>
-        </VBox>
-
-        <TableView fx:id="resultsTable" VBox.vgrow="ALWAYS">
-            <columns>
-                <TableColumn fx:id="idColumn" prefWidth="58.0" text="#" />
-                <TableColumn fx:id="caseColumn" prefWidth="350.0" text="Testcase" />
-                <TableColumn fx:id="phoneColumn" prefWidth="130.0" text="Phone" />
-                <TableColumn fx:id="expectedColumn" prefWidth="120.0" text="Expected" />
-                <TableColumn fx:id="httpColumn" prefWidth="90.0" text="HTTP" />
-                <TableColumn fx:id="verdictColumn" prefWidth="90.0" text="Result" />
-                <TableColumn fx:id="messageColumn" prefWidth="410.0" text="Response / Note" />
-            </columns>
-        </TableView>
-
-        <Label fx:id="summaryLabel" styleClass="text-muted" text="Ready." />
-
-        <TextArea fx:id="logArea" editable="false" prefHeight="150.0" promptText="Execution log..." wrapText="true" />
-    </children>
-</VBox>
+    </items>
+</SplitPane>
