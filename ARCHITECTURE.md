@@ -362,6 +362,7 @@ Network Layer:
 ```
 
 This architecture ensures:
+
 - ✅ Separation of concerns
 - ✅ Easy testing and mocking
 - ✅ Extensible design

@@ -18,18 +18,15 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
+    UserRepository userRepository = new UserRepository();
     @FXML
     private TextField usernameField;
-
     @FXML
     private PasswordField passwordField;
-
     @FXML
     private ComboBox<String> roleComboBox;
-
     @FXML
     private Label errorLabel;
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -37,8 +34,6 @@ public class LoginController implements Initializable {
         roleComboBox.setValue("Tester");
         errorLabel.setText("");
     }
-
-    UserRepository userRepository = new UserRepository();
 
     @FXML
     private void handleLogin() throws SQLException {

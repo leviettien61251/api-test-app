@@ -2,11 +2,7 @@ package com.example.apitestapp.controllers;
 
 
 import com.example.apitestapp.models.TestCaseRowModel;
-import com.example.apitestapp.services.ApiResponse;
-import com.example.apitestapp.services.ApiScenarioDefinition;
-import com.example.apitestapp.services.ApiScenarioRegistry;
-import com.example.apitestapp.services.ApiTestService;
-import com.example.apitestapp.services.ApiTestScenario;
+import com.example.apitestapp.services.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +19,7 @@ import java.util.ResourceBundle;
 
 public class TestcaseController implements Initializable {
 
+    private final ObservableList<TestCaseRowModel> testData = FXCollections.observableArrayList();
     @FXML
     private TreeView<String> testSuiteTree;
     @FXML
@@ -31,7 +28,6 @@ public class TestcaseController implements Initializable {
     private TableColumn<TestCaseRowModel, Boolean> colCheck;
     @FXML
     private TableColumn<TestCaseRowModel, String> colName, colInput, colExpected, colStatus, colResult;
-
     @FXML
     private ComboBox<String> executionModeCombo, stopConditionCombo;
     @FXML
@@ -40,13 +36,10 @@ public class TestcaseController implements Initializable {
     private Label summaryText;
     @FXML
     private Button runAllBtn, stopBtn;
-
     @FXML
     private TextField baseUrlField; // Thanh URL
     @FXML
     private TextArea bodyTextArea;   // Khung JSON Body
-
-    private final ObservableList<TestCaseRowModel> testData = FXCollections.observableArrayList();
     private volatile boolean isRunning = false;
     private ApiTestService apiTestService;
     private ApiScenarioRegistry scenarioRegistry;

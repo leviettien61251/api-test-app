@@ -34,13 +34,13 @@ Description: Valid password with special characters
 
 ## Response Codes
 
-| Code | Meaning | HTTP | Scenario |
-|------|---------|------|----------|
-| 1000 | Success | 200 | Scenario 1, 7 |
-| 2001 | Already registered | 400 | Scenario 2 |
-| 3006 | Missing password | 422 | Scenario 3 |
-| 3007 | Invalid phone | 422 | Scenario 4, 5 |
-| 3008 | Weak password | 422 | Scenario 6 |
+| Code | Meaning            | HTTP | Scenario      |
+|------|--------------------|------|---------------|
+| 1000 | Success            | 200  | Scenario 1, 7 |
+| 2001 | Already registered | 400  | Scenario 2    |
+| 3006 | Missing password   | 422  | Scenario 3    |
+| 3007 | Invalid phone      | 422  | Scenario 4, 5 |
+| 3008 | Weak password      | 422  | Scenario 6    |
 
 ## Classes & Files
 
@@ -81,6 +81,7 @@ TestcaseController.java (Modified)
 ## Key Methods
 
 ### ApiTestService
+
 ```java
 ApiTestService service = new ApiTestService();
 ApiResponse response = service.callSignupApi("84901234567", "Password@123");
@@ -94,27 +95,39 @@ String body = response.getResponseBody();     // JSON string
 ```
 
 ### SignupTestScenarios
+
 ```java
 List<SignupTestData> tests = SignupTestScenarios.getSignupScenarios();
-for (SignupTestData test : tests) {
-    System.out.println(test.getScenario());      // "Scenario 1"
-    System.out.println(test.getPhone());         // "84901234567"
-    System.out.println(test.getPassword());      // "Password@123"
-    System.out.println(test.getExpectedCode());  // "1000"
-    System.out.println(test.getDescription());   // "..."
-}
+for(
+SignupTestData test :tests){
+        System.out.
+
+println(test.getScenario());      // "Scenario 1"
+        System.out.
+
+println(test.getPhone());         // "84901234567"
+        System.out.
+
+println(test.getPassword());      // "Password@123"
+        System.out.
+
+println(test.getExpectedCode());  // "1000"
+        System.out.
+
+println(test.getDescription());   // "..."
+        }
 ```
 
 ## Configuration
 
-| Setting | Default | Note |
-|---------|---------|------|
-| Base URL | http://localhost:8080 | Can change in service |
-| Endpoint | /api/v1/signup | Fixed path |
-| Method | POST | Fixed HTTP method |
-| Connect Timeout | 10 seconds | Network timeout |
-| Read Timeout | 10 seconds | Response timeout |
-| Write Timeout | 10 seconds | Request timeout |
+| Setting         | Default               | Note                  |
+|-----------------|-----------------------|-----------------------|
+| Base URL        | http://localhost:8080 | Can change in service |
+| Endpoint        | /api/v1/signup        | Fixed path            |
+| Method          | POST                  | Fixed HTTP method     |
+| Connect Timeout | 10 seconds            | Network timeout       |
+| Read Timeout    | 10 seconds            | Response timeout      |
+| Write Timeout   | 10 seconds            | Request timeout       |
 
 ## Test Execution Modes
 
@@ -127,12 +140,14 @@ for (SignupTestData test : tests) {
 ## Expected Output
 
 ### Individual Test:
+
 ```
 ✅ Scenario 1 - Valid phone, not yet registered
   Code: 1000, HTTP: 200, Message: OK
 ```
 
 ### Summary:
+
 ```
 Pass: 6 | Fail: 1 | Total: 7
 ```
@@ -140,6 +155,7 @@ Pass: 6 | Fail: 1 | Total: 7
 ## Dependencies Added
 
 ```xml
+
 <dependency>
     <groupId>com.google.code.gson</groupId>
     <artifactId>gson</artifactId>
@@ -157,13 +173,13 @@ Pass: 6 | Fail: 1 | Total: 7
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| Connection refused | Start backend API server |
-| Timeout errors | Check network/firewall |
+| Problem             | Solution                  |
+|---------------------|---------------------------|
+| Connection refused  | Start backend API server  |
+| Timeout errors      | Check network/firewall    |
 | Wrong response code | Verify API implementation |
-| JSON parsing error | Check API response format |
-| No tests loading | Select API in tree view |
+| JSON parsing error  | Check API response format |
+| No tests loading    | Select API in tree view   |
 
 ## Files Created
 

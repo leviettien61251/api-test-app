@@ -13,27 +13,6 @@ public class MainApplication extends Application {
     private static Stage primaryStage;
     private static Scene scene;
 
-    @Override
-    public void start(Stage stage) throws IOException {
-        primaryStage = stage;
-        Parent root = loadRoot("login-view.fxml");
-        scene = new Scene(root);
-        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
-        String CSS_PATH = "/com/example/apitestapp/styles/styles.css";
-        java.net.URL cssUrl = getClass().getResource(CSS_PATH);
-        if (cssUrl == null) {
-            throw new IllegalStateException("Stylesheet not found: " + CSS_PATH);
-        }
-        scene.getStylesheets().add(cssUrl.toExternalForm());
-        stage.setTitle("API Test App");
-        stage.setMinWidth(960);
-        stage.setMinHeight(640);
-        stage.setScene(scene);
-        stage.sizeToScene();
-        stage.centerOnScreen();
-        stage.show();
-    }
-
     private static Parent loadRoot(String fxmlName) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource(fxmlName));
         return loader.load();
@@ -56,5 +35,26 @@ public class MainApplication extends Application {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load FXML: " + fxmlName, e);
         }
+    }
+
+    @Override
+    public void start(Stage stage) throws IOException {
+        primaryStage = stage;
+        Parent root = loadRoot("login-view.fxml");
+        scene = new Scene(root);
+        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+        String CSS_PATH = "/com/example/apitestapp/styles/styles.css";
+        java.net.URL cssUrl = getClass().getResource(CSS_PATH);
+        if (cssUrl == null) {
+            throw new IllegalStateException("Stylesheet not found: " + CSS_PATH);
+        }
+        scene.getStylesheets().add(cssUrl.toExternalForm());
+        stage.setTitle("API Test App");
+        stage.setMinWidth(960);
+        stage.setMinHeight(640);
+        stage.setScene(scene);
+        stage.sizeToScene();
+        stage.centerOnScreen();
+        stage.show();
     }
 }

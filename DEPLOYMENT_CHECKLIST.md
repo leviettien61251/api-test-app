@@ -3,6 +3,7 @@
 ## ✅ Pre-Testing Checklist
 
 ### Environment Setup
+
 - [ ] Java 21 JDK installed
 - [ ] Maven installed and in PATH
 - [ ] Backend API server accessible at localhost:8080
@@ -10,6 +11,7 @@
 - [ ] Network connectivity verified
 
 ### Code Verification
+
 - [ ] All 3 new service classes created
 - [ ] TestcaseController.java updated
 - [ ] pom.xml modified (Gson added)
@@ -17,6 +19,7 @@
 - [ ] No import errors
 
 ### Dependencies
+
 - [ ] OkHttp3 available (already in pom)
 - [ ] Gson 2.10.1 added to pom.xml
 - [ ] Lombok available for @Builder
@@ -27,31 +30,39 @@
 ## 🔨 Build Steps
 
 ### Step 1: Clean
+
 ```bash
 cd C:\Users\Admin\OneDrive\Documents\GitHub\api-test-app
 mvn clean
 ```
+
 - [ ] Old build artifacts removed
 
 ### Step 2: Download Dependencies
+
 ```bash
 mvn dependency:download-sources
 ```
+
 - [ ] All dependencies downloaded
 - [ ] No download errors
 
 ### Step 3: Compile
+
 ```bash
 mvn compile
 ```
+
 - [ ] Compilation successful
 - [ ] No syntax errors
 - [ ] No missing imports
 
 ### Step 4: Package
+
 ```bash
 mvn package
 ```
+
 - [ ] JAR file created
 - [ ] All resources included
 - [ ] No packaging errors
@@ -61,15 +72,19 @@ mvn package
 ## 🚀 Running the Application
 
 ### Start Backend
+
 - [ ] Backend API running on localhost:8080
 - [ ] API health check passes
 - [ ] Database connected
 
 ### Launch Application
+
 ```bash
 mvn javafx:run
 ```
+
 Or:
+
 ```bash
 java -jar target/api-test-app-1.0-SNAPSHOT.jar
 ```
@@ -83,12 +98,14 @@ java -jar target/api-test-app-1.0-SNAPSHOT.jar
 ## 📋 Test Execution Checklist
 
 ### Before Running Tests
+
 - [ ] Backend API running
 - [ ] Database in clean state (if needed)
 - [ ] Application started successfully
 - [ ] Collections tree visible
 
 ### Load Test Cases
+
 - [ ] Navigate to Collections in tree
 - [ ] Expand Auth Module
 - [ ] Click "POST /api/v1/signup"
@@ -97,17 +114,19 @@ java -jar target/api-test-app-1.0-SNAPSHOT.jar
 - [ ] All test names visible
 
 ### Test Case Verification
-| Test Case | Loaded | Visible | Ready |
-|-----------|--------|---------|-------|
-| Scenario 1 | ☐ | ☐ | ☐ |
-| Scenario 2 | ☐ | ☐ | ☐ |
-| Scenario 3 | ☐ | ☐ | ☐ |
-| Scenario 4 | ☐ | ☐ | ☐ |
-| Scenario 5 | ☐ | ☐ | ☐ |
-| Test 6 | ☐ | ☐ | ☐ |
-| Test 7 | ☐ | ☐ | ☐ |
+
+| Test Case  | Loaded | Visible | Ready |
+|------------|--------|---------|-------|
+| Scenario 1 | ☐      | ☐       | ☐     |
+| Scenario 2 | ☐      | ☐       | ☐     |
+| Scenario 3 | ☐      | ☐       | ☐     |
+| Scenario 4 | ☐      | ☐       | ☐     |
+| Scenario 5 | ☐      | ☐       | ☐     |
+| Test 6     | ☐      | ☐       | ☐     |
+| Test 7     | ☐      | ☐       | ☐     |
 
 ### Run Tests
+
 - [ ] Sequential mode selected
 - [ ] "Run All" button clicked
 - [ ] Tests start executing
@@ -116,6 +135,7 @@ java -jar target/api-test-app-1.0-SNAPSHOT.jar
 - [ ] Log messages appearing
 
 ### Verify Results
+
 - [ ] Test 1: ✅ PASS (code 1000)
 - [ ] Test 2: ✅ PASS (code 2001 expected)
 - [ ] Test 3: ✅ PASS (code 3006 expected)
@@ -125,6 +145,7 @@ java -jar target/api-test-app-1.0-SNAPSHOT.jar
 - [ ] Test 7: ✅ PASS (code 1000)
 
 ### Summary
+
 - [ ] Pass count matches expectations
 - [ ] Fail count correct (only expected failures)
 - [ ] Total = 7
@@ -135,73 +156,87 @@ java -jar target/api-test-app-1.0-SNAPSHOT.jar
 ## 🔍 Verification Tests
 
 ### Test 1: Valid Registration
+
 ```
 Input: Phone=84901234567, Password=Password@123
 Expected: 1000 (Success)
 Verify: HTTP 200, Response code 1000
 Result: ✅ PASS or ❌ FAIL
 ```
+
 - [ ] Response received
 - [ ] Code matches expected
 - [ ] Status message visible
 
 ### Test 2: Duplicate User
+
 ```
 Input: Phone=84901234567, Password=Password@123
 Expected: 2001 (Duplicate)
 Verify: HTTP 400, Response code 2001
 Result: ✅ PASS or ❌ FAIL
 ```
+
 - [ ] Proper error code returned
 - [ ] Error message appropriate
 
 ### Test 3: Missing Password
+
 ```
 Input: Phone=84901234567, Password=(empty)
 Expected: 3006 (Missing field)
 Verify: HTTP 422, Response code 3006
 Result: ✅ PASS or ❌ FAIL
 ```
+
 - [ ] Validation triggered
 - [ ] Error code correct
 
 ### Test 4: Invalid Phone
+
 ```
 Input: Phone=123, Password=Password@123
 Expected: 3007 (Invalid phone)
 Verify: HTTP 422, Response code 3007
 Result: ✅ PASS or ❌ FAIL
 ```
+
 - [ ] Format validation works
 - [ ] Error code correct
 
 ### Test 5: Invalid Phone (Duplicate)
+
 ```
 Input: Phone=invalid, Password=Password@123
 Expected: 3007 (Invalid phone)
 Verify: HTTP 422, Response code 3007
 Result: ✅ PASS or ❌ FAIL
 ```
+
 - [ ] Same validation applies
 - [ ] Error consistent
 
 ### Test 6: Weak Password
+
 ```
 Input: Phone=84901234567, Password=123
 Expected: 3008 (Weak password)
 Verify: HTTP 422, Response code 3008
 Result: ✅ PASS or ❌ FAIL
 ```
+
 - [ ] Password validation works
 - [ ] Correct error code
 
 ### Test 7: Special Characters
+
 ```
 Input: Phone=84909876543, Password=P@ssw0rd!#$%
 Expected: 1000 (Success)
 Verify: HTTP 200, Response code 1000
 Result: ✅ PASS or ❌ FAIL
 ```
+
 - [ ] Special chars accepted
 - [ ] Registration successful
 
@@ -210,6 +245,7 @@ Result: ✅ PASS or ❌ FAIL
 ## 📊 Results Validation
 
 ### Expected Results Summary
+
 ```
 Total Tests: 7
 Expected Pass: 6 (Tests 1, 2, 3, 4, 5, 6, 7 all have correct response codes)
@@ -221,18 +257,21 @@ behavior when given invalid/duplicate data.
 ```
 
 ### Pass/Fail Interpretation
-| Result | Meaning |
-|--------|---------|
+
+| Result | Meaning                        |
+|--------|--------------------------------|
 | ✅ PASS | Response code matches expected |
-| ❌ FAIL | Response code doesn't match |
+| ❌ FAIL | Response code doesn't match    |
 
 ### If All Tests PASS
+
 - [ ] API is working correctly
 - [ ] All validations functioning
 - [ ] Response codes accurate
 - [ ] System ready for production
 
 ### If Any Test FAILS
+
 - [ ] Check expected vs actual code in log
 - [ ] Verify API implementation
 - [ ] Check database state
@@ -244,24 +283,28 @@ behavior when given invalid/duplicate data.
 ## 🐛 Troubleshooting Checklist
 
 ### Connection Issues
+
 - [ ] Backend API running on localhost:8080
 - [ ] Firewall allowing localhost connections
 - [ ] No proxy interfering
 - [ ] Network interface up
 
 ### Test Loading Issues
+
 - [ ] Clicked correct API path in tree
 - [ ] Collections tree visible
 - [ ] Auth Module expanded
 - [ ] POST /api/v1/signup selected
 
 ### Test Execution Issues
+
 - [ ] Selected Run All or specific tests
 - [ ] Check mode set to Sequential
 - [ ] No other tests interfering
 - [ ] Log shows actual API responses
 
 ### Response Code Issues
+
 - [ ] Check actual vs expected in log
 - [ ] Verify API returns correct code field
 - [ ] Check JSON response format
@@ -272,18 +315,21 @@ behavior when given invalid/duplicate data.
 ## 📈 Performance Checklist
 
 ### Execution Time
+
 - [ ] Each test completes in 1-2 seconds
 - [ ] All 7 tests complete in ~7-10 seconds
 - [ ] No timeout errors
 - [ ] No hanging requests
 
 ### Resource Usage
+
 - [ ] Memory usage reasonable
 - [ ] CPU usage normal
 - [ ] Network bandwidth normal
 - [ ] No connection leaks
 
 ### Stability
+
 - [ ] Application doesn't crash
 - [ ] Tests run consistently
 - [ ] UI remains responsive
@@ -317,6 +363,7 @@ behavior when given invalid/duplicate data.
 ## 📦 Deployment Checklist
 
 ### Code Review
+
 - [ ] All source files reviewed
 - [ ] No code quality issues
 - [ ] Follows Java conventions
@@ -324,6 +371,7 @@ behavior when given invalid/duplicate data.
 - [ ] No dead code
 
 ### Testing Complete
+
 - [ ] Unit tests pass (if any)
 - [ ] Integration tests pass
 - [ ] Manual testing complete
@@ -331,6 +379,7 @@ behavior when given invalid/duplicate data.
 - [ ] Error scenarios tested
 
 ### Documentation Complete
+
 - [ ] All features documented
 - [ ] Examples provided
 - [ ] Troubleshooting guide included
@@ -338,6 +387,7 @@ behavior when given invalid/duplicate data.
 - [ ] Setup instructions clear
 
 ### Ready for Production
+
 - [ ] All checklist items checked
 - [ ] No known issues
 - [ ] Performance acceptable
@@ -349,18 +399,21 @@ behavior when given invalid/duplicate data.
 ## 🎯 Final Sign-Off
 
 ### Development Team
+
 - [ ] Code review completed
 - [ ] Testing verified
 - [ ] Documentation approved
 - [ ] Ready for deployment
 
 ### QA Team
+
 - [ ] Test cases executed
 - [ ] Results validated
 - [ ] Edge cases verified
 - [ ] Performance acceptable
 
 ### Operations Team
+
 - [ ] Deployment plan reviewed
 - [ ] Rollback procedure documented
 - [ ] Monitoring configured
@@ -377,6 +430,7 @@ behavior when given invalid/duplicate data.
 **Status**: ✅ COMPLETE
 
 ### Summary
+
 - 3 new service classes
 - 1 controller modified
 - 7 test scenarios
@@ -384,6 +438,7 @@ behavior when given invalid/duplicate data.
 - Ready for production use
 
 ### Key Features
+
 - Real API integration (OkHttp3)
 - JSON processing (Gson)
 - JavaFX UI
@@ -391,6 +446,7 @@ behavior when given invalid/duplicate data.
 - Comprehensive documentation
 
 ### Deployment Sign-Off
+
 - [ ] Development: Complete
 - [ ] QA: Verified
 - [ ] Operations: Approved
@@ -401,6 +457,7 @@ behavior when given invalid/duplicate data.
 ## 📞 Support Contact
 
 For issues or questions:
+
 1. Check QUICK_REFERENCE.md Troubleshooting section
 2. Review ARCHITECTURE.md for system design
 3. Check TEST_EXECUTION_EXAMPLES.md for expected outputs

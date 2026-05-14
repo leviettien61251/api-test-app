@@ -2,7 +2,7 @@ package com.example.apitestapp.services;
 
 import java.util.List;
 
-public class ChangePasswordScenarioProvider implements ApiScenarioProvider{
+public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
     @Override
     public ApiScenarioDefinition getDefinition() {
         List<ApiTestScenario> scenarios = List.of(
