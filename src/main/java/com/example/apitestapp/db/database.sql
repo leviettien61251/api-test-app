@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS test_reports CASCADE;
 DROP TABLE IF EXISTS test_assertions CASCADE;
 DROP TABLE IF EXISTS test_results CASCADE;
 DROP TABLE IF EXISTS test_runs CASCADE;
-DROP TABLE IF EXISTS environment_variables CASCADE;
+-- DROP TABLE IF EXISTS environment_variables CASCADE;
 DROP TABLE IF EXISTS test_data_sets CASCADE;
 DROP TABLE IF EXISTS test_cases CASCADE;
 DROP TABLE IF EXISTS api_endpoints CASCADE;
@@ -174,20 +174,20 @@ CREATE TABLE test_data_sets
     is_active    BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at   TIMESTAMP    NOT NULL DEFAULT NOW()
 );
-
-CREATE TABLE environment_variables
-(
-    id            SERIAL PRIMARY KEY,
-    collection_id INTEGER      NOT NULL REFERENCES collections (id),
-    key           VARCHAR(255) NOT NULL,
-    value         TEXT         NOT NULL,
-    is_secret     BOOLEAN      NOT NULL DEFAULT FALSE,
-    description   TEXT,
-    created_at    TIMESTAMP    NOT NULL DEFAULT NOW(),
-    updated_at    TIMESTAMP,
-
-    CONSTRAINT uq_env_vars_collection_key UNIQUE (collection_id, key)
-);
+--
+-- CREATE TABLE environment_variables
+-- (
+--     id            SERIAL PRIMARY KEY,
+--     collection_id INTEGER      NOT NULL REFERENCES collections (id),
+--     key           VARCHAR(255) NOT NULL,
+--     value         TEXT         NOT NULL,
+--     is_secret     BOOLEAN      NOT NULL DEFAULT FALSE,
+--     description   TEXT,
+--     created_at    TIMESTAMP    NOT NULL DEFAULT NOW(),
+--     updated_at    TIMESTAMP,
+--
+--     CONSTRAINT uq_env_vars_collection_key UNIQUE (collection_id, key)
+-- );
 
 -- ============================================
 -- PHẦN 6: LỊCH SỬ CHẠY TEST
