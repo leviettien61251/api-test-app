@@ -1,5 +1,6 @@
 package com.example.apitestapp.config;
 
+import com.example.apitestapp.models.ClientMachine;
 import com.example.apitestapp.models.User;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -8,7 +9,7 @@ public class AppSession {
     private static AppSession instance;
 
     private User currentUser;
-
+    private ClientMachine clientMachine;
 
     private static final StringProperty username = new SimpleStringProperty("Sơn");
     private static final StringProperty role = new SimpleStringProperty("Tester");
@@ -30,6 +31,14 @@ public class AppSession {
 
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
+    }
+
+    public ClientMachine getClientMachine() {
+        return clientMachine;
+    }
+
+    public void setClientMachine(ClientMachine clientMachine) {
+        this.clientMachine = clientMachine;
     }
 
     public static StringProperty usernameProperty() {

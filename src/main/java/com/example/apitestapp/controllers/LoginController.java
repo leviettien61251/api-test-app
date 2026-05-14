@@ -47,7 +47,7 @@ public class LoginController implements Initializable {
         String role = roleComboBox.getValue();
 
         List<User> user = userRepository.findUserByEmailAndPassword(username, password);
-        AppSession.getInstance().setCurrentUser(user.get(0));
+
 
         if (username == null || username.isBlank()) {
             errorLabel.setText("Vui lòng nhập tên đăng nhập.");
@@ -64,6 +64,7 @@ public class LoginController implements Initializable {
             errorLabel.setText("Không tìm thấy tài khoản");
             return;
         }
+        AppSession.getInstance().setCurrentUser(user.get(0));
         AppSession.setUsername(username);
         AppSession.setRole(role);
         errorLabel.setText("");

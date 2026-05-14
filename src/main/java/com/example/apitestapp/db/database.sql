@@ -2,14 +2,18 @@ INSERT INTO roles(name, description)
 values ('admin', 'this is admin role'),
        ('tester', 'this is tester role');
 
-insert into users(role_id, full_name,phone, email, password)
-values ('2', 'TESTER 1',  '0980000001','tester1@tester.com', 'SuperSecurePassword123@'),
-       ('1', 'ADMIN 1',  '0980000002','admin1@tester.com', 'SuperSecurePassword123@');
+insert into users(role_id, full_name, phone, email, password)
+values ('2', 'TESTER 1', '0980000001', 'tester1@tester.com', 'SuperSecurePassword123@'),
+       ('1', 'ADMIN 1', '0980000002', 'admin1@tester.com', 'SuperSecurePassword123@');
+
+insert into client_machines(user_id, machine_name, os_name, os_version, ip_address, cpu_info, ram_info, hostname)
+values (?, ?, ?, ?, ?, ?, ?, ?);
 
 SELECT *
 FROM roles;
 SELECT *
 FROM users;
+select * from client_machines;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ============================================
@@ -48,7 +52,7 @@ CREATE TABLE users
     id         VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
     role_id    INTEGER      NOT NULL REFERENCES roles (id),
     full_name  VARCHAR(255) NOT NULL,
-    phone      VARCHAR(15) NOT NULL UNIQUE,
+    phone      VARCHAR(15)  NOT NULL UNIQUE,
     email      VARCHAR(255) NOT NULL UNIQUE,
     password   VARCHAR(255) NOT NULL,
     is_active  BOOLEAN      NOT NULL    DEFAULT TRUE,
@@ -65,11 +69,8 @@ CREATE TABLE client_machines
     id           VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id      VARCHAR(255) NOT NULL REFERENCES users (id),
     machine_name VARCHAR(255) NOT NULL,
-    os_name      VARCHAR(100) NOT NULL, -- Windows, macOS, Linux
-    os_version   VARCHAR(100),          -- 10 Pro 22H2, 14.3 Sonoma
+    os           VARCHAR(100) NOT NULL, -- Windows, macOS, Linux
     ip_address   VARCHAR(45),           -- IPv4 hoặc IPv6
-    cpu_info     VARCHAR(255),          -- Intel Core i7-13700K
-    ram_info     VARCHAR(255),          -- 32GB DDR5
     hostname     VARCHAR(255),          -- Tên máy trong mạng
     is_active    BOOLEAN      NOT NULL    DEFAULT TRUE,
     created_at   TIMESTAMP    NOT NULL    DEFAULT NOW()

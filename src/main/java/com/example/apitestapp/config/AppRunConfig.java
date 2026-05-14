@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 
+
 public final class AppRunConfig {
     public static final String DEFAULT_BASE_URL = "http://localhost:8080";
     public static final String DEFAULT_RUN_MODE = "ALL";
@@ -18,6 +19,10 @@ public final class AppRunConfig {
     private static LocalDateTime configuredAt;
     private static boolean configured;
 
+
+
+
+
     private AppRunConfig() {
     }
 
@@ -30,6 +35,7 @@ public final class AppRunConfig {
         configured = false;
         configuredAt = null;
     }
+
     public static void configure(String selectedBaseUrl, String selectedRunMode, String selectedAlertMode, String selectedRunner) {
         baseUrl = normalizeBaseUrl(selectedBaseUrl);
         runMode = selectedRunMode;
@@ -38,6 +44,8 @@ public final class AppRunConfig {
         configuredAt = LocalDateTime.now();
         configured = true;
     }
+
+
 
     public static boolean isConfigured() {
         return configured;

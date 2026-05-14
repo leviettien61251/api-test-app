@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository {
+
+
     public List<User> findAll() throws SQLException {
         String sql = "SELECT * FROM users";
 

@@ -2,27 +2,24 @@ package com.example.apitestapp;
 
 import com.example.apitestapp.config.AppRunConfig;
 import com.example.apitestapp.config.AppSession;
+import com.example.apitestapp.models.ClientMachine;
+import com.example.apitestapp.models.User;
+import com.example.apitestapp.repository.ClientMachineRepository;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.geometry.Insets;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +46,12 @@ public class MainController implements Initializable {
         // Mặc định nạp Dashboard khi ứng dụng khởi chạy
         navigateTo("views/dashboard-view.fxml", btnDashboard);
         Platform.runLater(this::showDefaultRunConfigDialog);
+
+        try {
+            getClientMachineInfo();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         if (userMenuButton != null) {
             userMenuButton.textProperty().bind(Bindings.concat("👤 User: ", AppSession.usernameProperty()));
@@ -96,6 +99,7 @@ public class MainController implements Initializable {
     private void navigateProfile() {
         navigateTo("views/profile-view.fxml", null);
     }
+
     @FXML
     private void handleLogout() {
         AppSession.clear();
@@ -109,8 +113,9 @@ public class MainController implements Initializable {
 
     /**
      * Hàm dùng chung để nạp file FXML vào vùng nội dung chính
+     *
      * @param fxmlPath Đường dẫn file fxml tính từ thư mục resources
-     * @param button Nút được nhấn để cập nhật trạng thái hiển thị
+     * @param button   Nút được nhấn để cập nhật trạng thái hiển thị
      */
     private void navigateTo(String fxmlPath, ToggleButton button) {
         try {
@@ -154,7 +159,7 @@ public class MainController implements Initializable {
         btnCollections.setSelected(false);
         btnEnvironments.setSelected(false);
         btnHistory.setSelected(false);
-        
+
         // Set the clicked button as selected to apply CSS styling
         button.setSelected(true);
     }
@@ -194,14 +199,21 @@ public class MainController implements Initializable {
         TextField runnerField = new TextField(AppRunConfig.getRunner());
 
         GridPane grid = new GridPane();
-        grid.setHgap(10); grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setVgap(10);
         grid.setPadding(new Insets(10, 10, 0, 10));
-        grid.add(new Label("Base URL"), 0, 0); grid.add(baseUrlField, 1, 0);
-        grid.add(new Label("Run mode"), 0, 1); grid.add(runModeBox, 1, 1);
-        grid.add(new Label("Alert mode"), 0, 2); grid.add(alertModeBox, 1, 2);
-        grid.add(new Label("Runner"), 0, 3); grid.add(runnerField, 1, 3);
-        grid.add(new Label("Machine"), 0, 4); grid.add(new Label(AppRunConfig.getMachineName()), 1, 4);
-        grid.add(new Label("OS"), 0, 5); grid.add(new Label(AppRunConfig.getOs()), 1, 5);
+        grid.add(new Label("Base URL"), 0, 0);
+        grid.add(baseUrlField, 1, 0);
+        grid.add(new Label("Run mode"), 0, 1);
+        grid.add(runModeBox, 1, 1);
+        grid.add(new Label("Alert mode"), 0, 2);
+        grid.add(alertModeBox, 1, 2);
+        grid.add(new Label("Runner"), 0, 3);
+        grid.add(runnerField, 1, 3);
+        grid.add(new Label("Machine"), 0, 4);
+        grid.add(new Label(AppRunConfig.getMachineName()), 1, 4);
+        grid.add(new Label("OS"), 0, 5);
+        grid.add(new Label(AppRunConfig.getOs()), 1, 5);
 
         dialog.getDialogPane().setContent(grid);
 
@@ -223,5 +235,30 @@ public class MainController implements Initializable {
             }
             // Nhấn X hoặc Cancel sẽ không chạy vào đây -> Không bao giờ lưu!
         });
+    }
+
+    private void getClientMachineInfo() throws Exception {
+        ClientMachineRepository clientMachineRepository = new ClientMachineRepository();
+        ClientMachine cm;
+
+        User user = AppSession.getInstance().getCurrentUser();
+        String userId = user.getId();
+        InetAddress localHost = InetAddress.getLocalHost();
+
+        String hostname = localHost.getHostName();
+        String machineName = hostname;
+        String os = System.getProperty("os.name");
+        String ipAddress = localHost.getHostAddress();
+
+        cm = ClientMachine.builder()
+                .userId(userId)
+                .hostname(hostname)
+                .machineName(machineName)
+                .os(os)
+                .ipAddress(ipAddress)
+                .build();
+
+        clientMachineRepository.save(cm);
+
     }
 }
