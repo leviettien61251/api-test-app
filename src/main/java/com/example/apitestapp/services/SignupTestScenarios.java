@@ -11,8 +11,8 @@ public class SignupTestScenarios {
         // Scenario 1: Valid data, not yet registered → SUCCESS
         scenarios.add(SignupTestData.builder()
                 .scenario("Scenario 1")
-                .phone("84901234567")
-                .password("Password@123")
+                .phoneNumber("0981111111")
+                .password("111111")
                 .expectedCode("1000")
                 .expectedStatus("SUCCESS")
                 .description("Valid phone, not yet registered")
@@ -21,9 +21,9 @@ public class SignupTestScenarios {
         // Scenario 2: Valid data, already registered → FAILURE
         scenarios.add(SignupTestData.builder()
                 .scenario("Scenario 2")
-                .phone("84901234567")
-                .password("Password@123")
-                .expectedCode("2001")
+                .phoneNumber("0981111111")
+                .password("111111")
+                .expectedCode("3006")
                 .expectedStatus("FAILURE")
                 .description("Valid phone, already registered")
                 .build());
@@ -31,9 +31,9 @@ public class SignupTestScenarios {
         // Scenario 3: Valid phone, no password → FAILURE
         scenarios.add(SignupTestData.builder()
                 .scenario("Scenario 3")
-                .phone("84901234567")
+                .phoneNumber("0981111112")
                 .password("")
-                .expectedCode("3006")
+                .expectedCode("2001")
                 .expectedStatus("FAILURE")
                 .description("Valid phone, missing password")
                 .build());
@@ -41,8 +41,8 @@ public class SignupTestScenarios {
         // Scenario 4: Invalid phone, has password → FAILURE
         scenarios.add(SignupTestData.builder()
                 .scenario("Scenario 4")
-                .phone("123")
-                .password("Password@123")
+                .phoneNumber("123")
+                .password("111111")
                 .expectedCode("3007")
                 .expectedStatus("FAILURE")
                 .description("Invalid phone format")
@@ -51,9 +51,9 @@ public class SignupTestScenarios {
         // Scenario 5: Invalid phone, has password, already registered → FAILURE
         scenarios.add(SignupTestData.builder()
                 .scenario("Scenario 5")
-                .phone("invalid")
-                .password("Password@123")
-                .expectedCode("3007")
+                .phoneNumber("invalid")
+                .password("111111")
+                .expectedCode("2003")
                 .expectedStatus("FAILURE")
                 .description("Invalid phone, already registered")
                 .build());
@@ -61,9 +61,9 @@ public class SignupTestScenarios {
         // Additional Test: Invalid password format (too short)
         scenarios.add(SignupTestData.builder()
                 .scenario("Additional Test")
-                .phone("84901234567")
+                .phoneNumber("0981111111")
                 .password("123")
-                .expectedCode("3008")
+                .expectedCode("2003")
                 .expectedStatus("FAILURE")
                 .description("Invalid password format (too short)")
                 .build());
@@ -71,7 +71,7 @@ public class SignupTestScenarios {
         // Additional Test: Valid password with special characters
         scenarios.add(SignupTestData.builder()
                 .scenario("Additional Test")
-                .phone("84909876543")
+                .phoneNumber("0981111111")
                 .password("P@ssw0rd!#$%")
                 .expectedCode("1000")
                 .expectedStatus("SUCCESS")

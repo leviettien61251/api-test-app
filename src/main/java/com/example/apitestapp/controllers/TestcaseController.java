@@ -111,12 +111,12 @@ public class TestcaseController implements Initializable {
 
                 // Nạp kịch bản vào bảng
                 for (SignupTestData s : scenarios) {
-                    String input = String.format("{ \"phone\": \"%s\", \"password\": \"%s\" }", s.getPhone(), s.getPassword());
+                    String input = String.format("{ \"phoneNumber\": \"%s\", \"password\": \"%s\" }", s.getPhoneNumber(), s.getPassword());
                     testData.add(new TestCaseModel(
                             s.getScenario() + " - " + s.getDescription(),
                             input,
                             s.getExpectedCode(),
-                            s.getPhone(),
+                            s.getPhoneNumber(),
                             s.getPassword()
                     ));
                 }
@@ -124,8 +124,8 @@ public class TestcaseController implements Initializable {
                 // Hiển thị Body mẫu - allow editing
                 if (!scenarios.isEmpty()) {
                     SignupTestData first = scenarios.get(0);
-                    bodyTextArea.setText(String.format("{\n  \"phone\": \"%s\",\n  \"password\": \"%s\"\n}", 
-                            first.getPhone(), first.getPassword()));
+                    bodyTextArea.setText(String.format("{\n  \"phoneNumber\": \"%s\",\n  \"password\": \"%s\"\n}",
+                            first.getPhoneNumber(), first.getPassword()));
                     bodyTextArea.setEditable(true);
                     bodyTextArea.setWrapText(true);
                 }
@@ -202,7 +202,7 @@ public class TestcaseController implements Initializable {
             String password = tc.getPassword() != null ? tc.getPassword() : "";
             
             // Always build JSON from phone/password
-            String requestBody = "{\"phone\":\"" + phone + "\",\"password\":\"" + password + "\"}";
+            String requestBody = "{\"phoneNumber\":\"" + phone + "\",\"password\":\"" + password + "\"}";
             
             // Get endpoint from URL field
             String urlText = baseUrlField.getText().trim();
