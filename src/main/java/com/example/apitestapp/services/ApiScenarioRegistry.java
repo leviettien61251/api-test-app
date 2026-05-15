@@ -1,5 +1,9 @@
 package com.example.apitestapp.services;
 
+import com.example.apitestapp.services.AuthScenarios.ChangePasswordScenarioProvider;
+import com.example.apitestapp.services.AuthScenarios.LoginScenarioProvider;
+import com.example.apitestapp.services.AuthScenarios.SignupScenarioProvider;
+
 import java.util.List;
 import java.util.Optional;
 
