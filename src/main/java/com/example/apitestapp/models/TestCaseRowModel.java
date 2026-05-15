@@ -1,5 +1,6 @@
 package com.example.apitestapp.models;
 
+import com.example.apitestapp.services.ApiTestScenario;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,8 +16,13 @@ public class TestCaseRowModel {
     private final StringProperty result;
     private final String endpoint;
     private final String requestBody;
+    private final ApiTestScenario scenario;
 
     public TestCaseRowModel(String name, String input, String expected, String endpoint, String requestBody) {
+        this(name, input, expected, endpoint, requestBody, null);
+    }
+
+    public TestCaseRowModel(String name, String input, String expected, String endpoint, String requestBody, ApiTestScenario scenario) {
         this.name = new SimpleStringProperty(name);
         this.input = new SimpleStringProperty(input);
         this.expected = new SimpleStringProperty(expected);
@@ -24,6 +30,7 @@ public class TestCaseRowModel {
         this.result = new SimpleStringProperty("⚪ Chờ");
         this.endpoint = endpoint;
         this.requestBody = requestBody;
+        this.scenario = scenario;
     }
 
     public BooleanProperty selectedProperty() {
@@ -76,5 +83,9 @@ public class TestCaseRowModel {
 
     public String getRequestBody() {
         return requestBody;
+    }
+
+    public ApiTestScenario getScenario() {
+        return scenario;
     }
 }

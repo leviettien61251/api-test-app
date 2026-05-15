@@ -33,18 +33,39 @@ public class ApiTestService {
     }
 
     public ApiResponse callApi(String endpointOrUrl, String jsonBody) {
+        return callApi("POST", endpointOrUrl, jsonBody);
+    }
+
+    public ApiResponse callApi(String method, String endpointOrUrl, String jsonBody) {
         try {
-            if (jsonBody == null || jsonBody.trim().isEmpty()) {
+            String normalizedMethod = method == null || method.isBlank() ? "POST" : method.trim().toUpperCase();
+            boolean allowsEmptyBody = "GET".equals(normalizedMethod) || "DELETE".equals(normalizedMethod);
+            if (!allowsEmptyBody && (jsonBody == null || jsonBody.trim().isEmpty())) {
                 return new ApiResponse(0, false, "", "Error: Request body is empty");
             }
 
-            RequestBody body = RequestBody.create(jsonBody, MediaType.parse("application/json; charset=utf-8"));
+            RequestBody body = null;
+            if (jsonBody != null && !jsonBody.trim().isEmpty()) {
+                body = RequestBody.create(jsonBody, MediaType.parse("application/json; charset=utf-8"));
+            }
 
-            Request request = new Request.Builder()
+            Request.Builder requestBuilder = new Request.Builder()
                     .url(resolveUrl(endpointOrUrl))
-                    .post(body)
-                    .addHeader("Content-Type", "application/json; charset=utf-8")
-                    .build();
+                    .addHeader("Content-Type", "application/json; charset=utf-8");
+
+            if ("GET".equals(normalizedMethod)) {
+                requestBuilder.get();
+            } else if ("DELETE".equals(normalizedMethod)) {
+                if (body == null) {
+                    requestBuilder.delete();
+                } else {
+                    requestBuilder.delete(body);
+                }
+            } else {
+                requestBuilder.method(normalizedMethod, body);
+            }
+
+            Request request = requestBuilder.build();
 
             try (Response response = client.newCall(request).execute()) {
                 String responseBody = response.body() != null ? response.body().string() : "";

@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
+import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class TestcaseController implements Initializable {
     private volatile boolean isRunning = false;
     private ApiTestService apiTestService;
     private ApiScenarioRegistry scenarioRegistry;
+    private ApiScenarioDefinition currentDefinition;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -115,6 +117,7 @@ public class TestcaseController implements Initializable {
 
         scenarioRegistry.findByApiLabel(apiName)
                 .ifPresentOrElse(this::loadScenarioDefinition, () -> {
+                    currentDefinition = null;
                     baseUrlField.setText("");
                     bodyTextArea.setText("");
                     resultLogList.getItems().add("⚠️ Hệ thống chưa nạp kịch bản cho: " + apiName);
@@ -122,6 +125,7 @@ public class TestcaseController implements Initializable {
     }
 
     private void loadScenarioDefinition(ApiScenarioDefinition definition) {
+        currentDefinition = definition;
         List<ApiTestScenario> scenarios = definition.getScenarios();
         if (scenarios.isEmpty()) {
             baseUrlField.setText("");
@@ -140,7 +144,8 @@ public class TestcaseController implements Initializable {
                     requestBody,
                     scenario.getExpectedCode(),
                     definition.getEndpoint(),
-                    requestBody
+                    requestBody,
+                    scenario
             ));
         }
 
@@ -173,19 +178,21 @@ public class TestcaseController implements Initializable {
         if (isRunning || testData.isEmpty()) return;
         isRunning = true;
         resultLogList.getItems().clear();
+        ApiScenarioDefinition definitionToRun = currentDefinition;
 
         new Thread(() -> {
             int pass = 0, fail = 0;
+            boolean executedAny = false;
             String stopCond = stopConditionCombo.getValue();
 
             for (TestCaseRowModel tc : testData) {
                 if (!isRunning) break;
                 if (!all && !tc.isSelected()) continue;
+                executedAny = true;
 
                 Platform.runLater(() -> tc.setResult("⏳ Đang test..."));
 
-                // Call actual API
-                boolean isPass = callActualApi(tc);
+                boolean isPass = runScenarioSetup(tc) && callActualApi(tc);
 
                 Platform.runLater(() -> {
                     tc.setResult(isPass ? "✅ PASS" : "❌ FAIL");
@@ -207,6 +214,10 @@ public class TestcaseController implements Initializable {
                 } catch (InterruptedException e) {
                     break;
                 }
+            }
+
+            if (executedAny) {
+                runScenarioCleanup(definitionToRun);
             }
 
             final int p = pass, f = fail;
@@ -244,5 +255,96 @@ public class TestcaseController implements Initializable {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private void runScenarioCleanup(ApiScenarioDefinition definition) {
+        if (definition == null || definition.getCleanupRequests().isEmpty()) {
+            return;
+        }
+
+        for (ApiCleanupRequest cleanupRequest : definition.getCleanupRequests()) {
+            String cleanupUrl = resolveHookUrl(cleanupRequest.getEndpoint(), definition.getEndpoint());
+            Platform.runLater(() -> resultLogList.getItems().add("  Cleanup: " + cleanupRequest.getMethod() + " " + cleanupUrl));
+
+            ApiResponse response = apiTestService.callApi(
+                    cleanupRequest.getMethod(),
+                    cleanupUrl,
+                    cleanupRequest.getRequestBody()
+            );
+            String actualCode = response.getResponseCode();
+            boolean accepted = cleanupRequest.accepts(actualCode);
+
+            String logMessage = String.format("  Cleanup result: %s, Code: %s, HTTP: %d",
+                    accepted ? "PASS" : "FAIL",
+                    actualCode,
+                    response.getHttpCode());
+            Platform.runLater(() -> resultLogList.getItems().add(logMessage));
+
+            if (!accepted && cleanupRequest.isRequired()) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Cleanup required but failed: " + cleanupRequest.getName()));
+            }
+        }
+    }
+
+    private boolean runScenarioSetup(TestCaseRowModel tc) {
+        ApiTestScenario scenario = tc.getScenario();
+        if (scenario == null || scenario.getSetupRequests().isEmpty()) {
+            return true;
+        }
+
+        for (ApiSetupRequest setupRequest : scenario.getSetupRequests()) {
+            if (!isRunning) {
+                return false;
+            }
+
+            Platform.runLater(() -> resultLogList.getItems().add("  Setup: " + setupRequest.getName()));
+
+            ApiResponse response = apiTestService.callApi(
+                    setupRequest.getMethod(),
+                    resolveHookUrl(setupRequest.getEndpoint(), tc.getEndpoint()),
+                    setupRequest.getRequestBody()
+            );
+            String actualCode = response.getResponseCode();
+            boolean accepted = setupRequest.accepts(actualCode);
+
+            String logMessage = String.format("  Setup result: %s, Code: %s, HTTP: %d",
+                    accepted ? "PASS" : "FAIL",
+                    actualCode,
+                    response.getHttpCode());
+            Platform.runLater(() -> resultLogList.getItems().add(logMessage));
+
+            if (!accepted && setupRequest.isRequired()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private String resolveHookUrl(String endpointOrUrl, String testEndpoint) {
+        if (endpointOrUrl == null || endpointOrUrl.isBlank()) {
+            return endpointOrUrl;
+        }
+        if (endpointOrUrl.startsWith("http://") || endpointOrUrl.startsWith("https://")) {
+            return endpointOrUrl;
+        }
+
+        String targetUrl = baseUrlField.getText() == null ? "" : baseUrlField.getText().trim();
+        if (targetUrl.startsWith("http://") || targetUrl.startsWith("https://")) {
+            try {
+                URI uri = URI.create(targetUrl);
+                String baseUrl = uri.getScheme() + "://" + uri.getAuthority();
+                return baseUrl + (endpointOrUrl.startsWith("/") ? endpointOrUrl : "/" + endpointOrUrl);
+            } catch (IllegalArgumentException ignored) {
+                // Fall back to ApiTestService URL resolution.
+            }
+        }
+
+        if (targetUrl.endsWith(testEndpoint)) {
+            String baseUrl = targetUrl.substring(0, targetUrl.length() - testEndpoint.length());
+            return baseUrl + (endpointOrUrl.startsWith("/") ? endpointOrUrl : "/" + endpointOrUrl);
+        }
+
+        return endpointOrUrl;
     }
 }
