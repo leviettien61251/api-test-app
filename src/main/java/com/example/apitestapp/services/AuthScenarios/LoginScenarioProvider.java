@@ -1,5 +1,6 @@
 package com.example.apitestapp.services.AuthScenarios;
 
+import com.example.apitestapp.services.ApiCleanupRequest;
 import com.example.apitestapp.services.ApiScenarioDefinition;
 import com.example.apitestapp.services.ApiScenarioProvider;
 import com.example.apitestapp.services.ApiTestScenario;
@@ -12,10 +13,10 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
         List<ApiTestScenario> scenarios = List.of(
                 new ApiTestScenario(
                         "Scenario 1",
-                        "Valid phone, not yet registered",
+                        "Valid phone, registered account",
                         """
                                 {
-                                  "phoneNumber": "0981111111",
+                                  "phoneNumber": "0901234567",
                                   "password": "111111"
                                 }
                                 """,
@@ -24,7 +25,7 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Scenario 2",
-                        "Valid phone, already registered",
+                        "Valid phone but incorrect password",
                         """
                                 {
                                   "phoneNumber": "0981111111",
@@ -36,7 +37,7 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Scenario 3",
-                        "Valid phone, missing password",
+                        "Valid phone but unregistered",
                         """
                                 {
                                   "phoneNumber": "0981111112",
@@ -48,7 +49,7 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Scenario 4",
-                        "Invalid phone format",
+                        "Missing/empty password",
                         """
                                 {
                                   "phoneNumber": "123",
@@ -60,7 +61,7 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Scenario 5",
-                        "Invalid phone, already registered",
+                        "Empty phone",
                         """
                                 {
                                   "phoneNumber": "invalid",
@@ -72,7 +73,7 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Additional Test",
-                        "Invalid password format (too short)",
+                        "Phone with surrounding whitespace (trim expected by backend)",
                         """
                                 {
                                   "phoneNumber": "0981111111",
@@ -84,7 +85,7 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Additional Test",
-                        "Valid password with special characters",
+                        "User already logged in / exists in logged_in_users",
                         """
                                 {
                                   "phoneNumber": "0981111111",
@@ -102,7 +103,15 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 "POST /api/v1/login",
                 "/api/v1/login",
                 scenarios.get(0).getRequestBody(),
-                scenarios
+                scenarios,
+                List.of(new ApiCleanupRequest(
+                        "Clean login test data",
+                        "DELETE",
+                        "/api/v1/login/clean",
+                        "",
+                        List.of("1000", "200", "204", "201"),
+                        true
+                ))
         );
     }
 }
