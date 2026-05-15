@@ -4,6 +4,8 @@ import com.example.apitestapp.services.AuthScenarios.ChangePasswordScenarioProvi
 import com.example.apitestapp.services.AuthScenarios.LoginScenarioProvider;
 import com.example.apitestapp.services.AuthScenarios.SignupScenarioProvider;
 import com.example.apitestapp.services.MapScenarios.MapTestScenarioProvider;
+import com.example.apitestapp.services.MapScenarios.NodeTestScenarioProvider;
+import com.example.apitestapp.services.MapScenarios.StepTestScenarioProvider;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +19,9 @@ public class ApiScenarioRegistry {
                 new SignupScenarioProvider(),
                 new LoginScenarioProvider(),
                 new ChangePasswordScenarioProvider(),
-                new MapTestScenarioProvider()
+                new MapTestScenarioProvider(),
+                new NodeTestScenarioProvider(),
+                new StepTestScenarioProvider()
         ));
     }
 
