@@ -8,14 +8,14 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
         List<ApiTestScenario> scenarios = List.of(
                 new ApiTestScenario(
                         "Scenario 1",
-                        "Valid phone, not yet registered",
+                        "Số điện thoại hợp lệ, nhưng chưa đăng ký",
                         """
                                 {
-                                  "phoneNumber": "0981111111",
+                                  "phoneNumber": "0983111111",
                                   "password": "111111"
                                 }
                                 """,
-                        "1000",
+                        "",
                         "SUCCESS"
                 ),
                 new ApiTestScenario(

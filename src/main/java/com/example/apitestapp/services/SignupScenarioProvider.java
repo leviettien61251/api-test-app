@@ -12,7 +12,7 @@ public class SignupScenarioProvider implements ApiScenarioProvider {
                         "Valid phone, not yet registered",
                         """
                                 {
-                                  "phoneNumber": "0981111111",
+                                  "phoneNumber": "0982222222",
                                   "password": "111111"
                                 }
                                 """,
@@ -22,6 +22,18 @@ public class SignupScenarioProvider implements ApiScenarioProvider {
                 new ApiTestScenario(
                         "Scenario 2",
                         "Valid phone, already registered",
+                        List.of(new ApiSetupRequest(
+                                "Ensure user is already registered",
+                                "/api/v1/signup",
+                                """
+                                        {
+                                          "phoneNumber": "0981111111",
+                                          "password": "111111"
+                                        }
+                                        """,
+                                List.of("1000", "3006"),
+                                true
+                        )),
                         """
                                 {
                                   "phoneNumber": "0981111111",
@@ -99,7 +111,15 @@ public class SignupScenarioProvider implements ApiScenarioProvider {
                 "POST /api/v1/signup",
                 "/api/v1/signup",
                 scenarios.get(0).getRequestBody(),
-                scenarios
+                scenarios,
+                List.of(new ApiCleanupRequest(
+                        "Clean signup test data",
+                        "DELETE",
+                        "/api/v1/signup/clean",
+                        "",
+                        List.of("1000", "200", "204", "201"),
+                        true
+                ))
         );
     }
 }
