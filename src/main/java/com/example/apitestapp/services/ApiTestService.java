@@ -32,11 +32,15 @@ public class ApiTestService {
         return callApi("/api/v1/signup", jsonString);
     }
 
-    public ApiResponse callApi(String endpointOrUrl, String jsonBody) {
-        return callApi("POST", endpointOrUrl, jsonBody);
+    public ApiResponse callLoginApi(String phone, String password) {
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("phone", phone);
+        requestBody.addProperty("password", password);
+        String jsonString = requestBody.toString();
+        return callApi("/api/v1/login", jsonString);
     }
 
-    public ApiResponse callApi(String method, String endpointOrUrl, String jsonBody) {
+    public ApiResponse callApi(String endpoint, String jsonBody) {
         try {
             String normalizedMethod = method == null || method.isBlank() ? "POST" : method.trim().toUpperCase();
             boolean allowsEmptyBody = "GET".equals(normalizedMethod) || "DELETE".equals(normalizedMethod);
