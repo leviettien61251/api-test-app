@@ -30,7 +30,7 @@
 /* Trạng thái được chọn (Active/Chìm) */
 .nav-item:selected {
     -fx-background-color: #dbeafe; /* Xanh nhạt */
-    -fx-text-fill: #2563eb;       /* Chữ xanh đậm */
+    -fx-text-fill: #2563eb; /* Chữ xanh đậm */
     -fx-font-weight: bold;
 }
 
@@ -60,7 +60,6 @@
 }
 
 
-
 /* Dashboard  */
 .page-title {
     -fx-font-size: 24px;
@@ -71,7 +70,7 @@
 .section-bg {
     -fx-background-color: white;
     -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
 }
 
 .section-title {
@@ -85,7 +84,7 @@
     -fx-background-color: white;
     -fx-background-radius: 8;
     -fx-padding: 15;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
     -fx-border-width: 0 0 0 4;
 }
 
@@ -99,12 +98,29 @@
     -fx-font-weight: bold;
 }
 
-.card-blue { -fx-border-color: #3b82f6; }
-.card-purple { -fx-border-color: #8b5cf6; }
-.card-green { -fx-border-color: #10b981; }
-.card-green .card-value { -fx-text-fill: #10b981; }
-.card-red { -fx-border-color: #ef4444; }
-.card-red .card-value { -fx-text-fill: #ef4444; }
+.card-blue {
+    -fx-border-color: #3b82f6;
+}
+
+.card-purple {
+    -fx-border-color: #8b5cf6;
+}
+
+.card-green {
+    -fx-border-color: #10b981;
+}
+
+.card-green .card-value {
+    -fx-text-fill: #10b981;
+}
+
+.card-red {
+    -fx-border-color: #ef4444;
+}
+
+.card-red .card-value {
+    -fx-text-fill: #ef4444;
+}
 
 /* TableView Styling */
 .table-view {
@@ -122,17 +138,36 @@
 }
 
 
-
 /* report */
 /* Custom cho PieChart */
-.chart-pie-label { -fx-fill: #6b7280; -fx-font-size: 11px; }
-.default-color0.chart-pie { -fx-pie-color: #10b981; } /* Màu Pass */
-.default-color1.chart-pie { -fx-pie-color: #ef4444; } /* Màu Fail */
+.chart-pie-label {
+    -fx-fill: #6b7280;
+    -fx-font-size: 11px;
+}
+
+.default-color0.chart-pie {
+    -fx-pie-color: #10b981;
+}
+
+/* Màu Pass */
+.default-color1.chart-pie {
+    -fx-pie-color: #ef4444;
+}
+
+/* Màu Fail */
 
 /* Custom cho BarChart */
-.chart-bar { -fx-bar-fill: #3b82f6; }
-.chart-plot-background { -fx-background-color: transparent; }
-.axis { -fx-tick-label-fill: #6b7280; }
+.chart-bar {
+    -fx-bar-fill: #3b82f6;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.axis {
+    -fx-tick-label-fill: #6b7280;
+}
 
 /* Table Styling đồng bộ thiết kế của Sơn */
 .table-view {
@@ -140,14 +175,11 @@
     -fx-border-color: #e5e7eb;
     -fx-border-width: 1;
 }
+
 .table-view .column-header {
     -fx-background-color: #f9fafb;
     -fx-border-color: transparent transparent #e5e7eb transparent;
 }
-
-
-
-
 
 
 /* history */
@@ -167,7 +199,7 @@
 .section-bg {
     -fx-background-color: white;
     -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
 }
 
 /* Tiêu đề nhỏ bên trong Card */
@@ -227,10 +259,6 @@
 }
 
 
-
-
-
-
 /* environments */
 .main-container {
     -fx-background-color: #f9fafb;
@@ -284,7 +312,7 @@
 .card {
     -fx-background-color: white;
     -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
 }
 
 .page-title {
@@ -320,6 +348,7 @@
     -fx-text-fill: #1d4ed8;
     -fx-font-weight: bold;
 }
+
 /* Trạng thái bình thường */
 .env-item {
     -fx-background-radius: 8;
@@ -337,7 +366,7 @@
     -fx-background-color: #e7f1ff; /* Màu xanh nhạt */
     -fx-border-color: transparent transparent transparent #0d6efd; /* Vạch xanh bên trái */
     -fx-border-width: 0 0 0 4;
-    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 1, 1); /* Tạo cảm giác chìm */
+    -fx-effect: innershadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 1, 1); /* Tạo cảm giác chìm */
 }
 
 /* Đổi màu chữ cho đẹp khi được chọn */
@@ -345,7 +374,6 @@
     -fx-text-fill: #0d6efd;
     -fx-font-weight: bold;
 }
-
 
 
 /* collections */
@@ -364,7 +392,7 @@
 .card-white {
     -fx-background-color: white;
     -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 2);
     -fx-border-color: #f3f4f6;
     -fx-border-radius: 8;
 }
@@ -376,7 +404,10 @@
     -fx-background-radius: 4;
     -fx-cursor: hand;
 }
-.btn-primary:hover { -fx-background-color: #1d4ed8; }
+
+.btn-primary:hover {
+    -fx-background-color: #1d4ed8;
+}
 
 .btn-secondary {
     -fx-background-color: #f3f4f6;
@@ -395,23 +426,29 @@
 }
 
 /* Text styles */
-.text-muted { -fx-text-fill: #6b7280; }
-.text-bold { -fx-font-weight: bold; }
+.text-muted {
+    -fx-text-fill: #6b7280;
+}
+
+.text-bold {
+    -fx-font-weight: bold;
+}
 
 /* Customizing TreeView */
 .custom-tree-view {
     -fx-background-color: transparent;
     -fx-border-width: 0;
 }
+
 .custom-tree-view .tree-cell {
     -fx-padding: 5 0 5 0;
     -fx-background-color: transparent;
 }
+
 .custom-tree-view .tree-cell:selected {
     -fx-background-color: #dbeafe;
     -fx-text-fill: #1e40af;
 }
-
 
 
 /*profile */
@@ -437,7 +474,7 @@
 .card {
     -fx-background-color: white;
     -fx-background-radius: 12px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 5);
 }
 
 /* Phần Avatar */
@@ -540,9 +577,17 @@
     -fx-font-size: 14px;
 }
 
-.text-blue { -fx-text-fill: #3b82f6; }
-.text-green { -fx-text-fill: #22c55e; }
-.text-emerald { -fx-text-fill: #10b981; }
+.text-blue {
+    -fx-text-fill: #3b82f6;
+}
+
+.text-green {
+    -fx-text-fill: #22c55e;
+}
+
+.text-emerald {
+    -fx-text-fill: #10b981;
+}
 
 .text-small {
     -fx-font-size: 12px;
@@ -553,9 +598,8 @@
 .card {
     -fx-background-color: white;
     -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 4);
 }
-
 
 
 /*testcase*/
@@ -584,7 +628,7 @@
     -fx-border-color: #e5e7eb;
     -fx-border-radius: 8;
     -fx-padding: 15;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 5, 0, 0, 2);
 }
 
 /* Buttons */
@@ -593,14 +637,20 @@
     -fx-text-fill: white;
     -fx-cursor: hand;
 }
-.btn-primary:hover { -fx-background-color: #1d4ed8; }
+
+.btn-primary:hover {
+    -fx-background-color: #1d4ed8;
+}
 
 .btn-success {
     -fx-background-color: #16a34a;
     -fx-text-fill: white;
     -fx-cursor: hand;
 }
-.btn-success:hover { -fx-background-color: #15803d; }
+
+.btn-success:hover {
+    -fx-background-color: #15803d;
+}
 
 .btn-danger {
     -fx-background-color: #dc2626;
@@ -664,8 +714,6 @@
 }
 
 
-
-
 /*REQUEST*/
 /* Tổng thể */
 .root {
@@ -698,7 +746,10 @@
     -fx-text-fill: white;
     -fx-cursor: hand;
 }
-.btn-run-all:hover { -fx-background-color: #15803d; }
+
+.btn-run-all:hover {
+    -fx-background-color: #15803d;
+}
 
 .btn-run-selected {
     -fx-background-color: #2563eb;
@@ -729,7 +780,7 @@
 .card {
     -fx-background-color: white;
     -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
 }
 
 /* Input & TextArea */
@@ -787,7 +838,7 @@
 .login-card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 14;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 18, 0, 0, 8);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.12), 18, 0, 0, 8);
 }
 
 .login-title {

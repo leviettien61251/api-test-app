@@ -20,9 +20,6 @@ public final class AppRunConfig {
     private static boolean configured;
 
 
-
-
-
     private AppRunConfig() {
     }
 
@@ -44,7 +41,6 @@ public final class AppRunConfig {
         configuredAt = LocalDateTime.now();
         configured = true;
     }
-
 
 
     public static boolean isConfigured() {

@@ -24,26 +24,6 @@ public final class ConnectionManager {
         return INSTANCE;
     }
 
-    public Connection getConnection() throws SQLException {
-        try {
-            return DriverManager.getConnection(url, properties);
-        } catch (SQLException e) {
-            throw new SQLException("Failed to open database connection", e);
-        }
-    }
-
-    public boolean testConnection() {
-        try (Connection connection = getConnection()) {
-            return connection.isValid(5);
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
     private static String resolveUrl() {
         String value = System.getProperty("app.db.url");
         if (value == null || value.isBlank()) {
@@ -72,5 +52,25 @@ public final class ConnectionManager {
             return defaultValue;
         }
         return value.trim();
+    }
+
+    public Connection getConnection() throws SQLException {
+        try {
+            return DriverManager.getConnection(url, properties);
+        } catch (SQLException e) {
+            throw new SQLException("Failed to open database connection", e);
+        }
+    }
+
+    public boolean testConnection() {
+        try (Connection connection = getConnection()) {
+            return connection.isValid(5);
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

@@ -6,13 +6,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class AppSession {
-    private static AppSession instance;
-
-    private User currentUser;
-    private ClientMachine clientMachine;
-
     private static final StringProperty username = new SimpleStringProperty("Sơn");
     private static final StringProperty role = new SimpleStringProperty("Tester");
+    private static AppSession instance;
+    private User currentUser;
+    private ClientMachine clientMachine;
 
 
     private AppSession() {
@@ -23,22 +21,6 @@ public class AppSession {
             instance = new AppSession();
         }
         return instance;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public ClientMachine getClientMachine() {
-        return clientMachine;
-    }
-
-    public void setClientMachine(ClientMachine clientMachine) {
-        this.clientMachine = clientMachine;
     }
 
     public static StringProperty usernameProperty() {
@@ -68,6 +50,22 @@ public class AppSession {
     public static void clear() {
         setUsername("User");
         setRole("Tester");
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public ClientMachine getClientMachine() {
+        return clientMachine;
+    }
+
+    public void setClientMachine(ClientMachine clientMachine) {
+        this.clientMachine = clientMachine;
     }
 }
 

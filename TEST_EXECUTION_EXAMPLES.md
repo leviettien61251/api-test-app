@@ -3,10 +3,12 @@
 ## Example 1: Successful Registration (Scenario 1)
 
 ### Test Input:
+
 - Phone: `84901234567`
 - Password: `Password@123`
 
 ### Expected Response:
+
 ```json
 {
   "code": 1000,
@@ -21,6 +23,7 @@
 ```
 
 ### Test Result:
+
 ```
 ✅ Scenario 1 - Valid phone, not yet registered
   Code: 1000, HTTP: 200, Message: OK
@@ -32,10 +35,12 @@
 ## Example 2: User Already Registered (Scenario 2)
 
 ### Test Input:
+
 - Phone: `84901234567`
 - Password: `Password@123`
 
 ### Expected Response:
+
 ```json
 {
   "code": 2001,
@@ -46,6 +51,7 @@
 ```
 
 ### Test Result:
+
 ```
 ❌ Scenario 2 - Valid data, already registered
   Code: 2001, HTTP: 400, Message: Bad Request
@@ -57,10 +63,12 @@
 ## Example 3: Missing Password (Scenario 3)
 
 ### Test Input:
+
 - Phone: `84901234567`
 - Password: `` (empty)
 
 ### Expected Response:
+
 ```json
 {
   "code": 3006,
@@ -71,6 +79,7 @@
 ```
 
 ### Test Result:
+
 ```
 ✅ Scenario 3 - Valid phone, no password
   Code: 3006, HTTP: 422, Message: Unprocessable Entity
@@ -82,10 +91,12 @@
 ## Example 4: Invalid Phone Format (Scenario 4)
 
 ### Test Input:
+
 - Phone: `123`
 - Password: `Password@123`
 
 ### Expected Response:
+
 ```json
 {
   "code": 3007,
@@ -96,6 +107,7 @@
 ```
 
 ### Test Result:
+
 ```
 ✅ Scenario 4 - Invalid phone, has password
   Code: 3007, HTTP: 422, Message: Unprocessable Entity
@@ -107,10 +119,12 @@
 ## Example 5: Password Too Short (Additional Test)
 
 ### Test Input:
+
 - Phone: `84901234567`
 - Password: `123`
 
 ### Expected Response:
+
 ```json
 {
   "code": 3008,
@@ -121,6 +135,7 @@
 ```
 
 ### Test Result:
+
 ```
 ✅ Additional Test - Invalid password format (too short)
   Code: 3008, HTTP: 422, Message: Unprocessable Entity
@@ -132,10 +147,12 @@
 ## Example 6: Special Characters in Password (Additional Test)
 
 ### Test Input:
+
 - Phone: `84909876543`
 - Password: `P@ssw0rd!#$%`
 
 ### Expected Response:
+
 ```json
 {
   "code": 1000,
@@ -150,6 +167,7 @@
 ```
 
 ### Test Result:
+
 ```
 ✅ Additional Test - Valid password with special characters
   Code: 1000, HTTP: 200, Message: OK
@@ -161,6 +179,7 @@
 ## Complete Test Run Summary
 
 ### Test Execution Output:
+
 ```
 ✅ Scenario 1 - Valid phone, not yet registered
   Code: 1000, HTTP: 200, Message: OK
@@ -185,11 +204,13 @@ Pass: 6 | Fail: 1 | Total: 7
 ## Response Code Mapping
 
 ### Success Codes (HTTP 200)
+
 ```
 1000 = Registration successful
 ```
 
 ### Client Error Codes (HTTP 4xx)
+
 ```
 2001 = User already registered (HTTP 400)
 3006 = Missing required field (HTTP 422)
@@ -198,6 +219,7 @@ Pass: 6 | Fail: 1 | Total: 7
 ```
 
 ### Server Error Codes (HTTP 5xx)
+
 ```
 5000 = Internal server error
 5001 = Database connection error
@@ -209,6 +231,7 @@ Pass: 6 | Fail: 1 | Total: 7
 ## UI Display Format
 
 ### Table Columns:
+
 ```
 ☐ | Test Name | Input | Expected | Status | Result
 --|-----------|-------|----------|--------|--------
@@ -218,6 +241,7 @@ Pass: 6 | Fail: 1 | Total: 7
 ```
 
 ### Result Log:
+
 ```
 ✅ Scenario 1 - Valid phone, not yet registered
   Code: 1000, HTTP: 200, Message: OK
@@ -227,6 +251,7 @@ Pass: 6 | Fail: 1 | Total: 7
 ```
 
 ### Summary:
+
 ```
 Pass: 6 | Fail: 1 | Total: 7
 ```
@@ -236,18 +261,21 @@ Pass: 6 | Fail: 1 | Total: 7
 ## Testing Scenarios Details
 
 ### Setup Requirements:
+
 1. Ensure backend API server is running
 2. For Scenario 2 test: First run Scenario 1 to create user
 3. Prepare database state as needed
 4. Configure base URL if different from localhost:8080
 
 ### Execution Options:
+
 - **Sequential Mode**: Tests run one after another (recommended)
 - **Stop on Failure**: Useful for debugging failing tests
 - **Run Selected**: Run only checked test cases
 - **Run All**: Execute all test scenarios
 
 ### Performance Expectations:
+
 - Each test: ~500ms-1s including network time
 - All 7 tests: ~5-7 seconds total execution
 - No timeout expected with proper network connectivity
