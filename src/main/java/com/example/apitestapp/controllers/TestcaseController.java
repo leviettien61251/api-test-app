@@ -12,6 +12,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import com.example.apitestapp.services.ApiTestService;
 import com.example.apitestapp.services.SignupTestData;
 import com.example.apitestapp.services.SignupTestScenarios;
+import com.example.apitestapp.services.LoginTestData;
+import com.example.apitestapp.services.LoginTestScenarios;
 
 import java.net.URL;
 import java.util.List;
@@ -134,6 +136,41 @@ public class TestcaseController implements Initializable {
                 bodyTextArea.setText("");
                 resultLogList.getItems().add("⚠️ Hệ thống chưa nạp kịch bản cho: " + apiName);
             }
+        } else if (apiName.contains("login")) {
+            List<LoginTestData> scenarios = LoginTestScenarios.getLoginScenarios();
+
+            if (!scenarios.isEmpty()) {
+                // Cập nhật Base URL - allow editing
+                baseUrlField.setText("http://localhost:8080/api/v1/login");
+                baseUrlField.setEditable(true);
+
+                // Nạp kịch bản vào bảng
+                for (LoginTestData s : scenarios) {
+                    String input = String.format("{ \"phoneNumber\": \"%s\", \"password\": \"%s\" }", s.getPhoneNumber(), s.getPassword());
+                    testData.add(new TestCaseModel(
+                            s.getScenario() + " - " + s.getDescription(),
+                            input,
+                            s.getExpectedCode(),
+                            s.getPhoneNumber(),
+                            s.getPassword()
+                    ));
+                }
+
+                // Hiển thị Body mẫu - allow editing
+                LoginTestData first = scenarios.get(0);
+                bodyTextArea.setText(String.format("{\n  \"phoneNumber\": \"%s\",\n  \"password\": \"%s\"\n}",
+                        first.getPhoneNumber(), first.getPassword()));
+                bodyTextArea.setEditable(true);
+                bodyTextArea.setWrapText(true);
+            } else {
+                baseUrlField.setText("");
+                bodyTextArea.setText("");
+                resultLogList.getItems().add("⚠️ Hệ thống chưa nạp kịch bản cho: " + apiName);
+            }
+        } else {
+            baseUrlField.setText("");
+            bodyTextArea.setText("");
+            resultLogList.getItems().add("⚠️ Unknown API selection: " + apiName);
         }
     }
 

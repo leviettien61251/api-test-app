@@ -33,6 +33,14 @@ public class ApiTestService {
         return callApi("/api/v1/signup", jsonString);
     }
 
+    public ApiResponse callLoginApi(String phone, String password) {
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("phone", phone);
+        requestBody.addProperty("password", password);
+        String jsonString = requestBody.toString();
+        return callApi("/api/v1/login", jsonString);
+    }
+
     public ApiResponse callApi(String endpoint, String jsonBody) {
         try {
             if (jsonBody == null || jsonBody.trim().isEmpty()) {

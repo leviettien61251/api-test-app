@@ -8,7 +8,7 @@ import java.util.Properties;
 public final class ConnectionManager {
     private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/api_test_app";
     private static final String DEFAULT_USER = "postgres";
-    private static final String DEFAULT_PASSWORD = "123456789";
+    private static final String DEFAULT_PASSWORD = "12345";
 
     private static final ConnectionManager INSTANCE = new ConnectionManager();
 
