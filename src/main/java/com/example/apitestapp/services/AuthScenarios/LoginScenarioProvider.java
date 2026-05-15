@@ -1,4 +1,8 @@
-package com.example.apitestapp.services;
+package com.example.apitestapp.services.AuthScenarios;
+
+import com.example.apitestapp.services.ApiScenarioDefinition;
+import com.example.apitestapp.services.ApiScenarioProvider;
+import com.example.apitestapp.services.ApiTestScenario;
 
 import java.util.List;
 

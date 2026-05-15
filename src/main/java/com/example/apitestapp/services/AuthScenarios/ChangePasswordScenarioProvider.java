@@ -1,39 +1,30 @@
-package com.example.apitestapp.services;
+package com.example.apitestapp.services.AuthScenarios;
+
+import com.example.apitestapp.services.ApiScenarioDefinition;
+import com.example.apitestapp.services.ApiScenarioProvider;
+import com.example.apitestapp.services.ApiTestScenario;
 
 import java.util.List;
 
-public class SignupScenarioProvider implements ApiScenarioProvider {
-
+public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
     @Override
     public ApiScenarioDefinition getDefinition() {
         List<ApiTestScenario> scenarios = List.of(
                 new ApiTestScenario(
                         "Scenario 1",
-                        "Valid phone, not yet registered",
+                        "Số điện thoại hợp lệ, nhưng chưa đăng ký",
                         """
                                 {
-                                  "phoneNumber": "0982222222",
+                                  "phoneNumber": "0983111111",
                                   "password": "111111"
                                 }
                                 """,
-                        "1000",
+                        "",
                         "SUCCESS"
                 ),
                 new ApiTestScenario(
                         "Scenario 2",
                         "Valid phone, already registered",
-                        List.of(new ApiSetupRequest(
-                                "Ensure user is already registered",
-                                "/api/v1/signup",
-                                """
-                                        {
-                                          "phoneNumber": "0981111111",
-                                          "password": "111111"
-                                        }
-                                        """,
-                                List.of("1000", "3006"),
-                                true
-                        )),
                         """
                                 {
                                   "phoneNumber": "0981111111",
@@ -107,19 +98,11 @@ public class SignupScenarioProvider implements ApiScenarioProvider {
 
         return new ApiScenarioDefinition(
                 "Collections",
-                "Auth Module",
-                "POST /api/v1/signup",
-                "/api/v1/signup",
+                "Map Module",
+                "POST /api/v1/login",
+                "/api/v1/login",
                 scenarios.get(0).getRequestBody(),
-                scenarios,
-                List.of(new ApiCleanupRequest(
-                        "Clean signup test data",
-                        "DELETE",
-                        "/api/v1/signup/clean",
-                        "",
-                        List.of("1000", "200", "204", "201"),
-                        true
-                ))
+                scenarios
         );
     }
 }
