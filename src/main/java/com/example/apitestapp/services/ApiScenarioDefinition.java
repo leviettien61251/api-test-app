@@ -1,7 +1,10 @@
 package com.example.apitestapp.services;
 
+import lombok.Builder;
+
 import java.util.List;
 
+@Builder
 public class ApiScenarioDefinition {
     private final String collectionName;
     private final String moduleName;
