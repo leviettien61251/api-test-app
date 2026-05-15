@@ -1,10 +1,7 @@
 package com.example.apitestapp.services;
 
-import lombok.Builder;
-
 import java.util.List;
 
-@Builder
 public class ApiTestScenario {
     private final String scenario;
     private final String description;
@@ -60,5 +57,52 @@ public class ApiTestScenario {
             return scenario;
         }
         return scenario + " - " + description;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String scenario;
+        private String description;
+        private List<ApiSetupRequest> setupRequests = List.of();
+        private String requestBody;
+        private String expectedCode;
+        private String expectedStatus;
+
+        public Builder scenario(String scenario) {
+            this.scenario = scenario;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder setupRequests(List<ApiSetupRequest> setupRequests) {
+            this.setupRequests = setupRequests;
+            return this;
+        }
+
+        public Builder requestBody(String requestBody) {
+            this.requestBody = requestBody;
+            return this;
+        }
+
+        public Builder expectedCode(String expectedCode) {
+            this.expectedCode = expectedCode;
+            return this;
+        }
+
+        public Builder expectedStatus(String expectedStatus) {
+            this.expectedStatus = expectedStatus;
+            return this;
+        }
+
+        public ApiTestScenario build() {
+            return new ApiTestScenario(scenario, description, setupRequests, requestBody, expectedCode, expectedStatus);
+        }
     }
 }

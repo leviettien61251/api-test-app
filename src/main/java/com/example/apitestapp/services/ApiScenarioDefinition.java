@@ -1,10 +1,7 @@
 package com.example.apitestapp.services;
 
-import lombok.Builder;
-
 import java.util.List;
 
-@Builder
 public class ApiScenarioDefinition {
     private final String collectionName;
     private final String moduleName;
@@ -65,5 +62,66 @@ public class ApiScenarioDefinition {
 
     public List<ApiCleanupRequest> getCleanupRequests() {
         return cleanupRequests;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String collectionName;
+        private String moduleName;
+        private String apiLabel;
+        private String endpoint;
+        private String sampleRequestBody;
+        private List<ApiTestScenario> scenarios = List.of();
+        private List<ApiCleanupRequest> cleanupRequests = List.of();
+
+        public Builder collectionName(String collectionName) {
+            this.collectionName = collectionName;
+            return this;
+        }
+
+        public Builder moduleName(String moduleName) {
+            this.moduleName = moduleName;
+            return this;
+        }
+
+        public Builder apiLabel(String apiLabel) {
+            this.apiLabel = apiLabel;
+            return this;
+        }
+
+        public Builder endpoint(String endpoint) {
+            this.endpoint = endpoint;
+            return this;
+        }
+
+        public Builder sampleRequestBody(String sampleRequestBody) {
+            this.sampleRequestBody = sampleRequestBody;
+            return this;
+        }
+
+        public Builder scenarios(List<ApiTestScenario> scenarios) {
+            this.scenarios = scenarios;
+            return this;
+        }
+
+        public Builder cleanupRequests(List<ApiCleanupRequest> cleanupRequests) {
+            this.cleanupRequests = cleanupRequests;
+            return this;
+        }
+
+        public ApiScenarioDefinition build() {
+            return new ApiScenarioDefinition(
+                    collectionName,
+                    moduleName,
+                    apiLabel,
+                    endpoint,
+                    sampleRequestBody,
+                    scenarios,
+                    cleanupRequests
+            );
+        }
     }
 }
