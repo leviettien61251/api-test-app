@@ -1,8 +1,6 @@
 package com.example.apitestapp.services.AuthScenarios;
 
-import com.example.apitestapp.services.ApiScenarioDefinition;
-import com.example.apitestapp.services.ApiScenarioProvider;
-import com.example.apitestapp.services.ApiTestScenario;
+import com.example.apitestapp.services.*;
 
 import java.util.List;
 
@@ -13,9 +11,35 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
                 new ApiTestScenario(
                         "Scenario 1",
                         "Đủ dữ liệu, mật khẩu cũ đúng",
+                        List.of(
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "/api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0981111111",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                ),
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Login",
+                                        "/api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0981111111",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )
+                        ),
                         """
                                 {
-                                  "phoneNumber": "0982345678",
+                                  "phoneNumber": "0981111111",
                                   "oldPassword": "111111",
                                   "newPassword": "222222"
                                 }
@@ -26,9 +50,35 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
                 new ApiTestScenario(
                         "Scenario 2",
                         "Đủ dữ liệu, mật khẩu cũ sai",
+                        List.of(
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "/api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0982222222",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                ),
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Login",
+                                        "/api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0982222222",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of(),
+                                        true
+                                )
+                        ),
                         """
                                 {
-                                  "phoneNumber": "0982345679",
+                                  "phoneNumber": "0982222222",
                                   "oldPassword": "222222",
                                   "newPassword": "333333"
                                 }
@@ -41,9 +91,9 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
                         "Tài khoản chưa đăng ký (không có trong cả 2 bảng)",
                         """
                                 {
-                                  "phoneNumber": "0999999999",
-                                  "oldPassword": "any",
-                                  "newPassword": "anyNew"
+                                  "phoneNumber": "0983333333",
+                                  "oldPassword": "111111",
+                                  "newPassword": "222222"
                                 }
                                 """,
                         "3009",
@@ -51,28 +101,28 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Scenario 4",
-                        "Không nhập mật khẩu cũ (null)",
+                        "Thiếu nhập mật khẩu cũ",
                         """
                                 {
-                                  "phoneNumber": "0982111222",
-                                  "oldPassword": null,
-                                  "newPassword": "NewPass123"
+                                  "phoneNumber": "0984444444",
+                                  "oldPassword": "",
+                                  "newPassword": "222222"
                                 }
                                 """,
-                        "2001",
+                        "2006",
                         "FAILURE"
                 ),
                 new ApiTestScenario(
                         "Scenario 5",
-                        "Không nhập mật khẩu mới (null)",
+                        "Thiếu nhập mật khẩu mới ",
                         """
                                 {
-                                  "phoneNumber": "0982111333",
+                                  "phoneNumber": "0985555555",
                                   "oldPassword": "111111",
-                                  "newPassword": null
+                                  "newPassword": ""
                                 }
                                 """,
-                        "2001",
+                        "2006",
                         "FAILURE"
                 ),
                 new ApiTestScenario(
@@ -80,9 +130,9 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
                         "Mật khẩu mới không hợp lệ (quá ngắn)",
                         """
                                 {
-                                  "phoneNumber": "0982111444",
+                                  "phoneNumber": "0986666666",
                                   "oldPassword": "111111",
-                                  "newPassword": "a"
+                                  "newPassword": "222"
                                 }
                                 """,
                         "3008",
@@ -93,7 +143,7 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
                         "Mật khẩu mới trùng mật khẩu cũ",
                         """
                                 {
-                                  "phoneNumber": "0982111555",
+                                  "phoneNumber": "0987777777",
                                   "oldPassword": "111111",
                                   "newPassword": "111111"
                                 }
@@ -103,15 +153,15 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Scenario 8",
-                        "Không có phone",
+                        "Thiếu số điện thoại",
                         """
                                 {
-                                  "phoneNumber": null,
-                                  "oldPassword": "any",
-                                  "newPassword": "any"
+                                  "phoneNumber": "",
+                                  "oldPassword": "111111",
+                                  "newPassword": "222222"
                                 }
                                 """,
-                        "3008",
+                        "2006",
                         "FAILURE"
                 )
         );
@@ -122,7 +172,31 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
                 "POST /api/v1/change-password",
                 "/api/v1/change-password",
                 scenarios.get(0).getRequestBody(),
-                scenarios
+                scenarios,
+                List.of(new ApiCleanupRequest(
+                                "Dọn dẹp dữ liệu change password",
+                                "DELETE",
+                                "/api/v1/change-password/clean",
+                                "",
+                                List.of("1000", "200", "204", "201"),
+                                true
+                        ),
+                        new ApiCleanupRequest(
+                                "Dọn dẹp dữ liệu login",
+                                "DELETE",
+                                "/api/v1/login/clean",
+                                "",
+                                List.of("1000", "200", "204", "201"),
+                                true
+                        ),
+                        new ApiCleanupRequest(
+                                "Dọn dẹp dữ liệu signup",
+                                "DELETE",
+                                "/api/v1/signup/clean",
+                                "",
+                                List.of("1000", "200", "204", "201"),
+                                true
+                        ))
         );
     }
 }
