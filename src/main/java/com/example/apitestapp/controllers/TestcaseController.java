@@ -241,15 +241,9 @@ public class TestcaseController implements Initializable {
             ApiResponse response = apiTestService.callApi(targetUrl, requestBody);
             String expectedCode = tc.getExpected();
             String actualCode = response.getResponseCode();
-            String actualStatus = response.getResponseStatus();
-
-            boolean expectsStatus = "success".equalsIgnoreCase(expectedCode) || "fail".equalsIgnoreCase(expectedCode);
-            boolean isPass = expectsStatus
-                    ? expectedCode.equalsIgnoreCase(actualStatus)
-                    : expectedCode.equals(actualCode);
-
-            String logMessage = String.format("Code: %s, Status: %s, HTTP: %d",
-                    actualCode, actualStatus.isBlank() ? "-" : actualStatus, response.getHttpCode());
+            boolean isPass = expectedCode.equals(actualCode);
+            String logMessage = String.format("Code: %s, HTTP: %d",
+                    actualCode, response.getHttpCode());
 
             Platform.runLater(() -> resultLogList.getItems().add("  " + logMessage));
 
