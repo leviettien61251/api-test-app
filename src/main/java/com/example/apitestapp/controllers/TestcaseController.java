@@ -3,6 +3,8 @@ package com.example.apitestapp.controllers;
 
 import com.example.apitestapp.models.TestCaseRowModel;
 import com.example.apitestapp.services.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -190,9 +192,10 @@ public class TestcaseController implements Initializable {
                 if (!all && !tc.isSelected()) continue;
                 executedAny = true;
 
+                Map<String, String> runtimeVariables = new LinkedHashMap<>();
                 Platform.runLater(() -> tc.setResult("⏳ Đang test..."));
 
-                boolean isPass = runScenarioSetup(tc) && callActualApi(tc);
+                boolean isPass = runScenarioSetup(tc, runtimeVariables) && callActualApi(tc, runtimeVariables);
 
                 Platform.runLater(() -> {
                     tc.setResult(isPass ? "✅ PASS" : "❌ FAIL");
@@ -228,9 +231,13 @@ public class TestcaseController implements Initializable {
         }).start();
     }
 
-    private boolean callActualApi(TestCaseRowModel tc) {
+    private boolean callActualApi(TestCaseRowModel tc, Map<String, String> runtimeVariables) {
         try {
-            String requestBody = tc.getRequestBody();
+            String requestBody = replaceVariables(tc.getRequestBody(), runtimeVariables);
+            if (hasUnresolvedVariables(requestBody)) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Error: Request body has unresolved variables: " + requestBody));
+                return false;
+            }
             String targetUrl = baseUrlField.getText().trim();
             if (targetUrl.isEmpty()) {
                 targetUrl = tc.getEndpoint();
@@ -284,7 +291,7 @@ public class TestcaseController implements Initializable {
         }
     }
 
-    private boolean runScenarioSetup(TestCaseRowModel tc) {
+    private boolean runScenarioSetup(TestCaseRowModel tc, Map<String, String> runtimeVariables) {
         ApiTestScenario scenario = tc.getScenario();
         if (scenario == null || scenario.getSetupRequests().isEmpty()) {
             return true;
@@ -300,7 +307,7 @@ public class TestcaseController implements Initializable {
             ApiResponse response = apiTestService.callApi(
                     setupRequest.getMethod(),
                     resolveHookUrl(setupRequest.getEndpoint(), tc.getEndpoint()),
-                    setupRequest.getRequestBody()
+                    replaceVariables(setupRequest.getRequestBody(), runtimeVariables)
             );
             String actualCode = response.getResponseCode();
             boolean accepted = setupRequest.accepts(actualCode);
@@ -312,6 +319,10 @@ public class TestcaseController implements Initializable {
             Platform.runLater(() -> resultLogList.getItems().add(logMessage));
 
             if (!accepted && setupRequest.isRequired()) {
+                return false;
+            }
+
+            if (accepted && !captureResponseVariables(setupRequest, response, runtimeVariables)) {
                 return false;
             }
         }
@@ -344,5 +355,79 @@ public class TestcaseController implements Initializable {
         }
 
         return endpointOrUrl;
+    }
+
+    private boolean captureResponseVariables(ApiSetupRequest setupRequest,
+                                             ApiResponse response,
+                                             Map<String, String> runtimeVariables) {
+        boolean capturedAll = true;
+        for (ApiResponseVariable variable : setupRequest.getResponseVariables()) {
+            java.util.Optional<String> capturedValue = extractJsonValue(response.getResponseBody(), variable.getJsonPath());
+            if (capturedValue.isPresent()) {
+                String value = capturedValue.get();
+                runtimeVariables.put(variable.getName(), value);
+                Platform.runLater(() -> resultLogList.getItems().add(
+                        "  Captured: " + variable.getName() + "=" + value
+                ));
+            } else {
+                capturedAll = false;
+                Platform.runLater(() -> resultLogList.getItems().add(
+                        "  Capture missing: " + variable.getName() + " from " + variable.getJsonPath()
+                ));
+            }
+        }
+        return capturedAll;
+    }
+
+    private java.util.Optional<String> extractJsonValue(String responseBody, String jsonPath) {
+        if (responseBody == null || responseBody.isBlank() || jsonPath == null || jsonPath.isBlank()) {
+            return java.util.Optional.empty();
+        }
+
+        try {
+            JsonElement current = JsonParser.parseString(responseBody);
+            for (String part : jsonPath.split("\\.")) {
+                if (current.isJsonObject()) {
+                    if (!current.getAsJsonObject().has(part)) {
+                        return java.util.Optional.empty();
+                    }
+                    current = current.getAsJsonObject().get(part);
+                } else if (current.isJsonArray()) {
+                    int index = Integer.parseInt(part);
+                    if (index < 0 || index >= current.getAsJsonArray().size()) {
+                        return java.util.Optional.empty();
+                    }
+                    current = current.getAsJsonArray().get(index);
+                } else {
+                    return java.util.Optional.empty();
+                }
+            }
+
+            if (current == null || current.isJsonNull()) {
+                return java.util.Optional.empty();
+            }
+            if (current.isJsonPrimitive()) {
+                return java.util.Optional.of(current.getAsJsonPrimitive().getAsString());
+            }
+            return java.util.Optional.of(current.toString());
+        } catch (Exception ignored) {
+            return java.util.Optional.empty();
+        }
+    }
+
+    private String replaceVariables(String requestBody, Map<String, String> runtimeVariables) {
+        if (requestBody == null || requestBody.isBlank() || runtimeVariables.isEmpty()) {
+            return requestBody;
+        }
+
+        String resolvedBody = requestBody;
+        for (Map.Entry<String, String> entry : runtimeVariables.entrySet()) {
+            resolvedBody = resolvedBody.replace("${" + entry.getKey() + "}", entry.getValue());
+        }
+        return resolvedBody;
+    }
+
+    private boolean hasUnresolvedVariables(String requestBody) {
+        return requestBody != null && requestBody.matches("(?s).*\\$\\{[A-Za-z0-9_]+}.*");
     }
 }
