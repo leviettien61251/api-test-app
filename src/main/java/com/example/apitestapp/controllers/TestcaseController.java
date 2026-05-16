@@ -248,9 +248,7 @@ public class TestcaseController implements Initializable {
             ApiResponse response = apiTestService.callApi(targetUrl, requestBody);
             String expectedCode = tc.getExpected();
             String actualCode = response.getResponseCode();
-
             boolean isPass = expectedCode.equals(actualCode);
-
             String logMessage = String.format("Code: %s, HTTP: %d",
                     actualCode, response.getHttpCode());
 
