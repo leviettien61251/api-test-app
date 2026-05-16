@@ -12,95 +12,115 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
         List<ApiTestScenario> scenarios = List.of(
                 new ApiTestScenario(
                         "Scenario 1",
-                        "Số điện thoại hợp lệ, nhưng chưa đăng ký",
+                        "Đủ dữ liệu, mật khẩu cũ đúng",
                         """
                                 {
-                                  "phoneNumber": "0983111111",
-                                  "password": "111111"
+                                  "phoneNumber": "0982345678",
+                                  "oldPassword": "111111",
+                                  "newPassword": "222222"
                                 }
                                 """,
-                        "",
+                        "1000",
                         "SUCCESS"
                 ),
                 new ApiTestScenario(
                         "Scenario 2",
-                        "Valid phone, already registered",
+                        "Đủ dữ liệu, mật khẩu cũ sai",
                         """
                                 {
-                                  "phoneNumber": "0981111111",
-                                  "password": "111111"
+                                  "phoneNumber": "0982345679",
+                                  "oldPassword": "222222",
+                                  "newPassword": "333333"
                                 }
                                 """,
-                        "3006",
+                        "3008",
                         "FAILURE"
                 ),
                 new ApiTestScenario(
                         "Scenario 3",
-                        "Valid phone, missing password",
+                        "Tài khoản chưa đăng ký (không có trong cả 2 bảng)",
                         """
                                 {
-                                  "phoneNumber": "0981111112",
-                                  "password": ""
+                                  "phoneNumber": "0999999999",
+                                  "oldPassword": "any",
+                                  "newPassword": "anyNew"
+                                }
+                                """,
+                        "3009",
+                        "FAILURE"
+                ),
+                new ApiTestScenario(
+                        "Scenario 4",
+                        "Không nhập mật khẩu cũ (null)",
+                        """
+                                {
+                                  "phoneNumber": "0982111222",
+                                  "oldPassword": null,
+                                  "newPassword": "NewPass123"
                                 }
                                 """,
                         "2001",
                         "FAILURE"
                 ),
                 new ApiTestScenario(
-                        "Scenario 4",
-                        "Invalid phone format",
-                        """
-                                {
-                                  "phoneNumber": "123",
-                                  "password": "111111"
-                                }
-                                """,
-                        "3007",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
                         "Scenario 5",
-                        "Invalid phone, already registered",
+                        "Không nhập mật khẩu mới (null)",
                         """
                                 {
-                                  "phoneNumber": "invalid",
-                                  "password": "111111"
+                                  "phoneNumber": "0982111333",
+                                  "oldPassword": "111111",
+                                  "newPassword": null
                                 }
                                 """,
-                        "2003",
+                        "2001",
                         "FAILURE"
                 ),
                 new ApiTestScenario(
-                        "Additional Test",
-                        "Invalid password format (too short)",
+                        "Scenario 6",
+                        "Mật khẩu mới không hợp lệ (quá ngắn)",
                         """
                                 {
-                                  "phoneNumber": "0981111111",
-                                  "password": "123"
+                                  "phoneNumber": "0982111444",
+                                  "oldPassword": "111111",
+                                  "newPassword": "a"
                                 }
                                 """,
-                        "2003",
+                        "3008",
                         "FAILURE"
                 ),
                 new ApiTestScenario(
-                        "Additional Test",
-                        "Valid password with special characters",
+                        "Scenario 7",
+                        "Mật khẩu mới trùng mật khẩu cũ",
                         """
                                 {
-                                  "phoneNumber": "0981111111",
-                                  "password": "P@ssw0rd!#$%"
+                                  "phoneNumber": "0982111555",
+                                  "oldPassword": "111111",
+                                  "newPassword": "111111"
                                 }
                                 """,
-                        "1000",
-                        "SUCCESS"
+                        "3008",
+                        "FAILURE"
+                ),
+                new ApiTestScenario(
+                        "Scenario 8",
+                        "Không có phone",
+                        """
+                                {
+                                  "phoneNumber": null,
+                                  "oldPassword": "any",
+                                  "newPassword": "any"
+                                }
+                                """,
+                        "3008",
+                        "FAILURE"
                 )
         );
 
         return new ApiScenarioDefinition(
                 "Collections",
-                "Map Module",
-                "POST /api/v1/login",
-                "/api/v1/login",
+                "Node Module",
+                "POST /api/v1/change-password",
+                "/api/v1/change-password",
                 scenarios.get(0).getRequestBody(),
                 scenarios
         );

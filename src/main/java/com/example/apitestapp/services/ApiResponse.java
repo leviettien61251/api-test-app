@@ -43,4 +43,16 @@ public class ApiResponse {
         }
         return String.valueOf(httpCode);
     }
+
+    public String getResponseStatus() {
+        try {
+            JsonObject json = JsonParser.parseString(responseBody).getAsJsonObject();
+            if (json.has("status") && !json.get("status").isJsonNull()) {
+                return json.get("status").getAsString();
+            }
+        } catch (Exception ignored) {
+            // Some API responses only expose a numeric code.
+        }
+        return "";
+    }
 }

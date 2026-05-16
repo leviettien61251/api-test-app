@@ -1,6 +1,7 @@
 package com.example.apitestapp.services;
 
 import com.example.apitestapp.services.AuthScenarios.ChangePasswordScenarioProvider;
+import com.example.apitestapp.services.AuthScenarios.GetUserInfoScenarioProvider;
 import com.example.apitestapp.services.AuthScenarios.LoginScenarioProvider;
 import com.example.apitestapp.services.AuthScenarios.SignupScenarioProvider;
 
@@ -15,7 +16,8 @@ public class ApiScenarioRegistry {
         this(List.of(
                 new SignupScenarioProvider(),
                 new LoginScenarioProvider(),
-                new ChangePasswordScenarioProvider()
+                new ChangePasswordScenarioProvider(),
+                new GetUserInfoScenarioProvider()
         ));
     }
 
