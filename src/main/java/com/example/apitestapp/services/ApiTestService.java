@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class ApiTestService {
@@ -24,19 +25,15 @@ public class ApiTestService {
         this.baseUrl = baseUrl;
     }
 
-    public ApiResponse callSignupApi(String phone, String password) {
-        JsonObject requestBody = new JsonObject();
-        requestBody.addProperty("phoneNumber", phone);
-        requestBody.addProperty("password", password);
-        String jsonString = requestBody.toString();
-        return callApi("/api/v1/signup", jsonString);
-    }
-
     public ApiResponse callApi(String endpointOrUrl, String jsonBody) {
         return callApi("POST", endpointOrUrl, jsonBody);
     }
 
     public ApiResponse callApi(String method, String endpointOrUrl, String jsonBody) {
+        return callApi(method, endpointOrUrl, jsonBody, Map.of());
+    }
+
+    public ApiResponse callApi(String method, String endpointOrUrl, String jsonBody, Map<String, String> queryParams) {
         try {
             String normalizedMethod = method == null || method.isBlank() ? "POST" : method.trim().toUpperCase();
             boolean allowsEmptyBody = "GET".equals(normalizedMethod) || "DELETE".equals(normalizedMethod);
@@ -50,7 +47,7 @@ public class ApiTestService {
             }
 
             Request.Builder requestBuilder = new Request.Builder()
-                    .url(resolveUrl(endpointOrUrl))
+                    .url(resolveUrl(endpointOrUrl, queryParams))
                     .addHeader("Content-Type", "application/json; charset=utf-8");
 
             if ("GET".equals(normalizedMethod)) {
@@ -83,15 +80,39 @@ public class ApiTestService {
     }
 
     private String resolveUrl(String endpointOrUrl) {
+        return resolveUrl(endpointOrUrl, Map.of());
+    }
+
+    private String resolveUrl(String endpointOrUrl, Map<String, String> queryParams) {
+        String resolvedUrl;
         if (endpointOrUrl == null || endpointOrUrl.isBlank()) {
-            return baseUrl;
+            resolvedUrl = baseUrl;
+        } else if (endpointOrUrl.startsWith("http://") || endpointOrUrl.startsWith("https://")) {
+            resolvedUrl = endpointOrUrl;
+        } else if (endpointOrUrl.startsWith("/")) {
+            resolvedUrl = baseUrl + endpointOrUrl;
+        } else {
+            resolvedUrl = baseUrl + "/" + endpointOrUrl;
         }
-        if (endpointOrUrl.startsWith("http://") || endpointOrUrl.startsWith("https://")) {
-            return endpointOrUrl;
+        return appendQueryParams(resolvedUrl, queryParams);
+    }
+
+    private String appendQueryParams(String url, Map<String, String> queryParams) {
+        if (queryParams == null || queryParams.isEmpty()) {
+            return url;
         }
-        if (endpointOrUrl.startsWith("/")) {
-            return baseUrl + endpointOrUrl;
+
+        HttpUrl parsedUrl = HttpUrl.parse(url);
+        if (parsedUrl == null) {
+            return url;
         }
-        return baseUrl + "/" + endpointOrUrl;
+
+        HttpUrl.Builder builder = parsedUrl.newBuilder();
+        queryParams.forEach((key, value) -> {
+            if (key != null && !key.isBlank()) {
+                builder.addQueryParameter(key, value == null ? "" : value);
+            }
+        });
+        return builder.build().toString();
     }
 }

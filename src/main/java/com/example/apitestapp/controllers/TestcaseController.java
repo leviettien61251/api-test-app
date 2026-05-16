@@ -139,13 +139,16 @@ public class TestcaseController implements Initializable {
         baseUrlField.setText("http://localhost:8080" + definition.getEndpoint());
         baseUrlField.setEditable(true);
 
+        String apiMethod = resolveApiMethod(definition);
         for (ApiTestScenario scenario : scenarios) {
             String requestBody = scenario.getRequestBody();
+            String testInput = buildTestInput(requestBody, scenario.getQueryParams());
             testData.add(new TestCaseRowModel(
                     scenario.getDisplayName(),
-                    requestBody,
+                    testInput,
                     scenario.getExpectedCode(),
                     definition.getEndpoint(),
+                    apiMethod,
                     requestBody,
                     scenario
             ));
@@ -238,14 +241,27 @@ public class TestcaseController implements Initializable {
                 Platform.runLater(() -> resultLogList.getItems().add("  Error: Request body has unresolved variables: " + requestBody));
                 return false;
             }
+            ApiTestScenario scenario = tc.getScenario();
+            Map<String, String> queryParams = replaceVariables(
+                    scenario == null ? Map.of() : scenario.getQueryParams(),
+                    runtimeVariables
+            );
+            if (hasUnresolvedVariables(queryParams)) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Error: Query params have unresolved variables: " + queryParams));
+                return false;
+            }
             String targetUrl = baseUrlField.getText().trim();
             if (targetUrl.isEmpty()) {
                 targetUrl = tc.getEndpoint();
             }
 
-            Platform.runLater(() -> resultLogList.getItems().add("  Sending: " + requestBody));
+            String resolvedTargetUrl = targetUrl;
+            Platform.runLater(() -> resultLogList.getItems().add("  Sending: " + tc.getMethod() + " " + resolvedTargetUrl));
+            if (!queryParams.isEmpty()) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Query Params: " + queryParams));
+            }
 
-            ApiResponse response = apiTestService.callApi(targetUrl, requestBody);
+            ApiResponse response = apiTestService.callApi(tc.getMethod(), resolvedTargetUrl, requestBody, queryParams);
             String expectedCode = tc.getExpected();
             String actualCode = response.getResponseCode();
             boolean isPass = expectedCode.equals(actualCode);
@@ -357,6 +373,37 @@ public class TestcaseController implements Initializable {
         return endpointOrUrl;
     }
 
+    private String resolveApiMethod(ApiScenarioDefinition definition) {
+        if (definition == null || definition.getApiLabel() == null || definition.getApiLabel().isBlank()) {
+            return "POST";
+        }
+
+        String apiLabel = definition.getApiLabel().trim();
+        int firstSpace = apiLabel.indexOf(' ');
+        if (firstSpace <= 0) {
+            return "POST";
+        }
+
+        String method = apiLabel.substring(0, firstSpace).trim().toUpperCase();
+        return switch (method) {
+            case "GET", "POST", "PUT", "PATCH", "DELETE" -> method;
+            default -> "POST";
+        };
+    }
+
+    private String buildTestInput(String requestBody, Map<String, String> queryParams) {
+        boolean hasRequestBody = requestBody != null && !requestBody.isBlank();
+        boolean hasQueryParams = queryParams != null && !queryParams.isEmpty();
+
+        if (hasRequestBody && hasQueryParams) {
+            return requestBody + "\nQuery Params: " + queryParams;
+        }
+        if (hasQueryParams) {
+            return "Query Params: " + queryParams;
+        }
+        return requestBody;
+    }
+
     private boolean captureResponseVariables(ApiSetupRequest setupRequest,
                                              ApiResponse response,
                                              Map<String, String> runtimeVariables) {
@@ -427,7 +474,24 @@ public class TestcaseController implements Initializable {
         return resolvedBody;
     }
 
+    private Map<String, String> replaceVariables(Map<String, String> values, Map<String, String> runtimeVariables) {
+        if (values == null || values.isEmpty()) {
+            return Map.of();
+        }
+        if (runtimeVariables.isEmpty()) {
+            return values;
+        }
+
+        Map<String, String> resolvedValues = new LinkedHashMap<>();
+        values.forEach((key, value) -> resolvedValues.put(key, replaceVariables(value, runtimeVariables)));
+        return resolvedValues;
+    }
+
     private boolean hasUnresolvedVariables(String requestBody) {
         return requestBody != null && requestBody.matches("(?s).*\\$\\{[A-Za-z0-9_]+}.*");
+    }
+
+    private boolean hasUnresolvedVariables(Map<String, String> values) {
+        return values != null && values.values().stream().anyMatch(this::hasUnresolvedVariables);
     }
 }
