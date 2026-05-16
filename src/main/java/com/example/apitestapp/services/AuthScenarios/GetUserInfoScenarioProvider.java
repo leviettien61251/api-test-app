@@ -168,7 +168,7 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
 
         return new ApiScenarioDefinition(
                 "Collections",
-                "Map Module",
+                "User Module",
                 "POST /api/v1/get-user-info",
                 "/api/v1/get-user-info",
                 scenarios.get(0).getRequestBody(),

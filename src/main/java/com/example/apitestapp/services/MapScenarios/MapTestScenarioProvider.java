@@ -136,13 +136,13 @@ public class MapTestScenarioProvider implements ApiScenarioProvider {
                         )
                         .requestBody(
                                 """
-                                                {
-                                                        "buildingCode": "BA-3",
-                                                          "buildingName": "Building A-3",
-                                                          "imageUrl": "https://example.com/BA3.jpg",
-                                                          "scaleX": 5.1,
-                                                          "scaleY": 5.1
-                                                }
+                                            {
+                                                "buildingCode": "BA-3",
+                                                "buildingName": "Building A-3",
+                                                "imageUrl": "https://example.com/BA3.jpg",
+                                                "scaleX": 5.1,
+                                                "scaleY": 5.1
+                                            }
                                         """
                         )
                         .expectedCode("2001")

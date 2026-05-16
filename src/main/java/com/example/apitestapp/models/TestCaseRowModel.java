@@ -15,20 +15,26 @@ public class TestCaseRowModel {
     private final StringProperty status;
     private final StringProperty result;
     private final String endpoint;
+    private final String method;
     private final String requestBody;
     private final ApiTestScenario scenario;
 
     public TestCaseRowModel(String name, String input, String expected, String endpoint, String requestBody) {
-        this(name, input, expected, endpoint, requestBody, null);
+        this(name, input, expected, endpoint, "POST", requestBody, null);
     }
 
     public TestCaseRowModel(String name, String input, String expected, String endpoint, String requestBody, ApiTestScenario scenario) {
+        this(name, input, expected, endpoint, "POST", requestBody, scenario);
+    }
+
+    public TestCaseRowModel(String name, String input, String expected, String endpoint, String method, String requestBody, ApiTestScenario scenario) {
         this.name = new SimpleStringProperty(name);
         this.input = new SimpleStringProperty(input);
         this.expected = new SimpleStringProperty(expected);
         this.status = new SimpleStringProperty("-");
         this.result = new SimpleStringProperty("⚪ Chờ");
         this.endpoint = endpoint;
+        this.method = method == null || method.isBlank() ? "POST" : method.trim().toUpperCase();
         this.requestBody = requestBody;
         this.scenario = scenario;
     }
@@ -79,6 +85,10 @@ public class TestCaseRowModel {
 
     public String getEndpoint() {
         return endpoint;
+    }
+
+    public String getMethod() {
+        return method;
     }
 
     public String getRequestBody() {
