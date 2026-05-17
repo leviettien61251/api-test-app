@@ -353,7 +353,7 @@ public class TestcaseController implements Initializable {
             );
             if (hasUnresolvedVariables(queryParams)) {
                 Platform.runLater(() -> resultLogList.getItems().add("  Error: Query params have unresolved variables: " + queryParams));
-                return false;
+                return CaseOutcome.failed("Biến query params chưa được thay thế");
             }
             String targetUrl = baseUrlField.getText().trim();
             if (targetUrl.isEmpty()) {
