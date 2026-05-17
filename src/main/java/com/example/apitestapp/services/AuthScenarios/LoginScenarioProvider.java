@@ -1,9 +1,6 @@
 package com.example.apitestapp.services.AuthScenarios;
 
-import com.example.apitestapp.services.ApiCleanupRequest;
-import com.example.apitestapp.services.ApiScenarioDefinition;
-import com.example.apitestapp.services.ApiScenarioProvider;
-import com.example.apitestapp.services.ApiTestScenario;
+import com.example.apitestapp.services.*;
 
 import java.util.List;
 
@@ -13,10 +10,22 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
         List<ApiTestScenario> scenarios = List.of(
                 new ApiTestScenario(
                         "Scenario 1",
-                        "Valid phone, registered account",
+                        "Số điện thoại hợp lệ, đã đăng ký",
+                        List.of(new ApiSetupRequest(
+                                "Thêm dữ liệu mồi Signup",
+                                "api/v1/signup",
+                                """
+                                        {
+                                          "phoneNumber": "0981234567",
+                                          "password": "111111"
+                                        }
+                                        """,
+                                List.of(),
+                                true
+                        )),
                         """
                                 {
-                                  "phoneNumber": "0901234567",
+                                  "phoneNumber": "0981234567",
                                   "password": "111111"
                                 }
                                 """,
@@ -25,34 +34,34 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Scenario 2",
-                        "Valid phone but incorrect password",
+                        "Số điện thoại đúng, sai mật khẩu",
+                        List.of(new ApiSetupRequest(
+                                "Thêm dữ liệu mồi Signup",
+                                "api/v1/signup",
+                                """
+                                        {
+                                          "phoneNumber": "0981111111",
+                                          "password": "111111"
+                                        }
+                                        """,
+                                List.of(),
+                                true
+                        )),
                         """
                                 {
                                   "phoneNumber": "0981111111",
-                                  "password": "111111"
+                                  "password": "222222"
                                 }
                                 """,
-                        "3006",
+                        "3008",
                         "FAILURE"
                 ),
                 new ApiTestScenario(
                         "Scenario 3",
-                        "Valid phone but unregistered",
+                        "Số điện thoại hợp lệ, chưa đăng ký",
                         """
                                 {
-                                  "phoneNumber": "0981111112",
-                                  "password": ""
-                                }
-                                """,
-                        "2001",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
-                        "Scenario 4",
-                        "Missing/empty password",
-                        """
-                                {
-                                  "phoneNumber": "123",
+                                  "phoneNumber": "0983333333",
                                   "password": "111111"
                                 }
                                 """,
@@ -60,24 +69,48 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                         "FAILURE"
                 ),
                 new ApiTestScenario(
-                        "Scenario 5",
-                        "Empty phone",
+                        "Scenario 4",
+                        "Thiếu mật khẩu",
                         """
                                 {
-                                  "phoneNumber": "invalid",
+                                  "phoneNumber": "0981111111",
+                                  "password": ""
+                                }
+                                """,
+                        "2001",
+                        "FAILURE"
+                ),
+                new ApiTestScenario(
+                        "Scenario 5",
+                        "Thiếu số điện thoại",
+                        """
+                                {
+                                  "phoneNumber": "",
                                   "password": "111111"
                                 }
                                 """,
-                        "2003",
+                        "2001",
                         "FAILURE"
                 ),
                 new ApiTestScenario(
-                        "Additional Test",
-                        "Phone with surrounding whitespace (trim expected by backend)",
+                        "Scenario 6",
+                        "Số điện thoại hợp lệ, đã đăng ký nhưng thiếu mật khẩu",
                         """
                                 {
-                                  "phoneNumber": "0981111111",
-                                  "password": "123"
+                                  "phoneNumber": "0981234567",
+                                  "password": ""
+                                }
+                                """,
+                        "2001",
+                        "FAILURE"
+                ),
+                new ApiTestScenario(
+                        "Scenario 7",
+                        "Số điện thoại không hợp lệ, mật khẩu không hợp lệ",
+                        """
+                                {
+                                  "phoneNumber": "0981",
+                                  "password": "111"
                                 }
                                 """,
                         "2003",
@@ -85,11 +118,23 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Additional Test",
-                        "User already logged in / exists in logged_in_users",
+                        "Số điện thoại chứa khoảng trắng ở đầu/cuối, mật khẩu hợp lệ - đã đăng ký (Nên thành công)",
                         """
                                 {
-                                  "phoneNumber": "0981111111",
-                                  "password": "P@ssw0rd!#$%"
+                                  "phoneNumber": " 0981234567 ",
+                                  "password": "111111"
+                                }
+                                """,
+                        "1000",
+                        "SUCCESS"
+                ),
+                new ApiTestScenario(
+                        "Additional Test",
+                        "Số điện thoại đã đăng nhập",
+                        """
+                                {
+                                  "phoneNumber": "0981234567",
+                                  "password": "111111"
                                 }
                                 """,
                         "1000",
@@ -105,13 +150,22 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 scenarios.get(0).getRequestBody(),
                 scenarios,
                 List.of(new ApiCleanupRequest(
-                        "Clean login test data",
-                        "DELETE",
-                        "/api/v1/login/clean",
-                        "",
-                        List.of("1000", "200", "204", "201"),
-                        true
-                ))
+                                "Clean login test data",
+                                "DELETE",
+                                "/api/v1/login/clean",
+                                "",
+                                List.of("1000", "200", "204", "201"),
+                                true
+                        ),
+                        new ApiCleanupRequest(
+                                "Clean signup test data",
+                                "DELETE",
+                                "/api/v1/signup/clean",
+                                "",
+                                List.of("1000", "200", "204", "201"),
+                                true
+                        )
+                )
         );
     }
 }
