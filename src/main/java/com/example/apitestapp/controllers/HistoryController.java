@@ -12,12 +12,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 
 import java.net.URL;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -52,6 +52,7 @@ public class HistoryController implements Initializable, RefreshableView {
         cbResult.setValue("Tất cả");
 
         setupColumns();
+        setupFilters();
         historyTable.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 TestRun selected = historyTable.getSelectionModel().getSelectedItem();
@@ -150,9 +151,16 @@ public class HistoryController implements Initializable, RefreshableView {
         });
     }
 
+    private void setupFilters() {
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> applyFilters());
+        cbResult.valueProperty().addListener((observable, oldValue, newValue) -> applyFilters());
+        dpFrom.valueProperty().addListener((observable, oldValue, newValue) -> applyFilters());
+        dpTo.valueProperty().addListener((observable, oldValue, newValue) -> applyFilters());
+    }
+
     private void applyFilters() {
         String resultFilter = cbResult.getValue();
-        String keyword = txtSearch.getText() == null ? "" : txtSearch.getText().trim().toLowerCase();
+        String keyword = normalize(txtSearch.getText());
         LocalDate from = dpFrom.getValue();
         LocalDate to = dpTo.getValue();
 
@@ -198,11 +206,21 @@ public class HistoryController implements Initializable, RefreshableView {
         }
         return contains(run.getUser(), keyword)
                 || contains(run.getMachine(), keyword)
-                || contains(run.getRunName(), keyword);
+                || contains(run.getOs(), keyword)
+                || contains(run.getRunMode(), keyword)
+                || contains(run.getRunName(), keyword)
+                || contains(run.getId(), keyword)
+                || contains(formatTime(run), keyword)
+                || contains(run.getPassedCases() + " / " + run.getFailedCases(), keyword)
+                || contains(run.getFailedCases() > 0 ? "FAIL" : "PASS", keyword);
     }
 
     private static boolean contains(String value, String keyword) {
-        return value != null && value.toLowerCase().contains(keyword);
+        return normalize(value).contains(keyword);
+    }
+
+    private static String normalize(String value) {
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 
     private static String formatTime(TestRun run) {

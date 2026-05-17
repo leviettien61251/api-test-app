@@ -44,10 +44,10 @@
                         </VBox>
                         <VBox spacing="5.0" GridPane.columnIndex="3">
                             <children>
-                                <Label styleClass="filter-label" text="Người chạy"/>
+                                <Label styleClass="filter-label" text="Tìm kiếm"/>
                                 <HBox spacing="8.0">
                                     <children>
-                                        <TextField fx:id="txtSearch" promptText="Tìm kiếm..." HBox.hgrow="ALWAYS"/>
+                                        <TextField fx:id="txtSearch" promptText="Mã run, người chạy, máy, OS..." HBox.hgrow="ALWAYS"/>
                                         <Button fx:id="btnFilter" mnemonicParsing="false" onAction="#handleFilter"
                                                 styleClass="btn-primary" text="⚡" textFill="WHITE"/>
                                     </children>
