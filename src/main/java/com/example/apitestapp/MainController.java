@@ -6,7 +6,6 @@ import com.example.apitestapp.config.SelectedRunContext;
 import com.example.apitestapp.controllers.DashboardController;
 import com.example.apitestapp.controllers.HistoryController;
 import com.example.apitestapp.controllers.RefreshableView;
-import com.example.apitestapp.controllers.ReportController;
 import com.example.apitestapp.models.ClientMachine;
 import com.example.apitestapp.models.User;
 import com.example.apitestapp.repository.ClientMachineRepository;
@@ -41,7 +40,7 @@ public class MainController implements Initializable {
     private ToggleButton btnDashboard, btnTestcase, btnRequest, btnReport;
 
     @FXML
-    private ToggleButton btnCollections, btnEnvironments, btnHistory, btnProfile;
+    private ToggleButton btnHistory;
 
     @FXML
     private MenuButton userMenuButton;
@@ -85,16 +84,6 @@ public class MainController implements Initializable {
     }
 
     // Các hàm chuyển đổi View cho Sidebar
-    @FXML
-    private void navigateCollections() {
-        navigateTo("views/collections-view.fxml", btnCollections);
-    }
-
-    @FXML
-    private void navigateEnvironments() {
-        navigateTo("views/environments-view.fxml", btnEnvironments);
-    }
-
     @FXML
     private void navigateHistory() {
         navigateTo("views/history-view.fxml", btnHistory);
@@ -178,10 +167,7 @@ public class MainController implements Initializable {
         btnTestcase.setSelected(false);
         btnRequest.setSelected(false);
         btnReport.setSelected(false);
-        btnCollections.setSelected(false);
-        btnEnvironments.setSelected(false);
         btnHistory.setSelected(false);
-
         // Set the clicked button as selected to apply CSS styling
         button.setSelected(true);
     }
