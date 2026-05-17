@@ -2,6 +2,11 @@ package com.example.apitestapp;
 
 import com.example.apitestapp.config.AppRunConfig;
 import com.example.apitestapp.config.AppSession;
+import com.example.apitestapp.config.SelectedRunContext;
+import com.example.apitestapp.controllers.DashboardController;
+import com.example.apitestapp.controllers.HistoryController;
+import com.example.apitestapp.controllers.RefreshableView;
+import com.example.apitestapp.controllers.ReportController;
 import com.example.apitestapp.models.ClientMachine;
 import com.example.apitestapp.models.User;
 import com.example.apitestapp.repository.ClientMachineRepository;
@@ -119,16 +124,20 @@ public class MainController implements Initializable {
      */
     private void navigateTo(String fxmlPath, ToggleButton button) {
         try {
-            // Sử dụng Cache để tránh việc nạp lại file FXML nhiều lần gây lag
             if (!viewCache.containsKey(fxmlPath)) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
                 Node view = loader.load();
+                wireViewController(fxmlPath, loader.getController());
+                view.setUserData(loader.getController());
                 viewCache.put(fxmlPath, view);
             }
 
             Node view = viewCache.get(fxmlPath);
+            Object controller = view.getUserData();
+            if (controller instanceof RefreshableView refreshable) {
+                refreshable.refresh();
+            }
 
-            // Tạo hiệu ứng mờ dần (Fade) khi đổi trang cho chuyên nghiệp
             FadeTransition fade = new FadeTransition(Duration.millis(250), view);
             fade.setFromValue(0);
             fade.setToValue(1);
@@ -136,7 +145,6 @@ public class MainController implements Initializable {
             contentArea.getChildren().setAll(view);
             fade.play();
 
-            // Cập nhật trạng thái "đang chọn" cho nút bấm và thay đổi màu sắc
             if (button != null) {
                 setActiveButton(button);
             }
@@ -148,6 +156,20 @@ public class MainController implements Initializable {
             System.err.println("Đường dẫn file FXML bị sai: " + fxmlPath);
         }
 
+    }
+
+    public void openReportForRun(String runId) {
+        SelectedRunContext.setSelectedRunId(runId);
+        navigateTo("views/report-view.fxml", btnReport);
+    }
+
+    private void wireViewController(String fxmlPath, Object controller) {
+        if (controller instanceof HistoryController historyController) {
+            historyController.setOnOpenReport(this::openReportForRun);
+        }
+        if (controller instanceof DashboardController dashboardController) {
+            dashboardController.setOnOpenReport(this::openReportForRun);
+        }
     }
 
     private void setActiveButton(ToggleButton button) {

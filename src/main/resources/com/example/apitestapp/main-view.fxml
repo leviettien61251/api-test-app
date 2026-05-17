@@ -22,10 +22,7 @@
                     </VBox.margin>
                 </Label>
 
-                <ToggleButton fx:id="btnCollections" maxWidth="Infinity" onAction="#navigateCollections" selected="true"
-                              styleClass="nav-item" text="📁 Collections" toggleGroup="$sidebarGroup"/>
-                <ToggleButton fx:id="btnEnvironments" maxWidth="Infinity" onAction="#navigateEnvironments"
-                              styleClass="nav-item" text="⚙ Environments" toggleGroup="$sidebarGroup"/>
+
                 <ToggleButton fx:id="btnHistory" maxWidth="Infinity" onAction="#navigateHistory" styleClass="nav-item"
                               text="⏳ History" toggleGroup="$sidebarGroup"/>
             </children>

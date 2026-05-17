@@ -25,19 +25,19 @@
                     <children>
                         <VBox styleClass="card, card-blue">
                             <Label styleClass="card-label" text="Tổng TC"/>
-                            <Label styleClass="card-value" text="120"/>
+                            <Label fx:id="lblTotalTc" styleClass="card-value" text="0"/>
                         </VBox>
                         <VBox styleClass="card, card-purple" GridPane.columnIndex="1">
                             <Label styleClass="card-label" text="Tổng Run"/>
-                            <Label styleClass="card-value" text="36"/>
+                            <Label fx:id="lblTotalRun" styleClass="card-value" text="0"/>
                         </VBox>
                         <VBox styleClass="card, card-green" GridPane.columnIndex="2">
                             <Label styleClass="card-label" text="Pass"/>
-                            <Label styleClass="card-value" text="98"/>
+                            <Label fx:id="lblTotalPass" styleClass="card-value" text="0"/>
                         </VBox>
                         <VBox styleClass="card, card-red" GridPane.columnIndex="3">
                             <Label styleClass="card-label" text="Fail"/>
-                            <Label styleClass="card-value" text="22"/>
+                            <Label fx:id="lblTotalFail" styleClass="card-value" text="0"/>
                         </VBox>
                     </children>
                 </GridPane>
