@@ -1,7 +1,12 @@
 package com.example.apitestapp.controllers;
 
 
+import com.example.apitestapp.config.AppRunConfig;
+import com.example.apitestapp.config.AppSession;
+import com.example.apitestapp.config.SelectedRunContext;
 import com.example.apitestapp.models.TestCaseRowModel;
+import com.example.apitestapp.models.TestResult;
+import com.example.apitestapp.models.TestRun;
 import com.example.apitestapp.services.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -15,6 +20,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
 import java.net.URI;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +47,7 @@ public class TestcaseController implements Initializable {
     @FXML
     private Label summaryText;
     @FXML
-    private Button runAllBtn, stopBtn;
+    private Button runAllBtn, stopBtn, saveReportBtn;
     @FXML
     private TextField baseUrlField; // Thanh URL
     @FXML
@@ -47,6 +56,12 @@ public class TestcaseController implements Initializable {
     private ApiTestService apiTestService;
     private ApiScenarioRegistry scenarioRegistry;
     private ApiScenarioDefinition currentDefinition;
+    private final RunStorage runStorage = RunStorage.getInstance();
+    private final List<TestResult> lastRunResults = new ArrayList<>();
+    private int lastPassCount;
+    private int lastFailCount;
+    private Instant lastRunStartedAt;
+    private boolean lastRunWasAll;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -189,9 +204,65 @@ public class TestcaseController implements Initializable {
         resultLogList.getItems().add("⏹ Đã dừng thực thi");
     }
 
+    @FXML
+    private void handleSaveReport() {
+        if (lastRunResults.isEmpty()) {
+            showInfo("Chưa có kết quả", "Hãy chạy testcase trước, sau đó bấm Lưu báo cáo.");
+            return;
+        }
+        String runId = persistLastRun();
+        if (runId == null || runId.isBlank()) {
+            showInfo("Lỗi lưu", "Không ghi được file. Xem log console.");
+            return;
+        }
+        showInfo("Đã lưu báo cáo",
+                "File:\n" + runStorage.getStorageFile()
+                        + "\nMã run: " + shortId(runId)
+                        + "\nTổng run đã lưu: " + runStorage.count()
+                        + "\n\nMở History / Dashboard / Report để xem.");
+    }
+
+    private String persistLastRun() {
+        try {
+            TestRun run = buildTestRunFromLastExecution();
+            String runId = runStorage.saveCompleteRun(run);
+            SelectedRunContext.setSelectedRunId(runId);
+            return runId;
+        } catch (Exception e) {
+            System.err.println("Lưu run thất bại: " + e.getMessage());
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private TestRun buildTestRunFromLastExecution() {
+        String apiLabel = currentDefinition != null ? currentDefinition.getApiLabel() : "API Test";
+        String runName = apiLabel + " - " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+
+        TestRun run = new TestRun();
+        run.setRunName(runName);
+        run.setRunMode(lastRunWasAll ? "Run All" : "Run Selected");
+        run.setFailureStrategy(stopConditionCombo.getValue());
+        run.setStartedAt(lastRunStartedAt != null ? lastRunStartedAt : Instant.now());
+        run.setCompletedAt(Instant.now());
+        run.setTotalCases(lastPassCount + lastFailCount);
+        run.setPassedCases(lastPassCount);
+        run.setFailedCases(lastFailCount);
+        run.setUser(AppSession.getUsername());
+        run.setMachine(AppRunConfig.getMachineName());
+        run.setOs(AppRunConfig.getOs());
+        run.setResults(new ArrayList<>(lastRunResults));
+        return run;
+    }
+
     private void runTests(boolean all) {
         if (isRunning || testData.isEmpty()) return;
         isRunning = true;
+        lastRunWasAll = all;
+        lastRunStartedAt = Instant.now();
+        lastRunResults.clear();
+        lastPassCount = 0;
+        lastFailCount = 0;
         resultLogList.getItems().clear();
         ApiScenarioDefinition definitionToRun = currentDefinition;
 
@@ -199,6 +270,7 @@ public class TestcaseController implements Initializable {
             int pass = 0, fail = 0;
             boolean executedAny = false;
             String stopCond = stopConditionCombo.getValue();
+            List<TestResult> collectedResults = new ArrayList<>();
 
             for (TestCaseRowModel tc : testData) {
                 if (!isRunning) break;
@@ -208,11 +280,16 @@ public class TestcaseController implements Initializable {
                 Map<String, String> runtimeVariables = new LinkedHashMap<>();
                 Platform.runLater(() -> tc.setResult("⏳ Đang test..."));
 
-                boolean isPass = runScenarioSetup(tc, runtimeVariables) && callActualApi(tc, runtimeVariables);
+                boolean setupOk = runScenarioSetup(tc, runtimeVariables);
+                CaseOutcome outcome = setupOk ? callActualApi(tc, runtimeVariables) : CaseOutcome.failed("Setup thất bại");
+                boolean isPass = outcome.passed;
+
+                TestResult result = toTestResult(tc, outcome);
+                collectedResults.add(result);
 
                 Platform.runLater(() -> {
                     tc.setResult(isPass ? "✅ PASS" : "❌ FAIL");
-                    tc.setStatus(tc.getExpected());
+                    tc.setStatus(outcome.actualCodeText);
                     resultLogList.getItems().add((isPass ? "✅ " : "❌ ") + tc.getName());
                 });
 
@@ -237,19 +314,34 @@ public class TestcaseController implements Initializable {
             }
 
             final int p = pass, f = fail;
-            Platform.runLater(() -> {
-                summaryText.setText("Pass: " + p + " | Fail: " + f + " | Tổng: " + (p + f));
-                isRunning = false;
-            });
+            final List<TestResult> resultsSnapshot = new ArrayList<>(collectedResults);
+            Platform.runLater(() -> finishRun(p, f, resultsSnapshot));
         }).start();
     }
 
-    private boolean callActualApi(TestCaseRowModel tc, Map<String, String> runtimeVariables) {
+    private void finishRun(int pass, int fail, List<TestResult> resultsSnapshot) {
+        lastRunResults.clear();
+        lastRunResults.addAll(resultsSnapshot);
+        lastPassCount = pass;
+        lastFailCount = fail;
+        isRunning = false;
+
+        int total = pass + fail;
+        if (total == 0) {
+            summaryText.setText("Chưa chạy testcase nào");
+        } else {
+            summaryText.setText("Pass: " + pass + " | Fail: " + fail + " | Tổng: " + total
+                    + " — Bấm «Lưu báo cáo» để ghi History");
+        }
+    }
+
+    private CaseOutcome callActualApi(TestCaseRowModel tc, Map<String, String> runtimeVariables) {
+        long started = System.currentTimeMillis();
         try {
             String requestBody = replaceVariables(tc.getRequestBody(), runtimeVariables);
             if (hasUnresolvedVariables(requestBody)) {
                 Platform.runLater(() -> resultLogList.getItems().add("  Error: Request body has unresolved variables: " + requestBody));
-                return false;
+                return CaseOutcome.failed("Biến chưa được thay thế");
             }
             String targetUrl = baseUrlField.getText().trim();
             if (targetUrl.isEmpty()) {
@@ -262,16 +354,70 @@ public class TestcaseController implements Initializable {
             String expectedCode = tc.getExpected();
             String actualCode = response.getResponseCode();
             boolean isPass = expectedCode.equals(actualCode);
-            String logMessage = String.format("Code: %s, HTTP: %d",
-                    actualCode, response.getHttpCode());
+            long elapsed = System.currentTimeMillis() - started;
+            String logMessage = String.format("Code: %s, HTTP: %d", actualCode, response.getHttpCode());
 
             Platform.runLater(() -> resultLogList.getItems().add("  " + logMessage));
 
-            return isPass;
+            return new CaseOutcome(isPass, expectedCode, actualCode, elapsed, logMessage);
         } catch (Exception e) {
             Platform.runLater(() -> resultLogList.getItems().add("  Error: " + e.getMessage()));
-            e.printStackTrace();
-            return false;
+            return CaseOutcome.failed(e.getMessage());
+        }
+    }
+
+    private TestResult toTestResult(TestCaseRowModel tc, CaseOutcome outcome) {
+        TestResult result = new TestResult();
+        result.setCaseName(tc.getName());
+        result.setStatus(outcome.passed ? "PASSED" : "FAILED");
+        result.setMessage(outcome.message);
+        result.setExpectedCode(parseCode(outcome.expectedCodeText));
+        result.setActualCode(parseCode(outcome.actualCodeText));
+        result.setResponseTimeMs(outcome.responseTimeMs);
+        result.setExecutedAt(Instant.now());
+        return result;
+    }
+
+    private static int parseCode(String code) {
+        try {
+            return Integer.parseInt(code);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private static String shortId(String id) {
+        if (id == null || id.length() <= 8) {
+            return id;
+        }
+        return id.substring(0, 8) + "...";
+    }
+
+    private void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private static final class CaseOutcome {
+        final boolean passed;
+        final String expectedCodeText;
+        final String actualCodeText;
+        final long responseTimeMs;
+        final String message;
+
+        CaseOutcome(boolean passed, String expectedCodeText, String actualCodeText, long responseTimeMs, String message) {
+            this.passed = passed;
+            this.expectedCodeText = expectedCodeText;
+            this.actualCodeText = actualCodeText;
+            this.responseTimeMs = responseTimeMs;
+            this.message = message;
+        }
+
+        static CaseOutcome failed(String message) {
+            return new CaseOutcome(false, "-", "-", 0, message);
         }
     }
 

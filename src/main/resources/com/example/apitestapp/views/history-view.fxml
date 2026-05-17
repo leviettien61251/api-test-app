@@ -48,8 +48,8 @@
                                 <HBox spacing="8.0">
                                     <children>
                                         <TextField fx:id="txtSearch" promptText="Tìm kiếm..." HBox.hgrow="ALWAYS"/>
-                                        <Button mnemonicParsing="false" styleClass="btn-primary" text="⚡"
-                                                textFill="WHITE"/>
+                                        <Button fx:id="btnFilter" mnemonicParsing="false" onAction="#handleFilter"
+                                                styleClass="btn-primary" text="⚡" textFill="WHITE"/>
                                     </children>
                                 </HBox>
                             </children>

@@ -94,7 +94,8 @@
                         <Label fx:id="summaryText" text="Chưa có dữ liệu"/>
                     </children>
                 </VBox>
-                <Button fx:id="saveReportBtn" maxWidth="Infinity" styleClass="btn-primary" text="💾 Lưu báo cáo"/>
+                <Button fx:id="saveReportBtn" maxWidth="Infinity" onAction="#handleSaveReport" styleClass="btn-primary"
+                          text="💾 Lưu báo cáo"/>
             </children>
         </VBox>
     </items>
