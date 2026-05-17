@@ -118,7 +118,7 @@ public class ChangePasswordScenarioProvider implements ApiScenarioProvider {
 
         return new ApiScenarioDefinition(
                 "Collections",
-                "Node Module",
+                "Auth Module",
                 "POST /api/v1/change-password",
                 "/api/v1/change-password",
                 scenarios.get(0).getRequestBody(),

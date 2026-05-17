@@ -20,7 +20,7 @@ public class ApiScenarioRegistry {
                 new SignupScenarioProvider(),
                 new LoginScenarioProvider(),
                 new ChangePasswordScenarioProvider(),
-                new GetUserInfoScenarioProvider()
+                new GetUserInfoScenarioProvider(),
                 new MapTestScenarioProvider(),
                 new NodeTestScenarioProvider(),
                 new StepTestScenarioProvider()

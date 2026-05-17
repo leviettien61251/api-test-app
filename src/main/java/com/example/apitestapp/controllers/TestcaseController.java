@@ -70,7 +70,14 @@ public class TestcaseController implements Initializable {
         colExpected.setCellValueFactory(new PropertyValueFactory<>("expected"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colResult.setCellValueFactory(new PropertyValueFactory<>("result"));
+
+        testCaseTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, selectedTestCase) -> {
+            if (selectedTestCase != null) {
+                showRequestBody(selectedTestCase);
+            }
+        });
     }
+
 
     private void setupComboBoxes() {
         executionModeCombo.getItems().addAll("Lần lượt (Sequential)", "Song song (Parallel)");
@@ -158,6 +165,12 @@ public class TestcaseController implements Initializable {
         bodyTextArea.setText(sampleRequestBody);
         bodyTextArea.setEditable(true);
         bodyTextArea.setWrapText(true);
+        testCaseTable.getSelectionModel().selectFirst();
+    }
+
+    private void showRequestBody(TestCaseRowModel testCase) {
+        String requestBody = testCase.getRequestBody();
+        bodyTextArea.setText(requestBody == null ? "" : requestBody);
     }
 
     @FXML
