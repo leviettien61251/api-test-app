@@ -5,6 +5,7 @@ import com.example.apitestapp.services.AuthScenarios.GetUserInfoScenarioProvider
 import com.example.apitestapp.services.AuthScenarios.LoginScenarioProvider;
 import com.example.apitestapp.services.AuthScenarios.SignupScenarioProvider;
 import com.example.apitestapp.services.MapScenarios.GetFloorScenarioProvider;
+import com.example.apitestapp.services.MapScenarios.GetEdgesScenarioProvider;
 import com.example.apitestapp.services.MapScenarios.MapTestScenarioProvider;
 import com.example.apitestapp.services.MapScenarios.NodeTestScenarioProvider;
 import com.example.apitestapp.services.MapScenarios.StepTestScenarioProvider;
@@ -26,6 +27,7 @@ public class ApiScenarioRegistry {
                 new MapTestScenarioProvider(),
                 new NodeTestScenarioProvider(),
                 new StepTestScenarioProvider(),
+                new GetEdgesScenarioProvider(),
                 new GetFloorScenarioProvider()
 
         ));
