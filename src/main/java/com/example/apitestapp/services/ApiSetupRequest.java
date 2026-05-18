@@ -1,7 +1,9 @@
 package com.example.apitestapp.services;
 
-import java.util.List;
+import lombok.Builder;
 
+import java.util.List;
+@Builder
 public class ApiSetupRequest {
     private final String name;
     private final String method;
