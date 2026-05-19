@@ -1,8 +1,6 @@
 package com.example.apitestapp.services.AuthScenarios;
 
-import com.example.apitestapp.services.ApiScenarioDefinition;
-import com.example.apitestapp.services.ApiScenarioProvider;
-import com.example.apitestapp.services.ApiTestScenario;
+import com.example.apitestapp.services.*;
 
 import java.util.List;
 
@@ -12,10 +10,35 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
         List<ApiTestScenario> scenarios = List.of(
                 new ApiTestScenario(
                         "Testcase 1",
-                        "Valid phone, existing user",
+                        "Số điện thoại hợp lệ, user tồn tại",
+                        List.of(new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0981111111",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )
+                                ,
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0981111111",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )),
                         """
                                 {
-                                  "phoneNumber": "0901234567"
+                                  "phoneNumber": "0981111111"
                                 }
                                 """,
                         "1000",
@@ -23,18 +46,56 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 2",
-                        "Valid phone, non-existent user",
+                        "Số điện thoại hợp lệ, user chưa đăng nhập tồn tại - 3009",
+                        List.of(new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0982222222",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )
+                        ),
                         """
                                 {
-                                  "phoneNumber": "0901234567"
+                                  "phoneNumber": "0982222222"
                                 }
                                 """,
-                        "3007",
+                        "3009",
                         "FAILURE"
                 ),
                 new ApiTestScenario(
                         "Testcase 3",
-                        "Empty phone number",
+                        "Số điện thoại trống",
+                        List.of(new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0983333333",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )
+                                ,
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0983333333",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )),
                         """
                                 {
                                   "phoneNumber": ""
@@ -45,7 +106,32 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 4",
-                        "Invalid phone format",
+                        "Số điện thoại không hợp lệ",
+                        List.of(new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0984444444",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )
+                                ,
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0984444444",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )),
                         """
                                 {
                                   "phoneNumber": "123"
@@ -56,10 +142,35 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 5",
-                        "Phone with whitespace, existing user",
+                        "Số điện thoại hợp lệ + khoảng trắng, user tồn tại",
+                        List.of(new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0985555555",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )
+                                ,
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0985555555",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )),
                         """
                                 {
-                                  "phoneNumber": " 0901234567 "
+                                  "phoneNumber": " 0985555555 "
                                 }
                                 """,
                         "1000",
@@ -67,7 +178,32 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 6",
-                        "Null phone number",
+                        "Số điện thoại null",
+                        List.of(new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0986666666",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )
+                                ,
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0986666666",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )),
                         """
                                 {
                                   "phoneNumber": null
@@ -78,10 +214,35 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 7.1",
-                        "Multiple GetUserInfo queries - first user",
+                        "Lấy dữ liệu user nhiều lần - Lần 1",
+                        List.of(new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0987777777",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )
+                                ,
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0987777777",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )),
                         """
                                 {
-                                  "phoneNumber": "0901234567"
+                                  "phoneNumber": "0987777777"
                                 }
                                 """,
                         "1000",
@@ -89,10 +250,35 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 7.2",
-                        "Multiple GetUserInfo queries - second user",
+                        "Lấy dữ liệu user nhiều lần - Lần 2",
+                        List.of(new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0987777777",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000", "3006"),
+                                        true
+                                )
+                                ,
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0987777777",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )),
                         """
                                 {
-                                  "phoneNumber": "0912345678"
+                                  "phoneNumber": " 0987777777 "
                                 }
                                 """,
                         "1000",
@@ -100,7 +286,32 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 8.1",
-                        "Invalid phone format - too short",
+                        "Số điện thoại không hợp lệ + quá ngắn",
+                        List.of(new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0988888888",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )
+                                ,
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0988888888",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )),
                         """
                                 {
                                   "phoneNumber": "123"
@@ -111,10 +322,10 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 8.2",
-                        "Invalid phone format - contains letters",
+                        "Số điện thoại quá dài - chứa chữ",
                         """
                                 {
-                                  "phoneNumber": "ABC1234567"
+                                  "phoneNumber": "ABC0988888888"
                                 }
                                 """,
                         "2003",
@@ -122,10 +333,10 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 8.3",
-                        "Invalid phone format - too short valid prefix",
+                        "Số điện thoại quá ngắn - regex hợp lệ",
                         """
                                 {
-                                  "phoneNumber": "09012345"
+                                  "phoneNumber": "09888"
                                 }
                                 """,
                         "2003",
@@ -133,10 +344,10 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 8.4",
-                        "Invalid phone format - too long",
+                        "Số điện thoại quá dài",
                         """
                                 {
-                                  "phoneNumber": "09012345678901"
+                                  "phoneNumber": "09888888888888"
                                 }
                                 """,
                         "2003",
@@ -144,10 +355,35 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 9",
-                        "User info contains correct code and message validation",
+                        "Thông tin trả về chứa code và tin nhắn hợp lệ",
+                        List.of(new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/signup",
+                                        """
+                                                {
+                                                  "phoneNumber": "0981234567",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )
+                                ,
+                                new ApiSetupRequest(
+                                        "Thêm dữ liệu mồi Signup",
+                                        "api/v1/login",
+                                        """
+                                                {
+                                                  "phoneNumber": "0981234567",
+                                                  "password": "111111"
+                                                }
+                                                """,
+                                        List.of("1000"),
+                                        true
+                                )),
                         """
                                 {
-                                  "phoneNumber": "0901234567"
+                                  "phoneNumber": "0981234567"
                                 }
                                 """,
                         "1000",
@@ -155,13 +391,13 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 ),
                 new ApiTestScenario(
                         "Testcase 10",
-                        "Error handling - USER_NOT_FOUND",
+                        "User không tồn tại",
                         """
                                 {
                                   "phoneNumber": "0901234567"
                                 }
                                 """,
-                        "3007",
+                        "3009",
                         "FAILURE"
                 )
         );
@@ -172,7 +408,40 @@ public class GetUserInfoScenarioProvider implements ApiScenarioProvider {
                 "POST /api/v1/get-user-info",
                 "/api/v1/get-user-info",
                 scenarios.get(0).getRequestBody(),
-                scenarios
+                scenarios,
+                List.of(new ApiCleanupRequest(
+                                "Clean login test data",
+                                "DELETE",
+                                "/api/v1/get-user-info/clean",
+                                "",
+                                List.of("1000", "200", "204", "201"),
+                                true
+                        ),
+                        new ApiCleanupRequest(
+                                "Clean login test data",
+                                "DELETE",
+                                "/api/v1/user-test/clean",
+                                "",
+                                List.of("1000", "200", "204", "201"),
+                                true
+                        ),
+                        new ApiCleanupRequest(
+                                "Clean login test data",
+                                "DELETE",
+                                "/api/v1/login/clean",
+                                "",
+                                List.of("1000", "200", "204", "201"),
+                                true
+                        ),
+                        new ApiCleanupRequest(
+                                "Clean signup test data",
+                                "DELETE",
+                                "/api/v1/signup/clean",
+                                "",
+                                List.of("1000", "200", "204", "201"),
+                                true
+                        )
+                )
         );
     }
 }
