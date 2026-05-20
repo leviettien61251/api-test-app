@@ -1,4 +1,4 @@
-package com.example.apitestapp.services.MapScenarios;
+package com.example.apitestapp.services.map;
 
 
 import com.example.apitestapp.services.*;

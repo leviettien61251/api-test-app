@@ -26,6 +26,8 @@ DROP TABLE IF EXISTS test_reports CASCADE;
 DROP TABLE IF EXISTS test_assertions CASCADE;
 DROP TABLE IF EXISTS test_results CASCADE;
 DROP TABLE IF EXISTS test_runs CASCADE;
+DROP TABLE IF EXISTS user_test_cases CASCADE;
+DROP TABLE IF EXISTS user_test_suites CASCADE;
 -- DROP TABLE IF EXISTS environment_variables CASCADE;
 DROP TABLE IF EXISTS test_data_sets CASCADE;
 DROP TABLE IF EXISTS test_cases CASCADE;
@@ -176,6 +178,45 @@ CREATE TABLE test_data_sets
     is_active    BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at   TIMESTAMP    NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE user_test_suites
+(
+    id          VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id     VARCHAR(255) REFERENCES users (id),
+    owner_name  VARCHAR(255) NOT NULL,
+    name        VARCHAR(255) NOT NULL,
+    method      VARCHAR(10)  NOT NULL,
+    endpoint    VARCHAR(2048) NOT NULL,
+    description TEXT,
+    cleanup_requests JSONB NOT NULL DEFAULT '[]',
+    is_active   BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMP
+);
+
+-- Testcase do user tạo trực tiếp trong app. Đây là nguồn dữ liệu chính cho testcase động;
+-- JSON file chỉ dùng cho import/export hoặc seed dữ liệu mẫu.
+CREATE TABLE user_test_cases
+(
+    id                   VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id              VARCHAR(255) REFERENCES users (id),
+    suite_id             VARCHAR(255) REFERENCES user_test_suites (id),
+    owner_name           VARCHAR(255) NOT NULL,
+    api_label            VARCHAR(255) NOT NULL,
+    name                 VARCHAR(255) NOT NULL,
+    description          TEXT,
+    method               VARCHAR(10)  NOT NULL,
+    endpoint             VARCHAR(2048) NOT NULL,
+    request_headers      JSONB NOT NULL DEFAULT '{}',
+    query_params         JSONB NOT NULL DEFAULT '{}',
+    request_body         JSONB,
+    setup_requests       JSONB NOT NULL DEFAULT '[]',
+    cleanup_requests     JSONB NOT NULL DEFAULT '[]',
+    expected_status_code INTEGER NOT NULL,
+    is_active            BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at           TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at           TIMESTAMP
+);
 --
 -- CREATE TABLE environment_variables
 -- (
@@ -325,3 +366,10 @@ CREATE INDEX idx_test_cases_endpoint_id ON test_cases (api_endpoint_id);
 
 -- Tra cứu endpoints theo suit
 CREATE INDEX idx_api_endpoints_suit_id ON api_endpoints (test_suit_id);
+
+-- Tra cứu testcase user theo user/API
+CREATE INDEX idx_user_test_suites_user ON user_test_suites (user_id);
+CREATE INDEX idx_user_test_suites_owner ON user_test_suites (owner_name);
+CREATE INDEX idx_user_test_cases_user_api ON user_test_cases (user_id, api_label);
+CREATE INDEX idx_user_test_cases_owner_api ON user_test_cases (owner_name, api_label);
+CREATE INDEX idx_user_test_cases_suite_id ON user_test_cases (suite_id);

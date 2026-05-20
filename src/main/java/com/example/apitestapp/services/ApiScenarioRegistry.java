@@ -1,18 +1,17 @@
 package com.example.apitestapp.services;
 
-import com.example.apitestapp.services.AuthScenarios.ChangePasswordScenarioProvider;
-import com.example.apitestapp.services.AuthScenarios.GetUserInfoScenarioProvider;
-import com.example.apitestapp.services.AuthScenarios.LoginScenarioProvider;
-import com.example.apitestapp.services.AuthScenarios.SignupScenarioProvider;
-import com.example.apitestapp.services.MapScenarios.GetFloorScenarioProvider;
-import com.example.apitestapp.services.MapScenarios.GetEdgesScenarioProvider;
-import com.example.apitestapp.services.MapScenarios.GetNodesTestScenarioProvider;
-import com.example.apitestapp.services.MapScenarios.MapTestScenarioProvider;
-import com.example.apitestapp.services.MapScenarios.NodeTestScenarioProvider;
-import com.example.apitestapp.services.MapScenarios.StepTestScenarioProvider;
-import com.example.apitestapp.services.UserScenarios.SetUserInfoScenarioProvider;
-import com.example.apitestapp.services.UserScenarios.TestScenarioProvider;
-// import com.example.apitestapp.services.MapScenarios.GetFloorScenarioProvider;
+import com.example.apitestapp.services.auth.ChangePasswordScenarioProvider;
+import com.example.apitestapp.services.auth.GetUserInfoScenarioProvider;
+import com.example.apitestapp.services.auth.LoginScenarioProvider;
+import com.example.apitestapp.services.auth.SignupScenarioProvider;
+import com.example.apitestapp.services.map.GetEdgesScenarioProvider;
+import com.example.apitestapp.services.map.GetFloorScenarioProvider;
+import com.example.apitestapp.services.map.GetNodesTestScenarioProvider;
+import com.example.apitestapp.services.map.MapTestScenarioProvider;
+import com.example.apitestapp.services.map.NodeTestScenarioProvider;
+import com.example.apitestapp.services.map.StepTestScenarioProvider;
+import com.example.apitestapp.services.user.SetUserInfoScenarioProvider;
+import com.example.apitestapp.services.user.TestScenarioProvider;
 
 import java.util.List;
 import java.util.Optional;

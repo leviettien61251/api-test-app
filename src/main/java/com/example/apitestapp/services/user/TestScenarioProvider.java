@@ -1,11 +1,10 @@
-package com.example.apitestapp.services.UserScenarios;
+package com.example.apitestapp.services.user;
 
 import com.example.apitestapp.services.*;
 
 import java.util.List;
 
-public class SetUserInfoScenarioProvider implements ApiScenarioProvider {
-
+public class TestScenarioProvider implements ApiScenarioProvider {
     @Override
     public ApiScenarioDefinition getDefinition() {
         List<ApiTestScenario> scenarios = List.of(
@@ -112,8 +111,8 @@ public class SetUserInfoScenarioProvider implements ApiScenarioProvider {
         );
 
         return ApiScenarioDefinition.builder()
-                .collectionName("Collections")
-                .moduleName("User Module")
+                .collectionName("Collections 2")
+                .moduleName("User2 Module2")
                 .apiLabel("POST /api/v1/set-user-info")
                 .endpoint("/api/v1/set-user-info")
                 .sampleRequestBody(scenarios.get(0).getRequestBody())
