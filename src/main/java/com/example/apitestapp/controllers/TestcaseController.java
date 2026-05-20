@@ -51,6 +51,8 @@ public class TestcaseController implements Initializable {
     @FXML
     private TextField baseUrlField; // Thanh URL
     @FXML
+    private TextArea headerTextArea; // Header cua testcase
+    @FXML
     private TextArea bodyTextArea;   // Khung JSON Body
     private volatile boolean isRunning = false;
     private ApiTestService apiTestService;
@@ -143,6 +145,7 @@ public class TestcaseController implements Initializable {
                 .ifPresentOrElse(this::loadScenarioDefinition, () -> {
                     currentDefinition = null;
                     baseUrlField.setText("");
+                    headerTextArea.setText("");
                     bodyTextArea.setText("");
                     resultLogList.getItems().add("⚠️ Hệ thống chưa nạp kịch bản cho: " + apiName);
                 });
@@ -153,6 +156,7 @@ public class TestcaseController implements Initializable {
         List<ApiTestScenario> scenarios = definition.getScenarios();
         if (scenarios.isEmpty()) {
             baseUrlField.setText("");
+            headerTextArea.setText("");
             bodyTextArea.setText("");
             resultLogList.getItems().add("⚠️ Hệ thống chưa nạp kịch bản cho: " + definition.getApiLabel());
             return;
@@ -164,13 +168,14 @@ public class TestcaseController implements Initializable {
         String apiMethod = resolveApiMethod(definition);
         for (ApiTestScenario scenario : scenarios) {
             String requestBody = scenario.getRequestBody();
-            String testInput = buildTestInput(requestBody, scenario.getQueryParams());
+            String testInput = buildTestInput(requestBody, scenario.getHeaders(), scenario.getQueryParams());
             testData.add(new TestCaseRowModel(
                     scenario.getDisplayName(),
                     testInput,
                     scenario.getExpectedCode(),
                     definition.getEndpoint(),
                     apiMethod,
+                    scenario.getHeaders(),
                     requestBody,
                     scenario
             ));
@@ -180,6 +185,9 @@ public class TestcaseController implements Initializable {
         if (sampleRequestBody == null || sampleRequestBody.isBlank()) {
             sampleRequestBody = scenarios.get(0).getRequestBody();
         }
+        headerTextArea.setText(formatHeaders(scenarios.get(0).getHeaders()));
+        headerTextArea.setEditable(true);
+        headerTextArea.setWrapText(true);
         bodyTextArea.setText(sampleRequestBody);
         bodyTextArea.setEditable(true);
         bodyTextArea.setWrapText(true);
@@ -188,6 +196,7 @@ public class TestcaseController implements Initializable {
 
     private void showRequestBody(TestCaseRowModel testCase) {
         String requestBody = testCase.getRequestBody();
+        headerTextArea.setText(formatHeaders(testCase.getHeaders()));
         bodyTextArea.setText(requestBody == null ? "" : requestBody);
     }
 
@@ -351,9 +360,14 @@ public class TestcaseController implements Initializable {
                     scenario == null ? Map.of() : scenario.getQueryParams(),
                     runtimeVariables
             );
+            Map<String, String> headers = replaceVariables(tc.getHeaders(), runtimeVariables);
             if (hasUnresolvedVariables(queryParams)) {
                 Platform.runLater(() -> resultLogList.getItems().add("  Error: Query params have unresolved variables: " + queryParams));
                 return CaseOutcome.failed("Biến query params chưa được thay thế");
+            }
+            if (hasUnresolvedVariables(headers)) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Error: Headers have unresolved variables: " + headers));
+                return CaseOutcome.failed("Biến header chưa được thay thế");
             }
             String targetUrl = baseUrlField.getText().trim();
             if (targetUrl.isEmpty()) {
@@ -365,8 +379,11 @@ public class TestcaseController implements Initializable {
             if (!queryParams.isEmpty()) {
                 Platform.runLater(() -> resultLogList.getItems().add("  Query Params: " + queryParams));
             }
+            if (!headers.isEmpty()) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Headers: " + headers));
+            }
 
-            ApiResponse response = apiTestService.callApi(tc.getMethod(), resolvedTargetUrl, requestBody, queryParams);
+            ApiResponse response = apiTestService.callApi(tc.getMethod(), resolvedTargetUrl, requestBody, queryParams, headers);
             String expectedCode = tc.getExpected();
             String actualCode = response.getResponseCode();
             boolean isPass = expectedCode.equals(actualCode);
@@ -550,17 +567,37 @@ public class TestcaseController implements Initializable {
         };
     }
 
-    private String buildTestInput(String requestBody, Map<String, String> queryParams) {
+    private String buildTestInput(String requestBody, Map<String, String> headers, Map<String, String> queryParams) {
         boolean hasRequestBody = requestBody != null && !requestBody.isBlank();
+        boolean hasHeaders = headers != null && !headers.isEmpty();
         boolean hasQueryParams = queryParams != null && !queryParams.isEmpty();
+        List<String> inputParts = new ArrayList<>();
 
-        if (hasRequestBody && hasQueryParams) {
-            return requestBody + "\nQuery Params: " + queryParams;
+        if (hasHeaders) {
+            inputParts.add("Headers: " + headers);
         }
         if (hasQueryParams) {
-            return "Query Params: " + queryParams;
+            inputParts.add("Query Params: " + queryParams);
         }
-        return requestBody;
+        if (hasRequestBody) {ApiSetupRequestA
+            inputParts.add(requestBody);
+        }
+        return String.join("\n", inputParts);
+    }
+
+    private String formatHeaders(Map<String, String> headers) {
+        if (headers == null || headers.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        headers.forEach((key, value) -> {
+            if (!builder.isEmpty()) {
+                builder.append('\n');
+            }
+            builder.append(key).append(": ").append(value == null ? "" : value);
+        });
+        return builder.toString();
     }
 
     private boolean captureResponseVariables(ApiSetupRequest setupRequest,

@@ -34,6 +34,14 @@ public class ApiTestService {
     }
 
     public ApiResponse callApi(String method, String endpointOrUrl, String jsonBody, Map<String, String> queryParams) {
+        return callApi(method, endpointOrUrl, jsonBody, queryParams, Map.of());
+    }
+
+    public ApiResponse callApi(String method,
+                               String endpointOrUrl,
+                               String jsonBody,
+                               Map<String, String> queryParams,
+                               Map<String, String> headers) {
         try {
             String normalizedMethod = method == null || method.isBlank() ? "POST" : method.trim().toUpperCase();
             boolean allowsEmptyBody = "GET".equals(normalizedMethod) || "DELETE".equals(normalizedMethod);
@@ -48,7 +56,15 @@ public class ApiTestService {
 
             Request.Builder requestBuilder = new Request.Builder()
                     .url(resolveUrl(endpointOrUrl, queryParams))
-                    .addHeader("Content-Type", "application/json; charset=utf-8");
+                    .header("Content-Type", "application/json; charset=utf-8");
+
+            if (headers != null) {
+                headers.forEach((key, value) -> {
+                    if (key != null && !key.isBlank()) {
+                        requestBuilder.header(key, value == null ? "" : value);
+                    }
+                });
+            }
 
             if ("GET".equals(normalizedMethod)) {
                 requestBuilder.get();
