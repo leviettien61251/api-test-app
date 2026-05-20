@@ -1,6 +1,7 @@
 package com.example.apitestapp.models;
 
 import com.example.apitestapp.services.ApiTestScenario;
+import com.example.apitestapp.services.ApiCleanupRequest;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -8,6 +9,7 @@ import javafx.beans.property.StringProperty;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TestCaseRowModel {
@@ -23,6 +25,8 @@ public class TestCaseRowModel {
     private final Map<String, String> headers;
     private final String requestBody;
     private final ApiTestScenario scenario;
+    private final String userTestCaseId;
+    private final List<ApiCleanupRequest> cleanupRequests;
 
     public TestCaseRowModel(String name, String input, String expected, String endpoint, String requestBody) {
         this(name, input, expected, endpoint, "POST", requestBody, null);
@@ -44,6 +48,31 @@ public class TestCaseRowModel {
                             Map<String, String> headers,
                             String requestBody,
                             ApiTestScenario scenario) {
+        this(name, input, expected, endpoint, method, headers, requestBody, scenario, null);
+    }
+
+    public TestCaseRowModel(String name,
+                            String input,
+                            String expected,
+                            String endpoint,
+                            String method,
+                            Map<String, String> headers,
+                            String requestBody,
+                            ApiTestScenario scenario,
+                            String userTestCaseId) {
+        this(name, input, expected, endpoint, method, headers, requestBody, scenario, userTestCaseId, List.of());
+    }
+
+    public TestCaseRowModel(String name,
+                            String input,
+                            String expected,
+                            String endpoint,
+                            String method,
+                            Map<String, String> headers,
+                            String requestBody,
+                            ApiTestScenario scenario,
+                            String userTestCaseId,
+                            List<ApiCleanupRequest> cleanupRequests) {
         this.name = new SimpleStringProperty(name);
         this.input = new SimpleStringProperty(input);
         this.expected = new SimpleStringProperty(expected);
@@ -54,6 +83,8 @@ public class TestCaseRowModel {
         this.headers = headers == null ? Map.of() : Collections.unmodifiableMap(new LinkedHashMap<>(headers));
         this.requestBody = requestBody;
         this.scenario = scenario;
+        this.userTestCaseId = userTestCaseId;
+        this.cleanupRequests = cleanupRequests == null ? List.of() : List.copyOf(cleanupRequests);
     }
 
     public BooleanProperty selectedProperty() {
@@ -118,5 +149,17 @@ public class TestCaseRowModel {
 
     public ApiTestScenario getScenario() {
         return scenario;
+    }
+
+    public String getUserTestCaseId() {
+        return userTestCaseId;
+    }
+
+    public boolean isUserCreated() {
+        return userTestCaseId != null && !userTestCaseId.isBlank();
+    }
+
+    public List<ApiCleanupRequest> getCleanupRequests() {
+        return cleanupRequests;
     }
 }

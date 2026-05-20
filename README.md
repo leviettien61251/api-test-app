@@ -60,18 +60,21 @@ controllers/
 pom.xml                          (Added Gson dependency)
 ```
 
-### Documentation (8 files)
+### Documentation (`docs/`)
 
 ```
-├── README.md (this file)
-├── COMPLETION_SUMMARY.md        (Overview & implementation)
-├── QUICK_REFERENCE.md           (Quick lookup guide)
-├── TEST_CASES_DOCUMENTATION.md  (Detailed scenarios)
-├── TEST_EXECUTION_EXAMPLES.md   (Example outputs)
-├── IMPLEMENTATION_SUMMARY.md    (Technical details)
-├── ARCHITECTURE.md              (System design with diagrams)
-├── DEPLOYMENT_CHECKLIST.md      (Testing checklist)
-└── DOCUMENTATION_INDEX.md       (Navigation guide)
+├── README.md                    (this file)
+└── docs/
+    ├── START_HERE.md            (first guided entrypoint)
+    ├── COMPLETION_SUMMARY.md    (overview & implementation)
+    ├── QUICK_REFERENCE.md       (quick lookup guide)
+    ├── TEST_CASES_DOCUMENTATION.md
+    ├── TEST_EXECUTION_EXAMPLES.md
+    ├── IMPLEMENTATION_SUMMARY.md
+    ├── ARCHITECTURE.md
+    ├── DEPLOYMENT_CHECKLIST.md
+    ├── DOCUMENTATION_INDEX.md
+    └── notes/
 ```
 
 ## 🔑 Key Features
@@ -147,20 +150,22 @@ pom.xml                          (Added Gson dependency)
 | Document                        | Purpose                | When to Read                |
 |---------------------------------|------------------------|-----------------------------|
 | **README.md**                   | Quick overview         | First (you're reading it!)  |
-| **COMPLETION_SUMMARY.md**       | Implementation details | Overview of what was built  |
-| **QUICK_REFERENCE.md**          | Quick lookup           | While testing/debugging     |
-| **TEST_CASES_DOCUMENTATION.md** | Detailed test info     | Understanding each scenario |
-| **TEST_EXECUTION_EXAMPLES.md**  | Expected outputs       | Seeing example responses    |
-| **ARCHITECTURE.md**             | System design          | Understanding architecture  |
-| **IMPLEMENTATION_SUMMARY.md**   | Technical details      | Code structure and stack    |
-| **DEPLOYMENT_CHECKLIST.md**     | Testing checklist      | Pre-deployment verification |
-| **DOCUMENTATION_INDEX.md**      | Navigation             | Finding specific info       |
+| `docs/START_HERE.md`            | Guided entrypoint      | When onboarding             |
+| `docs/COMPLETION_SUMMARY.md`    | Implementation details | Overview of what was built  |
+| `docs/QUICK_REFERENCE.md`       | Quick lookup           | While testing/debugging     |
+| `docs/TEST_CASES_DOCUMENTATION.md` | Detailed test info  | Understanding each scenario |
+| `docs/TEST_EXECUTION_EXAMPLES.md`  | Expected outputs    | Seeing example responses    |
+| `docs/ARCHITECTURE.md`          | System design          | Understanding architecture  |
+| `docs/IMPLEMENTATION_SUMMARY.md`| Technical details      | Code structure and stack    |
+| `docs/DEPLOYMENT_CHECKLIST.md`  | Testing checklist      | Pre-deployment verification |
+| `docs/DOCUMENTATION_INDEX.md`   | Navigation             | Finding specific info       |
 
 ### Best Reading Order
 
 1. **README.md** (this file) - 5 minutes
-2. **COMPLETION_SUMMARY.md** - 10 minutes
-3. **QUICK_REFERENCE.md** - 5 minutes
+2. **docs/START_HERE.md** - 5 minutes
+3. **docs/COMPLETION_SUMMARY.md** - 10 minutes
+4. **docs/QUICK_REFERENCE.md** - 5 minutes
 4. Other docs as needed for specific questions
 
 ## 🎓 Usage Examples

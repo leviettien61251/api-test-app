@@ -1,5 +1,7 @@
 # 🚀 START HERE - Signup API Test Cases
 
+> This guide now lives under `docs/` as part of the repo cleanup.
+
 ## ⭐ Quick Overview
 
 Your **7-test signup API test system** is complete and ready to use!

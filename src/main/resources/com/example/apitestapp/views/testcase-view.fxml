@@ -12,6 +12,26 @@
         <VBox spacing="10.0" styleClass="left-panel">
             <children>
                 <Label styleClass="header-text" text="COLLECTIONS"/>
+                <VBox spacing="6.0">
+                    <children>
+                        <Button fx:id="addTestSuiteBtn" maxWidth="Infinity" onAction="#handleAddTestSuite"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white;"
+                                text="+ Thêm testsuit"/>
+                        <HBox spacing="6.0">
+                            <children>
+                                <Button fx:id="editTestSuiteBtn" maxWidth="Infinity" onAction="#handleEditTestSuite"
+                                        style="-fx-background-color: #2980b9; -fx-text-fill: white;"
+                                        text="Sửa" HBox.hgrow="ALWAYS"/>
+                                <Button fx:id="deleteTestSuiteBtn" maxWidth="Infinity" onAction="#handleDeleteTestSuite"
+                                        style="-fx-background-color: #e74c3c; -fx-text-fill: white;"
+                                        text="Xóa" HBox.hgrow="ALWAYS"/>
+                            </children>
+                        </HBox>
+                        <Button fx:id="editCleanupDataBtn" maxWidth="Infinity" onAction="#handleEditCleanupData"
+                                style="-fx-background-color: #8e44ad; -fx-text-fill: white;"
+                                text="Cleanup data"/>
+                    </children>
+                </VBox>
                 <TreeView fx:id="testSuiteTree" showRoot="false" VBox.vgrow="ALWAYS"/>
             </children>
             <padding>
@@ -61,8 +81,17 @@
                                     <Button fx:id="runSelectedBtn" onAction="#handleRunSelected"
                                             style="-fx-background-color: #2980b9; -fx-text-fill: white;"
                                             text="▶ Run Selected"/>
-                                    <Button fx:id="stopBtn" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"
+                                    <Button fx:id="stopBtn" onAction="#handleStop" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"
                                             text="■ Stop"/>
+                                    <Button fx:id="addTestCaseBtn" onAction="#handleAddTestCase"
+                                            style="-fx-background-color: #8e44ad; -fx-text-fill: white;"
+                                            text="+ Thêm testcase"/>
+                                    <Button fx:id="editTestCaseBtn" onAction="#handleEditTestCase"
+                                            style="-fx-background-color: #7f8c8d; -fx-text-fill: white;"
+                                            text="Sửa testcase"/>
+                                    <Button fx:id="deleteTestCaseBtn" onAction="#handleDeleteTestCase"
+                                            style="-fx-background-color: #c0392b; -fx-text-fill: white;"
+                                            text="Xóa testcase"/>
                                     <ComboBox fx:id="executionModeCombo" prefWidth="150.0" promptText="Lần lượt"/>
                                     <ComboBox fx:id="stopConditionCombo" prefWidth="180.0" promptText="Chế độ dừng"/>
                                 </HBox>

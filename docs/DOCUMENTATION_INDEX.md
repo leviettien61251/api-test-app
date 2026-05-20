@@ -1,5 +1,7 @@
 # Signup Test Cases - Complete Documentation Index
 
+> All supporting documentation now lives under `docs/`.
+
 ## 📚 Documentation Files
 
 ### 1. **COMPLETION_SUMMARY.md** ⭐ START HERE

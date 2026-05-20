@@ -7,6 +7,8 @@ import com.example.apitestapp.config.SelectedRunContext;
 import com.example.apitestapp.models.TestCaseRowModel;
 import com.example.apitestapp.models.TestResult;
 import com.example.apitestapp.models.TestRun;
+import com.example.apitestapp.models.UserTestCase;
+import com.example.apitestapp.models.UserTestSuite;
 import com.example.apitestapp.services.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -24,9 +26,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class TestcaseController implements Initializable {
@@ -47,7 +51,9 @@ public class TestcaseController implements Initializable {
     @FXML
     private Label summaryText;
     @FXML
-    private Button runAllBtn, stopBtn, saveReportBtn;
+    private Button runAllBtn, stopBtn, saveReportBtn, addTestCaseBtn, editTestCaseBtn, deleteTestCaseBtn;
+    @FXML
+    private Button addTestSuiteBtn, editTestSuiteBtn, deleteTestSuiteBtn, editCleanupDataBtn;
     @FXML
     private TextField baseUrlField; // Thanh URL
     @FXML
@@ -56,8 +62,12 @@ public class TestcaseController implements Initializable {
     private TextArea bodyTextArea;   // Khung JSON Body
     private volatile boolean isRunning = false;
     private ApiTestService apiTestService;
+    private UserTestSuiteService userTestSuiteService;
+    private UserTestCaseService userTestCaseService;
     private ApiScenarioRegistry scenarioRegistry;
     private ApiScenarioDefinition currentDefinition;
+    private UserTestSuite currentUserSuite;
+    private final Map<TreeItem<String>, UserTestSuite> userSuiteNodes = new IdentityHashMap<>();
     private final RunStorage runStorage = RunStorage.getInstance();
     private final List<TestResult> lastRunResults = new ArrayList<>();
     private int lastPassCount;
@@ -71,6 +81,8 @@ public class TestcaseController implements Initializable {
         setupComboBoxes();
 
         apiTestService = new ApiTestService();
+        userTestSuiteService = new UserTestSuiteService();
+        userTestCaseService = new UserTestCaseService();
         scenarioRegistry = new ApiScenarioRegistry();
         initTreeView();
 
@@ -105,6 +117,7 @@ public class TestcaseController implements Initializable {
     }
 
     private void initTreeView() {
+        userSuiteNodes.clear();
         List<ApiScenarioDefinition> definitions = scenarioRegistry.getDefinitions();
         String rootName = definitions.isEmpty() ? "Collections" : definitions.get(0).getCollectionName();
         TreeItem<String> root = new TreeItem<>(rootName);
@@ -122,15 +135,43 @@ public class TestcaseController implements Initializable {
             moduleNode.getChildren().add(new TreeItem<>(definition.getApiLabel()));
         }
 
+        appendUserSuites(root);
+
         testSuiteTree.setRoot(root);
         root.setExpanded(true);
         moduleNodes.values().forEach(node -> node.setExpanded(true));
 
         testSuiteTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue.isLeaf()) {
-                handleApiSelection(newValue.getValue());
+                UserTestSuite suite = userSuiteNodes.get(newValue);
+                if (suite != null) {
+                    loadUserSuite(suite);
+                } else {
+                    handleApiSelection(newValue.getValue());
+                }
             }
         });
+    }
+
+    private void appendUserSuites(TreeItem<String> root) {
+        try {
+            List<UserTestSuite> suites = userTestSuiteService.findForCurrentUser();
+            if (suites.isEmpty()) {
+                return;
+            }
+
+            TreeItem<String> userRoot = new TreeItem<>("User Test Suites");
+            root.getChildren().add(userRoot);
+            userRoot.setExpanded(true);
+
+            for (UserTestSuite suite : suites) {
+                TreeItem<String> item = new TreeItem<>(suite.getApiLabel());
+                userRoot.getChildren().add(item);
+                userSuiteNodes.put(item, suite);
+            }
+        } catch (Exception e) {
+            resultLogList.getItems().add("Không nạp được testsuit user từ database: " + e.getMessage());
+        }
     }
 
     /**
@@ -153,17 +194,18 @@ public class TestcaseController implements Initializable {
 
     private void loadScenarioDefinition(ApiScenarioDefinition definition) {
         currentDefinition = definition;
+        currentUserSuite = null;
         List<ApiTestScenario> scenarios = definition.getScenarios();
+        baseUrlField.setText("http://localhost:8080" + definition.getEndpoint());
+        baseUrlField.setEditable(true);
+
         if (scenarios.isEmpty()) {
-            baseUrlField.setText("");
             headerTextArea.setText("");
             bodyTextArea.setText("");
             resultLogList.getItems().add("⚠️ Hệ thống chưa nạp kịch bản cho: " + definition.getApiLabel());
+            appendUserTestCases(definition);
             return;
         }
-
-        baseUrlField.setText("http://localhost:8080" + definition.getEndpoint());
-        baseUrlField.setEditable(true);
 
         String apiMethod = resolveApiMethod(definition);
         for (ApiTestScenario scenario : scenarios) {
@@ -191,7 +233,84 @@ public class TestcaseController implements Initializable {
         bodyTextArea.setText(sampleRequestBody);
         bodyTextArea.setEditable(true);
         bodyTextArea.setWrapText(true);
+        appendUserTestCases(definition);
         testCaseTable.getSelectionModel().selectFirst();
+    }
+
+    private void loadUserSuite(UserTestSuite suite) {
+        currentUserSuite = suite;
+        currentDefinition = ApiScenarioDefinition.builder()
+                .collectionName("User Test Suites")
+                .moduleName("User Test Suites")
+                .apiLabel(suite.getApiLabel())
+                .endpoint(suite.getEndpoint())
+                .sampleRequestBody("")
+                .scenarios(List.of())
+                .cleanupRequests(suite.getCleanupRequests())
+                .build();
+
+        testData.clear();
+        resultLogList.getItems().clear();
+        summaryText.setText("Chưa có dữ liệu thực thi");
+        baseUrlField.setText(suite.getEndpoint());
+        baseUrlField.setEditable(true);
+        headerTextArea.setText("");
+        bodyTextArea.setText("");
+
+        try {
+            List<UserTestCase> testCases = userTestCaseService.findBySuite(suite.getId());
+            for (UserTestCase testCase : testCases) {
+                testData.add(toRowModel(testCase));
+            }
+            resultLogList.getItems().add("Đã nạp testsuit user: " + suite.getName());
+        } catch (Exception e) {
+            resultLogList.getItems().add("Không nạp được testcase của testsuit: " + e.getMessage());
+        }
+
+        if (!testData.isEmpty()) {
+            testCaseTable.getSelectionModel().selectFirst();
+        }
+    }
+
+    private void appendUserTestCases(ApiScenarioDefinition definition) {
+        try {
+            List<UserTestCase> userTestCases = userTestCaseService.findForCurrentUserAndApi(definition.getApiLabel());
+            for (UserTestCase testCase : userTestCases) {
+                testData.add(toRowModel(testCase));
+            }
+            if (!userTestCases.isEmpty()) {
+                resultLogList.getItems().add("Đã nạp " + userTestCases.size() + " testcase user từ database.");
+            }
+        } catch (Exception e) {
+            resultLogList.getItems().add("Không nạp được testcase user từ database: " + e.getMessage());
+        }
+    }
+
+    private TestCaseRowModel toRowModel(UserTestCase testCase) {
+        ApiTestScenario scenario = ApiTestScenario.builder()
+                .scenario(testCase.getName())
+                .description(testCase.getDescription())
+                .setupRequests(testCase.getSetupRequests())
+                .headers(testCase.getRequestHeaders())
+                .queryParams(testCase.getQueryParams())
+                .requestBody(testCase.getRequestBody())
+                .expectedCode(String.valueOf(testCase.getExpectedStatusCode()))
+                .expectedStatus("User testcase")
+                .build();
+
+        String input = buildTestInput(testCase.getRequestBody(), testCase.getRequestHeaders(), testCase.getQueryParams());
+        return new TestCaseRowModel(
+                "[User] " + testCase.getName(),
+                input,
+                String.valueOf(testCase.getExpectedStatusCode()),
+                testCase.getEndpoint(),
+                testCase.getMethod(),
+                testCase.getRequestHeaders(),
+                testCase.getRequestBody(),
+                scenario,
+                testCase.getId(),
+                testCase.getCleanupRequests()
+        );
     }
 
     private void showRequestBody(TestCaseRowModel testCase) {
@@ -214,6 +333,222 @@ public class TestcaseController implements Initializable {
     private void handleStop() {
         isRunning = false;
         resultLogList.getItems().add("⏹ Đã dừng thực thi");
+    }
+
+    @FXML
+    private void handleAddTestSuite() {
+        try {
+            Optional<String> name = promptText("Thêm testsuit", "Tên testsuit", "Nhập tên testsuit:");
+            if (name.isEmpty()) return;
+            Optional<String> method = promptText("Thêm testsuit", "Method", "Nhập method:", "POST");
+            if (method.isEmpty()) return;
+            Optional<String> endpoint = promptText("Thêm testsuit", "Endpoint hoặc URL", "Nhập endpoint hoặc URL:", "http://localhost:8080/api");
+            if (endpoint.isEmpty()) return;
+
+            UserTestSuite suite = userTestSuiteService.create(name.get(), method.get(), endpoint.get(), "");
+            initTreeView();
+            selectUserSuite(suite.getId());
+            showInfo("Đã thêm testsuit", "Testsuit đã được lưu vào database.");
+        } catch (Exception e) {
+            showInfo("Không thêm được testsuit", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleEditTestSuite() {
+        if (currentUserSuite == null) {
+            showInfo("Không thể sửa", "Chỉ có thể sửa testsuit do user tạo.");
+            return;
+        }
+
+        try {
+            Optional<String> name = promptText("Sửa testsuit", "Tên testsuit", "Nhập tên testsuit:", currentUserSuite.getName());
+            if (name.isEmpty()) return;
+            Optional<String> method = promptText("Sửa testsuit", "Method", "Nhập method:", currentUserSuite.getMethod());
+            if (method.isEmpty()) return;
+            Optional<String> endpoint = promptText("Sửa testsuit", "Endpoint hoặc URL", "Nhập endpoint hoặc URL:", currentUserSuite.getEndpoint());
+            if (endpoint.isEmpty()) return;
+
+            UserTestSuite updated = userTestSuiteService.update(currentUserSuite.getId(), name.get(), method.get(), endpoint.get(), currentUserSuite.getDescription());
+            initTreeView();
+            selectUserSuite(updated.getId());
+            showInfo("Đã sửa testsuit", "Testsuit đã được cập nhật.");
+        } catch (Exception e) {
+            showInfo("Không sửa được testsuit", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleDeleteTestSuite() {
+        if (currentUserSuite == null) {
+            showInfo("Không thể xóa", "Chỉ có thể xóa testsuit do user tạo.");
+            return;
+        }
+        if (!confirm("Xóa testsuit", "Bạn chắc chắn muốn xóa testsuit này?")) {
+            return;
+        }
+
+        try {
+            userTestSuiteService.delete(currentUserSuite.getId());
+            currentUserSuite = null;
+            currentDefinition = null;
+            testData.clear();
+            baseUrlField.setText("");
+            headerTextArea.setText("");
+            bodyTextArea.setText("");
+            initTreeView();
+            showInfo("Đã xóa testsuit", "Testsuit đã được xóa khỏi danh sách.");
+        } catch (Exception e) {
+            showInfo("Không xóa được testsuit", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleEditCleanupData() {
+        if (currentUserSuite == null) {
+            showInfo("Không thể cấu hình cleanup", "Hãy chọn một testsuit do user tạo trước.");
+            return;
+        }
+
+        try {
+            List<ApiCleanupRequest> cleanupRequests = userTestCaseService.parseCleanupRequests(promptHookJson(
+                    "Cleanup data",
+                    "Cleanup requests JSON array - chạy một lần sau khi kết thúc lượt chạy testcase",
+                    currentUserSuite.getCleanupRequests().isEmpty()
+                            ? sampleCleanupRequestsJson()
+                            : userTestCaseService.toJson(currentUserSuite.getCleanupRequests())
+            ));
+            currentUserSuite = userTestSuiteService.updateCleanupRequests(currentUserSuite.getId(), cleanupRequests);
+            loadUserSuite(currentUserSuite);
+            showInfo("Đã lưu cleanup data", "Cleanup data sẽ chạy sau khi kết thúc lượt chạy testcase.");
+        } catch (Exception e) {
+            showInfo("Không lưu được cleanup data", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleAddTestCase() {
+        if (currentDefinition == null) {
+            showInfo("Chưa chọn API", "Hãy chọn một API trong cây Collections trước khi thêm testcase.");
+            return;
+        }
+
+        try {
+            Optional<String> name = promptText("Thêm testcase", "Tên testcase", "Nhập tên testcase:");
+            if (name.isEmpty()) {
+                return;
+            }
+
+            Optional<String> expectedStatus = promptText(
+                    "Thêm testcase",
+                    "Expected status code",
+                    "Nhập HTTP status mong đợi:",
+                    defaultExpectedStatus()
+            );
+            if (expectedStatus.isEmpty()) {
+                return;
+            }
+
+            int statusCode = Integer.parseInt(expectedStatus.get().trim());
+            List<ApiSetupRequest> setupRequests = userTestCaseService.parseSetupRequests(promptHookJson(
+                    "Dữ liệu mồi",
+                    "Setup requests JSON array",
+                    sampleSetupRequestsJson()
+            ));
+
+            UserTestCase saved = userTestCaseService.create(
+                    currentDefinition.getApiLabel(),
+                    currentUserSuite == null ? null : currentUserSuite.getId(),
+                    name.get(),
+                    "",
+                    resolveApiMethod(currentDefinition),
+                    resolveEndpointFromUrl(),
+                    parseHeaders(headerTextArea.getText()),
+                    Map.of(),
+                    bodyTextArea.getText(),
+                    setupRequests,
+                    List.of(),
+                    statusCode
+            );
+
+            TestCaseRowModel row = toRowModel(saved);
+            testData.add(row);
+            testCaseTable.getSelectionModel().select(row);
+            resultLogList.getItems().add("Đã lưu testcase user vào database: " + saved.getName());
+            showInfo("Đã thêm testcase", "Testcase đã được lưu vào database.");
+        } catch (NumberFormatException e) {
+            showInfo("Status code không hợp lệ", "Expected status code phải là số, ví dụ: 200 hoặc 400.");
+        } catch (Exception e) {
+            showInfo("Không thêm được testcase", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleEditTestCase() {
+        TestCaseRowModel selected = testCaseTable.getSelectionModel().getSelectedItem();
+        if (selected == null || !selected.isUserCreated()) {
+            showInfo("Không thể sửa", "Chỉ có thể sửa testcase do user tạo.");
+            return;
+        }
+
+        try {
+            Optional<String> name = promptText("Sửa testcase", "Tên testcase", "Nhập tên testcase:", stripUserPrefix(selected.getName()));
+            if (name.isEmpty()) return;
+            Optional<String> expectedStatus = promptText(
+                    "Sửa testcase",
+                    "Expected status code",
+                    "Nhập HTTP status mong đợi:",
+                    selected.getExpected()
+            );
+            if (expectedStatus.isEmpty()) return;
+
+            int statusCode = Integer.parseInt(expectedStatus.get().trim());
+            List<ApiSetupRequest> setupRequests = userTestCaseService.parseSetupRequests(promptHookJson(
+                    "Dữ liệu mồi",
+                    "Setup requests JSON array",
+                    userTestCaseService.toJson(selected.getScenario() == null ? List.of() : selected.getScenario().getSetupRequests())
+            ));
+
+            userTestCaseService.update(
+                    selected.getUserTestCaseId(),
+                    name.get(),
+                    "",
+                    selected.getMethod(),
+                    resolveEndpointFromUrl(),
+                    parseHeaders(headerTextArea.getText()),
+                    Map.of(),
+                    bodyTextArea.getText(),
+                    setupRequests,
+                    List.of(),
+                    statusCode
+            );
+            reloadCurrentSelection();
+            showInfo("Đã sửa testcase", "Testcase đã được cập nhật.");
+        } catch (NumberFormatException e) {
+            showInfo("Status code không hợp lệ", "Expected status code phải là số, ví dụ: 0, 200 hoặc 9999.");
+        } catch (Exception e) {
+            showInfo("Không sửa được testcase", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleDeleteTestCase() {
+        TestCaseRowModel selected = testCaseTable.getSelectionModel().getSelectedItem();
+        if (selected == null || !selected.isUserCreated()) {
+            showInfo("Không thể xóa", "Chỉ có thể xóa testcase do user tạo.");
+            return;
+        }
+        if (!confirm("Xóa testcase", "Bạn chắc chắn muốn xóa testcase này?")) {
+            return;
+        }
+
+        try {
+            userTestCaseService.delete(selected.getUserTestCaseId());
+            testData.remove(selected);
+            showInfo("Đã xóa testcase", "Testcase đã được xóa khỏi danh sách.");
+        } catch (Exception e) {
+            showInfo("Không xóa được testcase", e.getMessage());
+        }
     }
 
     @FXML
@@ -434,6 +769,99 @@ public class TestcaseController implements Initializable {
         alert.showAndWait();
     }
 
+    private Optional<String> promptText(String title, String header, String content) {
+        return promptText(title, header, content, "");
+    }
+
+    private Optional<String> promptText(String title, String header, String content, String defaultValue) {
+        TextInputDialog dialog = new TextInputDialog(defaultValue == null ? "" : defaultValue);
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.setContentText(content);
+        return dialog.showAndWait().map(String::trim).filter(value -> !value.isBlank());
+    }
+
+    private String promptHookJson(String title, String header, String defaultValue) {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        TextArea textArea = new TextArea(defaultValue == null ? "" : defaultValue);
+        textArea.setPrefWidth(700);
+        textArea.setPrefHeight(320);
+        textArea.setWrapText(false);
+        textArea.setStyle("-fx-font-family: 'Courier New';");
+        dialog.getDialogPane().setContent(textArea);
+        dialog.setResultConverter(button -> button == ButtonType.OK ? textArea.getText() : "");
+        return dialog.showAndWait().orElse("");
+    }
+
+    private String sampleSetupRequestsJson() {
+        return """
+                [
+                  {
+                    "name": "Thêm dữ liệu mồi",
+                    "method": "POST",
+                    "endpoint": "/api/v1/insert-map-test",
+                    "requestBody": "{\\n  \\"buildingCode\\": \\"B-TEST-001\\",\\n  \\"buildingName\\": \\"Building Test\\",\\n  \\"imageUrl\\": \\"https://example.com/test.jpg\\",\\n  \\"scaleX\\": 10,\\n  \\"scaleY\\": 10\\n}",
+                    "expectedCodes": ["1000", "200", "201"],
+                    "required": true,
+                    "responseVariables": [
+                      { "name": "mapId", "jsonPath": "data.0.id" }
+                    ]
+                  }
+                ]
+                """;
+    }
+
+    private String sampleCleanupRequestsJson() {
+        return """
+                [
+                  {
+                    "name": "Dọn dữ liệu test",
+                    "method": "DELETE",
+                    "endpoint": "/api/v1/map/clean",
+                    "requestBody": "",
+                    "expectedCodes": ["1000", "200", "204"],
+                    "required": true
+                  }
+                ]
+                """;
+    }
+
+    private boolean confirm(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        return alert.showAndWait().filter(button -> button == ButtonType.OK).isPresent();
+    }
+
+    private void reloadCurrentSelection() {
+        if (currentUserSuite != null) {
+            loadUserSuite(currentUserSuite);
+        } else if (currentDefinition != null) {
+            loadScenarioDefinition(currentDefinition);
+        }
+    }
+
+    private void selectUserSuite(String suiteId) {
+        for (Map.Entry<TreeItem<String>, UserTestSuite> entry : userSuiteNodes.entrySet()) {
+            if (entry.getValue().getId().equals(suiteId)) {
+                testSuiteTree.getSelectionModel().select(entry.getKey());
+                return;
+            }
+        }
+    }
+
+    private String stripUserPrefix(String name) {
+        if (name == null) {
+            return "";
+        }
+        return name.startsWith("[User] ") ? name.substring("[User] ".length()) : name;
+    }
+
     private static final class CaseOutcome {
         final boolean passed;
         final String expectedCodeText;
@@ -579,10 +1007,49 @@ public class TestcaseController implements Initializable {
         if (hasQueryParams) {
             inputParts.add("Query Params: " + queryParams);
         }
-        if (hasRequestBody) {ApiSetupRequestA
+        if (hasRequestBody) {
             inputParts.add(requestBody);
         }
         return String.join("\n", inputParts);
+    }
+
+    private Map<String, String> parseHeaders(String rawHeaders) {
+        Map<String, String> headers = new LinkedHashMap<>();
+        if (rawHeaders == null || rawHeaders.isBlank()) {
+            return headers;
+        }
+
+        for (String line : rawHeaders.split("\\R")) {
+            if (line == null || line.isBlank()) {
+                continue;
+            }
+            int separator = line.indexOf(':');
+            if (separator <= 0) {
+                throw new IllegalArgumentException("Header không hợp lệ: " + line + ". Định dạng đúng: Key: Value");
+            }
+            String key = line.substring(0, separator).trim();
+            String value = line.substring(separator + 1).trim();
+            if (!key.isBlank()) {
+                headers.put(key, value);
+            }
+        }
+        return headers;
+    }
+
+    private String resolveEndpointFromUrl() {
+        String targetUrl = baseUrlField.getText() == null ? "" : baseUrlField.getText().trim();
+        if (targetUrl.isBlank()) {
+            return currentDefinition.getEndpoint();
+        }
+        return targetUrl;
+    }
+
+    private String defaultExpectedStatus() {
+        TestCaseRowModel selected = testCaseTable.getSelectionModel().getSelectedItem();
+        if (selected != null && selected.getExpected() != null && selected.getExpected().matches("\\d{3}")) {
+            return selected.getExpected();
+        }
+        return "200";
     }
 
     private String formatHeaders(Map<String, String> headers) {

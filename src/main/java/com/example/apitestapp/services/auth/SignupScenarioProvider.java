@@ -1,4 +1,4 @@
-package com.example.apitestapp.services.AuthScenarios;
+package com.example.apitestapp.services.auth;
 
 import com.example.apitestapp.services.*;
 
