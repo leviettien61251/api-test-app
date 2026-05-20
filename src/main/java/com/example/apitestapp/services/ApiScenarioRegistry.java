@@ -11,6 +11,7 @@ import com.example.apitestapp.services.MapScenarios.MapTestScenarioProvider;
 import com.example.apitestapp.services.MapScenarios.NodeTestScenarioProvider;
 import com.example.apitestapp.services.MapScenarios.StepTestScenarioProvider;
 import com.example.apitestapp.services.UserScenarios.SetUserInfoScenarioProvider;
+import com.example.apitestapp.services.UserScenarios.TestScenarioProvider;
 // import com.example.apitestapp.services.MapScenarios.GetFloorScenarioProvider;
 
 import java.util.List;
@@ -32,7 +33,8 @@ public class ApiScenarioRegistry {
                 new StepTestScenarioProvider(),
                 new GetEdgesScenarioProvider(),
                 new GetNodesTestScenarioProvider(),
-                new GetFloorScenarioProvider()
+                new GetFloorScenarioProvider(),
+                new TestScenarioProvider()
 
         ));
     }
