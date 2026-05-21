@@ -127,7 +127,11 @@ public class UserTestCaseService {
         if (requestBody == null || requestBody.isBlank()) {
             return;
         }
-        JsonParser.parseString(requestBody);
+
+        // Setup/test bodies may reference values captured from earlier setup responses.
+        // Replace those tokens only for syntax validation; runtime execution keeps the original body.
+        String validationBody = requestBody.replaceAll("\\$\\{[A-Za-z0-9_]+}", "0");
+        JsonParser.parseString(validationBody);
     }
 
     private String normalizeBlank(String value) {

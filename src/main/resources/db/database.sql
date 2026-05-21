@@ -73,9 +73,9 @@ CREATE TABLE client_machines
     id           VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id      VARCHAR(255) NOT NULL REFERENCES users (id),
     machine_name VARCHAR(255) NOT NULL,
-    os           VARCHAR(100) NOT NULL, -- Windows, macOS, Linux
-    ip_address   VARCHAR(45),           -- IPv4 hoặc IPv6
-    hostname     VARCHAR(255),          -- Tên máy trong mạng
+    os           VARCHAR(100) NOT NULL,
+    ip_address   VARCHAR(45),
+    hostname     VARCHAR(255),
     is_active    BOOLEAN      NOT NULL    DEFAULT TRUE,
     created_at   TIMESTAMP    NOT NULL    DEFAULT NOW()
 );
@@ -209,7 +209,7 @@ CREATE TABLE user_test_cases
     endpoint             VARCHAR(2048) NOT NULL,
     request_headers      JSONB NOT NULL DEFAULT '{}',
     query_params         JSONB NOT NULL DEFAULT '{}',
-    request_body         JSONB,
+    request_body         TEXT,
     setup_requests       JSONB NOT NULL DEFAULT '[]',
     cleanup_requests     JSONB NOT NULL DEFAULT '[]',
     expected_status_code INTEGER NOT NULL,
@@ -217,20 +217,6 @@ CREATE TABLE user_test_cases
     created_at           TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at           TIMESTAMP
 );
---
--- CREATE TABLE environment_variables
--- (
---     id            SERIAL PRIMARY KEY,
---     collection_id INTEGER      NOT NULL REFERENCES collections (id),
---     key           VARCHAR(255) NOT NULL,
---     value         TEXT         NOT NULL,
---     is_secret     BOOLEAN      NOT NULL DEFAULT FALSE,
---     description   TEXT,
---     created_at    TIMESTAMP    NOT NULL DEFAULT NOW(),
---     updated_at    TIMESTAMP,
---
---     CONSTRAINT uq_env_vars_collection_key UNIQUE (collection_id, key)
--- );
 
 -- ============================================
 -- PHẦN 6: LỊCH SỬ CHẠY TEST

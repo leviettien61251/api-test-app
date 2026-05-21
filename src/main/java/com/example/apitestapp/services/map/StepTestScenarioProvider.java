@@ -144,13 +144,13 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                             "mapId": ${mapId},
                                             "startNodeId": ${startNodeId},
                                             "endNodeId": ${endNodeId},
-                                            "distance": ,
+                                            "distance": null,
                                             "direction": "up",
                                             "instruction": "up up up"
                                         }
                                         """
                         )
-                        .expectedCode("5000")
+                        .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
                 ApiTestScenario.builder()

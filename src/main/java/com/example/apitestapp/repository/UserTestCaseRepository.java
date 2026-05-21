@@ -30,17 +30,13 @@ public class UserTestCaseRepository {
 
     private final Gson gson = new Gson();
 
-    public UserTestCaseRepository() {
-        ensureTable();
-    }
-
     public UserTestCase save(UserTestCase testCase) throws SQLException {
         String sql = """
                 INSERT INTO user_test_cases (
                     user_id, suite_id, owner_name, api_label, name, description, method, endpoint,
                     request_headers, query_params, request_body, setup_requests, cleanup_requests, expected_status_code
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::jsonb, ?::jsonb, ?::jsonb, ?::jsonb, ?::jsonb, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::jsonb, ?::jsonb, ?, ?::jsonb, ?::jsonb, ?)
                 RETURNING *
                 """;
 
@@ -75,7 +71,7 @@ public class UserTestCaseRepository {
         String sql = """
                 UPDATE user_test_cases
                 SET name = ?, description = ?, method = ?, endpoint = ?,
-                    request_headers = ?::jsonb, query_params = ?::jsonb, request_body = ?::jsonb,
+                    request_headers = ?::jsonb, query_params = ?::jsonb, request_body = ?,
                     setup_requests = ?::jsonb, cleanup_requests = ?::jsonb,
                     expected_status_code = ?, updated_at = NOW()
                 WHERE id = ?
@@ -168,59 +164,6 @@ public class UserTestCaseRepository {
         }
 
         return testCases;
-    }
-
-    private void ensureTable() {
-        String extensionSql = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"";
-        String sql = """
-                CREATE TABLE IF NOT EXISTS user_test_cases
-                (
-                    id                   VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
-                    user_id              VARCHAR(255) REFERENCES users (id),
-                    suite_id             VARCHAR(255) REFERENCES user_test_suites (id),
-                    owner_name           VARCHAR(255) NOT NULL,
-                    api_label            VARCHAR(255) NOT NULL,
-                    name                 VARCHAR(255) NOT NULL,
-                    description          TEXT,
-                    method               VARCHAR(10) NOT NULL,
-                    endpoint             VARCHAR(2048) NOT NULL,
-                    request_headers      JSONB NOT NULL DEFAULT '{}',
-                    query_params         JSONB NOT NULL DEFAULT '{}',
-                    request_body         JSONB,
-                    setup_requests       JSONB NOT NULL DEFAULT '[]',
-                    cleanup_requests     JSONB NOT NULL DEFAULT '[]',
-                    expected_status_code INTEGER NOT NULL,
-                    is_active            BOOLEAN NOT NULL DEFAULT TRUE,
-                    created_at           TIMESTAMP NOT NULL DEFAULT NOW(),
-                    updated_at           TIMESTAMP
-                )
-                """;
-
-        try (Connection c = ConnectionManager.getInstance().getConnection();
-             PreparedStatement extensionPs = c.prepareStatement(extensionSql);
-             PreparedStatement tablePs = c.prepareStatement(sql)) {
-            extensionPs.executeUpdate();
-            tablePs.executeUpdate();
-            ensureSuiteIdColumn(c);
-            ensureJsonColumn(c, "setup_requests", "'[]'");
-            ensureJsonColumn(c, "cleanup_requests", "'[]'");
-        } catch (SQLException e) {
-            System.err.println("Không thể khởi tạo bảng user_test_cases: " + e.getMessage());
-        }
-    }
-
-    private void ensureSuiteIdColumn(Connection c) throws SQLException {
-        String sql = "ALTER TABLE user_test_cases ADD COLUMN IF NOT EXISTS suite_id VARCHAR(255) REFERENCES user_test_suites (id)";
-        try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.executeUpdate();
-        }
-    }
-
-    private void ensureJsonColumn(Connection c, String column, String defaultValue) throws SQLException {
-        String sql = "ALTER TABLE user_test_cases ADD COLUMN IF NOT EXISTS " + column + " JSONB NOT NULL DEFAULT " + defaultValue;
-        try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.executeUpdate();
-        }
     }
 
     private UserTestCase mapRow(ResultSet rs) throws SQLException {
