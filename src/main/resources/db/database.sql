@@ -1,11 +1,14 @@
+insert into users(role_id, full_name, phone, email, password)
+values
+    ('2', 'TESTER 3', '0980000004', 'b', 'b'),
+    ('2', 'TESTER 2', '0980000003', 'a', 'a'),
+       ('2', 'TESTER 3', '0980000004', 'b', 'b'),
+       ('2', 'TESTER 1', '0980000001', 'tester1@tester.com', 'tester1@tester.com'),
+       ('1', 'ADMIN 1', '0980000002', 'admin1@tester.com', 'SuperSecurePassword123@');
+
 INSERT INTO roles(name, description)
 values ('admin', 'this is admin role'),
        ('tester', 'this is tester role');
-
-insert into users(role_id, full_name, phone, email, password)
-values ('2', 'TESTER 2', '0980000003', 'a', 'a'),
-       ('2', 'TESTER 1', '0980000001', 'tester1@tester.com', 'tester1@tester.com'),
-       ('1', 'ADMIN 1', '0980000002', 'admin1@tester.com', 'SuperSecurePassword123@');
 
 insert into client_machines(user_id, machine_name, os_name, os_version, ip_address, cpu_info, ram_info, hostname)
 values (?, ?, ?, ?, ?, ?, ?, ?);
@@ -16,6 +19,8 @@ SELECT *
 FROM users;
 select *
 from client_machines;
+select *
+from user_test_suites;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ============================================
@@ -181,17 +186,17 @@ CREATE TABLE test_data_sets
 
 CREATE TABLE user_test_suites
 (
-    id          VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id     VARCHAR(255) REFERENCES users (id),
-    owner_name  VARCHAR(255) NOT NULL,
-    name        VARCHAR(255) NOT NULL,
-    method      VARCHAR(10)  NOT NULL,
-    endpoint    VARCHAR(2048) NOT NULL,
-    description TEXT,
-    cleanup_requests JSONB NOT NULL DEFAULT '[]',
-    is_active   BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMP
+    id               VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id          VARCHAR(255) REFERENCES users (id),
+    owner_name       VARCHAR(255)  NOT NULL,
+    name             VARCHAR(255)  NOT NULL,
+    method           VARCHAR(10)   NOT NULL,
+    endpoint         VARCHAR(2048) NOT NULL,
+    description      TEXT,
+    cleanup_requests JSONB         NOT NULL   DEFAULT '[]',
+    is_active        BOOLEAN       NOT NULL   DEFAULT TRUE,
+    created_at       TIMESTAMP     NOT NULL   DEFAULT NOW(),
+    updated_at       TIMESTAMP
 );
 
 -- Testcase do user tạo trực tiếp trong app. Đây là nguồn dữ liệu chính cho testcase động;
@@ -201,20 +206,20 @@ CREATE TABLE user_test_cases
     id                   VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id              VARCHAR(255) REFERENCES users (id),
     suite_id             VARCHAR(255) REFERENCES user_test_suites (id),
-    owner_name           VARCHAR(255) NOT NULL,
-    api_label            VARCHAR(255) NOT NULL,
-    name                 VARCHAR(255) NOT NULL,
+    owner_name           VARCHAR(255)  NOT NULL,
+    api_label            VARCHAR(255)  NOT NULL,
+    name                 VARCHAR(255)  NOT NULL,
     description          TEXT,
-    method               VARCHAR(10)  NOT NULL,
+    method               VARCHAR(10)   NOT NULL,
     endpoint             VARCHAR(2048) NOT NULL,
-    request_headers      JSONB NOT NULL DEFAULT '{}',
-    query_params         JSONB NOT NULL DEFAULT '{}',
+    request_headers      JSONB         NOT NULL   DEFAULT '{}',
+    query_params         JSONB         NOT NULL   DEFAULT '{}',
     request_body         TEXT,
-    setup_requests       JSONB NOT NULL DEFAULT '[]',
-    cleanup_requests     JSONB NOT NULL DEFAULT '[]',
-    expected_status_code INTEGER NOT NULL,
-    is_active            BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at           TIMESTAMP NOT NULL DEFAULT NOW(),
+    setup_requests       JSONB         NOT NULL   DEFAULT '[]',
+    cleanup_requests     JSONB         NOT NULL   DEFAULT '[]',
+    expected_status_code INTEGER       NOT NULL,
+    is_active            BOOLEAN       NOT NULL   DEFAULT TRUE,
+    created_at           TIMESTAMP     NOT NULL   DEFAULT NOW(),
     updated_at           TIMESTAMP
 );
 
