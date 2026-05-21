@@ -36,6 +36,7 @@ import java.util.ResourceBundle;
 public class TestcaseController implements Initializable {
 
     private final ObservableList<TestCaseRowModel> testData = FXCollections.observableArrayList();
+    private String baseUrl;
     @FXML
     private TreeView<String> testSuiteTree;
     @FXML
@@ -79,7 +80,7 @@ public class TestcaseController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setupTable();
         setupComboBoxes();
-
+        baseUrl = AppRunConfig.getBaseUrl();
         apiTestService = new ApiTestService();
         userTestSuiteService = new UserTestSuiteService();
         userTestCaseService = new UserTestCaseService();
@@ -342,7 +343,7 @@ public class TestcaseController implements Initializable {
             if (name.isEmpty()) return;
             Optional<String> method = promptText("Thêm testsuit", "Method", "Nhập method:", "POST");
             if (method.isEmpty()) return;
-            Optional<String> endpoint = promptText("Thêm testsuit", "Endpoint hoặc URL", "Nhập endpoint hoặc URL:", "http://localhost:8080/api");
+            Optional<String> endpoint = promptText("Thêm testsuit", "Endpoint hoặc URL", "Nhập endpoint hoặc URL:", baseUrl );
             if (endpoint.isEmpty()) return;
 
             UserTestSuite suite = userTestSuiteService.create(name.get(), method.get(), endpoint.get(), "");
