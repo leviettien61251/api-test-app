@@ -14,9 +14,10 @@ public class ApiTestScenario {
     private final String requestBody;
     private final String expectedCode;
     private final String expectedStatus;
+    private final List<ApiPayloadAssertion> payloadAssertions;
 
     public ApiTestScenario(String scenario, String description, String requestBody, String expectedCode, String expectedStatus) {
-        this(scenario, description, List.of(), Map.of(), Map.of(), requestBody, expectedCode, expectedStatus);
+        this(scenario, description, List.of(), Map.of(), Map.of(), requestBody, expectedCode, expectedStatus, List.of());
     }
 
     public ApiTestScenario(String scenario,
@@ -25,7 +26,7 @@ public class ApiTestScenario {
                            String requestBody,
                            String expectedCode,
                            String expectedStatus) {
-        this(scenario, description, setupRequests, Map.of(), Map.of(), requestBody, expectedCode, expectedStatus);
+        this(scenario, description, setupRequests, Map.of(), Map.of(), requestBody, expectedCode, expectedStatus, List.of());
     }
 
     public ApiTestScenario(String scenario,
@@ -35,7 +36,7 @@ public class ApiTestScenario {
                            String requestBody,
                            String expectedCode,
                            String expectedStatus) {
-        this(scenario, description, setupRequests, Map.of(), queryParams, requestBody, expectedCode, expectedStatus);
+        this(scenario, description, setupRequests, Map.of(), queryParams, requestBody, expectedCode, expectedStatus, List.of());
     }
 
     public ApiTestScenario(String scenario,
@@ -45,7 +46,8 @@ public class ApiTestScenario {
                            Map<String, String> queryParams,
                            String requestBody,
                            String expectedCode,
-                           String expectedStatus) {
+                           String expectedStatus,
+                           List<ApiPayloadAssertion> payloadAssertions) {
         this.scenario = scenario;
         this.description = description;
         this.setupRequests = setupRequests == null ? List.of() : List.copyOf(setupRequests);
@@ -54,6 +56,7 @@ public class ApiTestScenario {
         this.requestBody = requestBody;
         this.expectedCode = expectedCode;
         this.expectedStatus = expectedStatus;
+        this.payloadAssertions = payloadAssertions == null ? List.of() : List.copyOf(payloadAssertions);
     }
 
     public String getScenario() {
@@ -88,6 +91,10 @@ public class ApiTestScenario {
         return expectedStatus;
     }
 
+    public List<ApiPayloadAssertion> getPayloadAssertions() {
+        return payloadAssertions;
+    }
+
     public String getDisplayName() {
         if (description == null || description.isBlank()) {
             return scenario;
@@ -108,6 +115,7 @@ public class ApiTestScenario {
         private String requestBody;
         private String expectedCode;
         private String expectedStatus;
+        private List<ApiPayloadAssertion> payloadAssertions = List.of();
 
         public Builder scenario(String scenario) {
             this.scenario = scenario;
@@ -149,8 +157,13 @@ public class ApiTestScenario {
             return this;
         }
 
+        public Builder payloadAssertions(List<ApiPayloadAssertion> payloadAssertions) {
+            this.payloadAssertions = payloadAssertions;
+            return this;
+        }
+
         public ApiTestScenario build() {
-            return new ApiTestScenario(scenario, description, setupRequests, headers, queryParams, requestBody, expectedCode, expectedStatus);
+            return new ApiTestScenario(scenario, description, setupRequests, headers, queryParams, requestBody, expectedCode, expectedStatus, payloadAssertions);
         }
     }
 }

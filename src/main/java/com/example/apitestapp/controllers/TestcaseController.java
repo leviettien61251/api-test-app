@@ -4,11 +4,7 @@ package com.example.apitestapp.controllers;
 import com.example.apitestapp.config.AppRunConfig;
 import com.example.apitestapp.config.AppSession;
 import com.example.apitestapp.config.SelectedRunContext;
-import com.example.apitestapp.models.TestCaseRowModel;
-import com.example.apitestapp.models.TestResult;
-import com.example.apitestapp.models.TestRun;
-import com.example.apitestapp.models.UserTestCase;
-import com.example.apitestapp.models.UserTestSuite;
+import com.example.apitestapp.models.*;
 import com.example.apitestapp.services.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -20,18 +16,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.net.URL;
 import java.net.URI;
+import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class TestcaseController implements Initializable {
 
@@ -63,6 +53,7 @@ public class TestcaseController implements Initializable {
     private TextArea bodyTextArea;   // Khung JSON Body
     private volatile boolean isRunning = false;
     private ApiTestService apiTestService;
+    private final ApiPayloadAssertionEvaluator payloadAssertionEvaluator = new ApiPayloadAssertionEvaluator();
     private UserTestSuiteService userTestSuiteService;
     private UserTestCaseService userTestCaseService;
     private ApiScenarioRegistry scenarioRegistry;
@@ -343,7 +334,7 @@ public class TestcaseController implements Initializable {
             if (name.isEmpty()) return;
             Optional<String> method = promptText("Thêm testsuit", "Method", "Nhập method:", "POST");
             if (method.isEmpty()) return;
-            Optional<String> endpoint = promptText("Thêm testsuit", "Endpoint hoặc URL", "Nhập endpoint hoặc URL:", baseUrl );
+            Optional<String> endpoint = promptText("Thêm testsuit", "Endpoint hoặc URL", "Nhập endpoint hoặc URL:", baseUrl);
             if (endpoint.isEmpty()) return;
 
             UserTestSuite suite = userTestSuiteService.create(name.get(), method.get(), endpoint.get(), "");
@@ -722,13 +713,24 @@ public class TestcaseController implements Initializable {
             ApiResponse response = apiTestService.callApi(tc.getMethod(), resolvedTargetUrl, requestBody, queryParams, headers);
             String expectedCode = tc.getExpected();
             String actualCode = response.getResponseCode();
-            boolean isPass = expectedCode.equals(actualCode);
+            boolean codePassed = expectedCode.equals(actualCode);
+            ApiPayloadAssertionEvaluator.Evaluation payloadEvaluation = payloadAssertionEvaluator.evaluate(
+                    response.getResponseBody(),
+                    scenario == null ? List.of() : scenario.getPayloadAssertions()
+            );
+            boolean isPass = codePassed && payloadEvaluation.passed();
             long elapsed = System.currentTimeMillis() - started;
             String logMessage = String.format("Code: %s, HTTP: %d", actualCode, response.getHttpCode());
 
             Platform.runLater(() -> resultLogList.getItems().add("  " + logMessage));
+            for (String payloadMessage : payloadEvaluation.messages()) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Payload: " + payloadMessage));
+            }
 
-            return new CaseOutcome(isPass, expectedCode, actualCode, elapsed, logMessage);
+            String outcomeMessage = payloadEvaluation.passed() || payloadEvaluation.messages().isEmpty()
+                    ? logMessage
+                    : logMessage + " | " + String.join(" | ", payloadEvaluation.messages());
+            return new CaseOutcome(isPass, expectedCode, actualCode, elapsed, outcomeMessage);
         } catch (Exception e) {
             Platform.runLater(() -> resultLogList.getItems().add("  Error: " + e.getMessage()));
             return CaseOutcome.failed(e.getMessage());
