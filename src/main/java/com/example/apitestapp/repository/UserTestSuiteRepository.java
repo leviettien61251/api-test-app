@@ -3,7 +3,6 @@ package com.example.apitestapp.repository;
 import com.example.apitestapp.db.ConnectionManager;
 import com.example.apitestapp.models.UserTestSuite;
 import com.example.apitestapp.services.ApiCleanupRequest;
-import com.example.apitestapp.services.ApiResponseVariable;
 import com.example.apitestapp.services.ApiSetupRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -21,10 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class UserTestSuiteRepository {
-
-    public UserTestSuiteRepository() {
-        ensureTable();
-    }
 
     public UserTestSuite save(UserTestSuite suite) throws SQLException {
         String sql = """
@@ -151,43 +146,6 @@ public class UserTestSuiteRepository {
         }
 
         return suites;
-    }
-
-    private void ensureTable() {
-        String extensionSql = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"";
-        String sql = """
-                CREATE TABLE IF NOT EXISTS user_test_suites
-                (
-                    id          VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
-                    user_id     VARCHAR(255) REFERENCES users (id),
-                    owner_name  VARCHAR(255) NOT NULL,
-                    name        VARCHAR(255) NOT NULL,
-                    method      VARCHAR(10) NOT NULL,
-                    endpoint    VARCHAR(2048) NOT NULL,
-                    description TEXT,
-                    cleanup_requests JSONB NOT NULL DEFAULT '[]',
-                    is_active   BOOLEAN NOT NULL DEFAULT TRUE,
-                    created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
-                    updated_at  TIMESTAMP
-                )
-                """;
-
-        try (Connection c = ConnectionManager.getInstance().getConnection();
-             PreparedStatement extensionPs = c.prepareStatement(extensionSql);
-            PreparedStatement tablePs = c.prepareStatement(sql)) {
-            extensionPs.executeUpdate();
-            tablePs.executeUpdate();
-            ensureCleanupRequestsColumn(c);
-        } catch (SQLException e) {
-            System.err.println("Không thể khởi tạo bảng user_test_suites: " + e.getMessage());
-        }
-    }
-
-    private void ensureCleanupRequestsColumn(Connection c) throws SQLException {
-        String sql = "ALTER TABLE user_test_suites ADD COLUMN IF NOT EXISTS cleanup_requests JSONB NOT NULL DEFAULT '[]'";
-        try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.executeUpdate();
-        }
     }
 
     private UserTestSuite mapRow(ResultSet rs) throws SQLException {
