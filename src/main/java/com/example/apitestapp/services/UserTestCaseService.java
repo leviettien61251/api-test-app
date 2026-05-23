@@ -162,6 +162,7 @@ public class UserTestCaseService {
             object.addProperty("method", request.getMethod());
             object.addProperty("endpoint", request.getEndpoint());
             object.addProperty("requestBody", request.getRequestBody());
+            object.add("headers", stringMapToJson(request.getHeaders()));
             object.add("expectedCodes", stringArrayToJson(request.getExpectedCodes()));
             object.addProperty("required", request.isRequired());
             object.add("responseVariables", responseVariablesToJson(request.getResponseVariables()));
@@ -192,17 +193,30 @@ public class UserTestCaseService {
             validateRequired(endpoint, "Endpoint setup/cleanup");
             String requestBody = getString(object, "requestBody", "");
             validateJsonBody(requestBody);
+            Map<String, String> headers = readStringMap(object.get("headers"));
             List<String> expectedCodes = readStringArray(object.get("expectedCodes"));
             boolean required = getBoolean(object, "required", true);
             List<ApiResponseVariable> variables = readResponseVariables(object.get("responseVariables"));
 
             if (cleanup) {
-                requests.add(new ApiCleanupRequest(name, method, endpoint, requestBody, expectedCodes, required));
+                requests.add(new ApiCleanupRequest(name, method, endpoint, requestBody, headers, expectedCodes, required));
             } else {
-                requests.add(new ApiSetupRequest(name, method, endpoint, requestBody, expectedCodes, required, variables));
+                requests.add(new ApiSetupRequest(name, method, endpoint, requestBody, headers, expectedCodes, required, variables));
             }
         }
         return requests;
+    }
+
+    private Map<String, String> readStringMap(JsonElement element) {
+        if (element == null || !element.isJsonObject()) {
+            return Map.of();
+        }
+        Map<String, String> values = new java.util.LinkedHashMap<>();
+        for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet()) {
+            JsonElement value = entry.getValue();
+            values.put(entry.getKey(), value == null || value.isJsonNull() ? "" : value.getAsString());
+        }
+        return values;
     }
 
     private List<String> readStringArray(JsonElement element) {
@@ -241,6 +255,19 @@ public class UserTestCaseService {
         }
         values.forEach(array::add);
         return array;
+    }
+
+    private JsonObject stringMapToJson(Map<String, String> values) {
+        JsonObject object = new JsonObject();
+        if (values == null) {
+            return object;
+        }
+        values.forEach((key, value) -> {
+            if (key != null && !key.isBlank()) {
+                object.addProperty(key, value == null ? "" : value);
+            }
+        });
+        return object;
     }
 
     private JsonArray responseVariablesToJson(List<ApiResponseVariable> variables) {

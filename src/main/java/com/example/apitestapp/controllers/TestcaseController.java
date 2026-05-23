@@ -616,6 +616,7 @@ public class TestcaseController implements Initializable {
             boolean executedAny = false;
             String stopCond = stopConditionCombo.getValue();
             List<TestResult> collectedResults = new ArrayList<>();
+            Map<String, String> cleanupRuntimeVariables = new LinkedHashMap<>();
 
             for (TestCaseRowModel tc : testData) {
                 if (!isRunning) break;
@@ -625,8 +626,9 @@ public class TestcaseController implements Initializable {
                 Map<String, String> runtimeVariables = new LinkedHashMap<>();
                 Platform.runLater(() -> tc.setResult("⏳ Đang test..."));
 
-                boolean setupOk = runScenarioSetup(tc, runtimeVariables);
+                boolean setupOk = runDefaultAuthSetup(tc, runtimeVariables) && runScenarioSetup(tc, runtimeVariables);
                 CaseOutcome outcome = setupOk ? callActualApi(tc, runtimeVariables) : CaseOutcome.failed("Setup thất bại");
+                cleanupRuntimeVariables.putAll(runtimeVariables);
                 boolean isPass = outcome.passed;
 
                 TestResult result = toTestResult(tc, outcome);
@@ -655,7 +657,7 @@ public class TestcaseController implements Initializable {
             }
 
             if (executedAny) {
-                runScenarioCleanup(definitionToRun);
+                runScenarioCleanup(definitionToRun, cleanupRuntimeVariables);
             }
 
             final int p = pass, f = fail;
@@ -814,6 +816,7 @@ public class TestcaseController implements Initializable {
                     "method": "POST",
                     "endpoint": "/api/v1/insert-map-test",
                     "requestBody": "{\\n  \\"buildingCode\\": \\"B-TEST-001\\",\\n  \\"buildingName\\": \\"Building Test\\",\\n  \\"imageUrl\\": \\"https://example.com/test.jpg\\",\\n  \\"scaleX\\": 10,\\n  \\"scaleY\\": 10\\n}",
+                    "headers": {},
                     "expectedCodes": ["1000", "200", "201"],
                     "required": true,
                     "responseVariables": [
@@ -832,6 +835,7 @@ public class TestcaseController implements Initializable {
                     "method": "DELETE",
                     "endpoint": "/api/v1/map/clean",
                     "requestBody": "",
+                    "headers": {},
                     "expectedCodes": ["1000", "200", "204"],
                     "required": true
                   }
@@ -891,7 +895,7 @@ public class TestcaseController implements Initializable {
         }
     }
 
-    private void runScenarioCleanup(ApiScenarioDefinition definition) {
+    private void runScenarioCleanup(ApiScenarioDefinition definition, Map<String, String> runtimeVariables) {
         if (definition == null || definition.getCleanupRequests().isEmpty()) {
             return;
         }
@@ -903,7 +907,9 @@ public class TestcaseController implements Initializable {
             ApiResponse response = apiTestService.callApi(
                     cleanupRequest.getMethod(),
                     cleanupUrl,
-                    cleanupRequest.getRequestBody()
+                    replaceVariables(cleanupRequest.getRequestBody(), runtimeVariables),
+                    Map.of(),
+                    replaceVariables(cleanupRequest.getHeaders(), runtimeVariables)
             );
             String actualCode = response.getResponseCode();
             boolean accepted = cleanupRequest.accepts(actualCode);
@@ -936,7 +942,9 @@ public class TestcaseController implements Initializable {
             ApiResponse response = apiTestService.callApi(
                     setupRequest.getMethod(),
                     resolveHookUrl(setupRequest.getEndpoint(), tc.getEndpoint()),
-                    replaceVariables(setupRequest.getRequestBody(), runtimeVariables)
+                    replaceVariables(setupRequest.getRequestBody(), runtimeVariables),
+                    Map.of(),
+                    replaceVariables(setupRequest.getHeaders(), runtimeVariables)
             );
             String actualCode = response.getResponseCode();
             boolean accepted = setupRequest.accepts(actualCode);
@@ -957,6 +965,89 @@ public class TestcaseController implements Initializable {
         }
 
         return true;
+    }
+
+    private boolean runDefaultAuthSetup(TestCaseRowModel tc, Map<String, String> runtimeVariables) {
+        if (!isRunning) {
+            return false;
+        }
+
+        String phoneNumber = buildAuthPhoneNumber();
+        String password = "111111";
+        runtimeVariables.put("phoneNumber", phoneNumber);
+        runtimeVariables.put("authPhoneNumber", phoneNumber);
+        runtimeVariables.put("password", password);
+        runtimeVariables.put("authPassword", password);
+
+        Platform.runLater(() -> resultLogList.getItems().add("  Auth setup: signup + login mặc định"));
+
+        String signupBody = """
+                {
+                  "phoneNumber": "%s",
+                  "password": "%s"
+                }
+                """.formatted(phoneNumber, password);
+
+        ApiResponse signupResponse = apiTestService.callApi(
+                "POST",
+                resolveHookUrl("/api/v1/signup", tc.getEndpoint()),
+                signupBody,
+                Map.of(),
+                Map.of()
+        );
+
+        String signupCode = signupResponse.getResponseCode();
+        boolean signupAccepted = List.of("1000", "200", "201", "3006").contains(signupCode);
+        Platform.runLater(() -> resultLogList.getItems().add(
+                "  Auth signup: " + (signupAccepted ? "PASS" : "FAIL")
+                        + ", Code: " + signupCode
+                        + ", HTTP: " + signupResponse.getHttpCode()
+        ));
+        if (!signupAccepted) {
+            return false;
+        }
+
+        String loginBody = """
+                {
+                  "phoneNumber": "%s",
+                  "password": "%s"
+                }
+                """.formatted(phoneNumber, password);
+
+        ApiResponse loginResponse = apiTestService.callApi(
+                "POST",
+                resolveHookUrl("/api/v1/login", tc.getEndpoint()),
+                loginBody,
+                Map.of(),
+                Map.of()
+        );
+
+        String loginCode = loginResponse.getResponseCode();
+        boolean loginAccepted = List.of("1000", "200").contains(loginCode);
+        Platform.runLater(() -> resultLogList.getItems().add(
+                "  Auth login: " + (loginAccepted ? "PASS" : "FAIL")
+                        + ", Code: " + loginCode
+                        + ", HTTP: " + loginResponse.getHttpCode()
+        ));
+        if (!loginAccepted) {
+            return false;
+        }
+
+        java.util.Optional<String> token = extractJsonValue(loginResponse.getResponseBody(), "token");
+        if (token.isEmpty() || token.get().isBlank()) {
+            Platform.runLater(() -> resultLogList.getItems().add("  Auth token: không lấy được token từ response login"));
+            return false;
+        }
+
+        runtimeVariables.put("token", token.get());
+        runtimeVariables.put("authorizationHeader", "Bearer " + token.get());
+        Platform.runLater(() -> resultLogList.getItems().add("  Auth token: " + shortId(token.get())));
+        return true;
+    }
+
+    private String buildAuthPhoneNumber() {
+        long suffix = Math.abs(UUID.randomUUID().getMostSignificantBits()) % 10_000_000L;
+        return "098" + String.format("%07d", suffix);
     }
 
     private String resolveHookUrl(String endpointOrUrl, String testEndpoint) {
