@@ -25,6 +25,10 @@ import java.util.*;
 
 public class TestcaseController implements Initializable {
 
+    private static final String CONTINUE_ALERT_MODE = "Continue";
+    private static final String RUN_UNTIL_FINISHED_LABEL = "Chạy liên tục đến hết";
+    private static final String STOP_ON_FAIL_LABEL = "Dừng ngay khi có FAIL";
+
     private final ObservableList<TestCaseRowModel> testData = FXCollections.observableArrayList();
     private String baseUrl;
     @FXML
@@ -104,8 +108,10 @@ public class TestcaseController implements Initializable {
         executionModeCombo.getItems().addAll("Lần lượt (Sequential)", "Song song (Parallel)");
         executionModeCombo.setValue("Lần lượt (Sequential)");
 
-        stopConditionCombo.getItems().addAll("Chạy liên tục đến hết", "Dừng ngay khi có FAIL");
-        stopConditionCombo.setValue("Dừng ngay khi có FAIL");
+        stopConditionCombo.getItems().addAll(RUN_UNTIL_FINISHED_LABEL, STOP_ON_FAIL_LABEL);
+        stopConditionCombo.setValue(CONTINUE_ALERT_MODE.equals(AppRunConfig.getAlertMode())
+                ? RUN_UNTIL_FINISHED_LABEL
+                : STOP_ON_FAIL_LABEL);
     }
 
     private void initTreeView() {
@@ -635,7 +641,7 @@ public class TestcaseController implements Initializable {
                 if (isPass) pass++;
                 else fail++;
 
-                if (!isPass && "Dừng ngay khi có FAIL".equals(stopCond)) {
+                if (!isPass && STOP_ON_FAIL_LABEL.equals(stopCond)) {
                     isRunning = false;
                     Platform.runLater(() -> resultLogList.getItems().add("⛔ DỪNG: Phát hiện lỗi tại " + tc.getName()));
                     break;

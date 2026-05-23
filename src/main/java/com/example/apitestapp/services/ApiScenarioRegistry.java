@@ -5,6 +5,7 @@ import com.example.apitestapp.services.auth.GetUserInfoScenarioProvider;
 import com.example.apitestapp.services.auth.LoginScenarioProvider;
 import com.example.apitestapp.services.auth.SignupScenarioProvider;
 import com.example.apitestapp.services.map.*;
+import com.example.apitestapp.services.user.SetAvatarScenarioProvider;
 import com.example.apitestapp.services.user.SetUserInfoScenarioProvider;
 import com.example.apitestapp.services.user.TestScenarioProvider;
 
@@ -22,6 +23,7 @@ public class ApiScenarioRegistry {
                 new ChangePasswordScenarioProvider(),
                 new GetUserInfoScenarioProvider(),
                 new SetUserInfoScenarioProvider(),
+                new SetAvatarScenarioProvider(),
                 new MapTestScenarioProvider(),
                 new NodeTestScenarioProvider(),
                 new StepTestScenarioProvider(),
@@ -29,7 +31,10 @@ public class ApiScenarioRegistry {
                 new GetNodesTestScenarioProvider(),
                 new GetFloorScenarioProvider(),
                 new TestScenarioProvider(),
-                new GetMetaScenarioProvider()
+                new GetMetaScenarioProvider(),
+                new WardTestScenarioProvider(),
+                new BulkTest1ScenarioProvider()
+
 
         ));
     }
