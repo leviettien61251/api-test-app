@@ -106,7 +106,7 @@ public class SetUserInfoScenarioProvider implements ApiScenarioProvider {
                         .scenario("Scenario 10")
                         .description("User không tồn tại")
                         .requestBody(createSetUserInfoRequestBody("Steve Jobs", "0981111120", "Ha Noi, Viet Nam"))
-                        .expectedCode("3009")
+                        .expectedCode("3007")
                         .expectedStatus("FAILURE")
                         .build()
         );
