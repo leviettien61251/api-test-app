@@ -27,6 +27,7 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                                                     "scaleY": 10
                                                 }
                                                 """,
+                                        Map.of("Authorization", "Bearer ${token}"),
                                         List.of("1000", "200", "201"),
                                         true,
                                         List.of(new ApiResponseVariable("mapId", "data.0.id"))
@@ -44,6 +45,7 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                                                     "isPassable": true
                                                 }
                                                 """,
+                                        Map.of("Authorization", "Bearer ${token}"),
                                         List.of("1000"),
                                         true,
                                         List.of(new ApiResponseVariable("startNodeId", "data.id")
@@ -62,12 +64,14 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                                                     "isPassable": true
                                                 }
                                                 """,
+                                        Map.of("Authorization", "Bearer ${token}"),
                                         List.of("1000"),
                                         true,
                                         List.of(new ApiResponseVariable("endNodeId", "data.id"))
                                 )
 
                         ))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .queryParams(Map.of("floor_id", "${mapId}"))
                         .expectedCode("1000")
                         .expectedStatus("SUCCESS")
@@ -75,6 +79,7 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                 ApiTestScenario.builder()
                         .scenario("Scenario 2")
                         .description("Thiếu floor_id - Mã 2001")
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -82,6 +87,7 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                         .scenario("Scenario 3")
                         .description("floor_id truyền vào là mảng - Mã 2001")
                         .queryParams(Map.of("floor_id[]", "1"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -89,6 +95,7 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                         .scenario("Scenario 4")
                         .description("floor_id không phải là số - Mã 2002")
                         .queryParams(Map.of("floor_id", "abc"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2002")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -96,6 +103,7 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                         .scenario("Scenario 5")
                         .description("floor_id là số âm - Mã 2002")
                         .queryParams(Map.of("floor_id", "-5"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2002")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -103,6 +111,7 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                         .scenario("Scenario 6")
                         .description("floor_id là số 0 - Mã 2003")
                         .queryParams(Map.of("floor_id", "0"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2003")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -110,6 +119,7 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                         .scenario("Scenario 7")
                         .description("floor_id không tồn tại trong DB - Mã 4001")
                         .queryParams(Map.of("floor_id", "999999"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("4001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -117,6 +127,7 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                         .scenario("Scenario 8")
                         .description("floor_id vượt quá giới hạn integer - Mã 2003")
                         .queryParams(Map.of("floor_id", "999999999999"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2003")
                         .expectedStatus("FAILURE")
                         .build()
@@ -133,16 +144,18 @@ public class GetNodesTestScenarioProvider implements ApiScenarioProvider {
                         new ApiCleanupRequest(
                                 "Clean node test data",
                                 "DELETE",
-                                "/api/v1/map/node/clean",
+                                "/api/v1/clean/map/node",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         ),
                         new ApiCleanupRequest(
                                 "Clean map test data",
                                 "DELETE",
-                                "/api/v1/map/clean",
+                                "/api/v1/clean/map",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         )

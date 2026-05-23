@@ -3,6 +3,7 @@ package com.example.apitestapp.services.map;
 import com.example.apitestapp.services.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class StepTestScenarioProvider implements ApiScenarioProvider {
 
@@ -26,6 +27,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("1000")
                         .expectedStatus("SUCCESS")
                         .build(),
@@ -44,6 +46,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -61,6 +64,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -79,6 +83,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -96,6 +101,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -114,6 +120,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -131,6 +138,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -150,6 +158,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -169,6 +178,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -188,6 +198,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -207,6 +218,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -226,6 +238,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -245,6 +258,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("4001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -264,6 +278,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("4002")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -283,6 +298,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("4002")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -302,6 +318,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -321,6 +338,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -340,6 +358,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build()
@@ -357,24 +376,27 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                         new ApiCleanupRequest(
                                 "Clean step test data",
                                 "DELETE",
-                                "/api/v1/map/step/clean",
+                                "/api/v1/clean/map/step",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         ),
                         new ApiCleanupRequest(
                                 "Clean node test data",
                                 "DELETE",
-                                "/api/v1/map/node/clean",
+                                "/api/v1/clean/map/node",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         ),
                         new ApiCleanupRequest(
                                 "Clean map test data",
                                 "DELETE",
-                                "/api/v1/map/clean",
+                                "/api/v1/clean/map",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         ))
@@ -396,6 +418,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                     "scaleY": 10
                                 }
                                 """.formatted(suffix, suffix),
+                        Map.of("Authorization", "Bearer ${token}"),
                         List.of("1000", "200", "201"),
                         true,
                         List.of(new ApiResponseVariable("mapId", "data.0.id"))
@@ -413,6 +436,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                     "isPassable": true
                                 }
                                 """,
+                        Map.of("Authorization", "Bearer ${token}"),
                         List.of("1000"),
                         true,
                         List.of(new ApiResponseVariable("startNodeId", "data.id"))
@@ -430,6 +454,7 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                     "isPassable": true
                                 }
                                 """,
+                        Map.of("Authorization", "Bearer ${token}"),
                         List.of("1000"),
                         true,
                         List.of(new ApiResponseVariable("endNodeId", "data.id"))

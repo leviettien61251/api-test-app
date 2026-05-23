@@ -3,6 +3,7 @@ package com.example.apitestapp.services.auth;
 import com.example.apitestapp.services.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class LoginScenarioProvider implements ApiScenarioProvider {
     @Override
@@ -154,6 +155,7 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                                 "DELETE",
                                 "/api/v1/login/clean",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         ),
@@ -162,6 +164,7 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                                 "DELETE",
                                 "/api/v1/signup/clean",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         )

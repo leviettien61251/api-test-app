@@ -3,6 +3,7 @@ package com.example.apitestapp.services.map;
 import com.example.apitestapp.services.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class WardTestScenarioProvider implements ApiScenarioProvider {
 
@@ -14,6 +15,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                         .description("Yêu câu hợp lệ với đấy đủ tham số - 1000")
                         .setupRequests(createStepSetupRequests("S1"))
                         .requestBody(createWardRequestBody("Ward 1", "open"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("1000")
                         .expectedStatus("SUCCESS")
                         .build(),
@@ -29,6 +31,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -37,6 +40,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                         .description("Ward name null - 2001")
                         .setupRequests(createStepSetupRequests("S3"))
                         .requestBody(createWardRequestBody(null, "open"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -45,6 +49,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                         .description("Ward status null - 2001")
                         .setupRequests(createStepSetupRequests("S4"))
                         .requestBody(createWardRequestBody("Ward 4", null))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -53,6 +58,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                         .description("Ward name bị để trống - 2001")
                         .setupRequests(createStepSetupRequests("S5"))
                         .requestBody(createWardRequestBody("", "open"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -61,6 +67,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                         .description("Ward status bị để trống - 2001")
                         .setupRequests(createStepSetupRequests("S6"))
                         .requestBody(createWardRequestBody("Ward 6", ""))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
@@ -77,6 +84,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("4002")
                         .expectedStatus("FAILURE")
                         .build()
@@ -94,6 +102,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                                         }
                                         """
                         )
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("400")
                         .expectedStatus("FAILURE")
                         .build()
@@ -103,6 +112,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                         .description("Ward name chứa ký tự đặc biệt - 2002")
                         .setupRequests(createStepSetupRequests("S9"))
                         .requestBody(createWardRequestBody("Ward 9;DROP TABLE ward_test;", "open"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2002")
                         .expectedStatus("FAILURE")
                         .build()
@@ -112,6 +122,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                         .description("Ward status chứa ký tự đặc biệt - 2002")
                         .setupRequests(createStepSetupRequests("S10"))
                         .requestBody(createWardRequestBody("Ward 10", "open;DROP TABLE ward_test;"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
                         .expectedCode("2002")
                         .expectedStatus("FAILURE")
                         .build()
@@ -128,24 +139,27 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                         new ApiCleanupRequest(
                                 "Dọn dẹp dữ liệu Ward",
                                 "DELETE",
-                                "/api/v1/map/ward/clean",
+                                "/api/v1/clean/map/ward",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         ),
                         new ApiCleanupRequest(
                                 "Dọn dẹp dữ liệu Map",
                                 "DELETE",
-                                "/api/v1/map/node/clean",
+                                "/api/v1/clean/map/node",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         ),
                         new ApiCleanupRequest(
                                 "Dọn dẹp dữ liệu Map",
                                 "DELETE",
-                                "/api/v1/map/clean",
+                                "/api/v1/clean/map",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         )
@@ -168,6 +182,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                                     "scaleY": 10
                                 }
                                 """.formatted(suffix, suffix),
+                        Map.of("Authorization", "Bearer ${token}"),
                         List.of("1000", "200", "201"),
                         true,
                         List.of(new ApiResponseVariable("mapId", "data.0.id"))
@@ -185,6 +200,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                                     "isPassable": true
                                 }
                                 """,
+                        Map.of("Authorization", "Bearer ${token}"),
                         List.of("1000"),
                         true,
                         List.of(new ApiResponseVariable("map_node_id", "data.id"))

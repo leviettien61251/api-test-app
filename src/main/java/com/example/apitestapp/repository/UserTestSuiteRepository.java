@@ -16,7 +16,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class UserTestSuiteRepository {
@@ -193,6 +195,7 @@ public class UserTestSuiteRepository {
             object.addProperty("method", request.getMethod());
             object.addProperty("endpoint", request.getEndpoint());
             object.addProperty("requestBody", request.getRequestBody());
+            object.add("headers", stringMapToJson(request.getHeaders()));
             object.add("expectedCodes", stringArrayToJson(request.getExpectedCodes()));
             object.addProperty("required", request.isRequired());
             array.add(object);
@@ -221,11 +224,24 @@ public class UserTestSuiteRepository {
                     getString(object, "method", "DELETE"),
                     getString(object, "endpoint", ""),
                     getString(object, "requestBody", ""),
+                    readStringMap(object.get("headers")),
                     readStringArray(object.get("expectedCodes")),
                     getBoolean(object, "required", true)
             ));
         }
         return requests;
+    }
+
+    private Map<String, String> readStringMap(JsonElement element) {
+        if (element == null || !element.isJsonObject()) {
+            return Map.of();
+        }
+        Map<String, String> values = new LinkedHashMap<>();
+        for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet()) {
+            JsonElement value = entry.getValue();
+            values.put(entry.getKey(), value == null || value.isJsonNull() ? "" : value.getAsString());
+        }
+        return values;
     }
 
     private JsonArray stringArrayToJson(List<String> values) {
@@ -234,6 +250,19 @@ public class UserTestSuiteRepository {
             values.forEach(array::add);
         }
         return array;
+    }
+
+    private JsonObject stringMapToJson(Map<String, String> values) {
+        JsonObject object = new JsonObject();
+        if (values == null) {
+            return object;
+        }
+        values.forEach((key, value) -> {
+            if (key != null && !key.isBlank()) {
+                object.addProperty(key, value == null ? "" : value);
+            }
+        });
+        return object;
     }
 
     private List<String> readStringArray(JsonElement element) {
