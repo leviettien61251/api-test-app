@@ -1,113 +1,121 @@
 package com.example.apitestapp.services.user;
 
-import com.example.apitestapp.services.ApiScenarioDefinition;
-import com.example.apitestapp.services.ApiCleanupRequest;
-import com.example.apitestapp.services.ApiScenarioProvider;
-import com.example.apitestapp.services.ApiSetupRequest;
-import com.example.apitestapp.services.ApiTestScenario;
+import com.example.apitestapp.services.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class SetAvatarScenarioProvider implements ApiScenarioProvider {
 
     @Override
     public ApiScenarioDefinition getDefinition() {
         List<ApiTestScenario> scenarios = List.of(
-                new ApiTestScenario(
-                        "Scenario 1",
-                        "Cập nhật avatar thành công khi user đã signup và login",
-                        createAuthSetupRequests("0980000001"),
-                        createSetAvatarRequestBody("https://example.com/avatar1.jpg", "0980000001"),
-                        "1000",
-                        "SUCCESS"
-                ),
-                new ApiTestScenario(
-                        "Scenario 2",
-                        "Thiếu avatarUrl",
-                        createAuthSetupRequests("0980000002"),
-                        """
+                ApiTestScenario.builder()
+                        .scenario("Scenario 1")
+                        .description("Cập nhật avatar thành công khi user đã signup và login")
+                        .setupRequests(createAuthSetupRequests("0980000001"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody(createSetAvatarRequestBody("https://example.com/avatar1.jpg", "0980000001"))
+                        .expectedCode("1000")
+                        .expectedStatus("SUCCESS")
+                        .build(),
+                ApiTestScenario.builder()
+                        .scenario("Scenario 2")
+                        .description("Thiếu avatarUrl")
+                        .setupRequests(createAuthSetupRequests("0980000002"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody("""
                                 {
                                   "phoneNumber": "0980000002"
                                 }
-                                """,
-                        "2001",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
-                        "Scenario 3",
-                        "avatarUrl null",
-                        createAuthSetupRequests("0980000003"),
-                        createSetAvatarRequestBody(null, "0980000003"),
-                        "2001",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
-                        "Scenario 4",
-                        "avatarUrl để trống",
-                        createAuthSetupRequests("0980000004"),
-                        createSetAvatarRequestBody("", "0980000004"),
-                        "2001",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
-                        "Scenario 5",
-                        "avatarUrl không hợp lệ",
-                        createAuthSetupRequests("0980000005"),
-                        createSetAvatarRequestBody("not-a-url", "0980000005"),
-                        "2003",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
-                        "Scenario 6",
-                        "Thiếu phoneNumber",
-                        createAuthSetupRequests("0980000006"),
-                        """
+                                """)
+                        .expectedCode("2001")
+                        .expectedStatus("FAILURE")
+                        .build(),
+                ApiTestScenario.builder()
+                        .scenario("Scenario 3")
+                        .description("avatarUrl null")
+                        .setupRequests(createAuthSetupRequests("0980000003"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody(createSetAvatarRequestBody(null, "0980000003"))
+                        .expectedCode("2001")
+                        .expectedStatus("FAILURE")
+                        .build(),
+                ApiTestScenario.builder()
+                        .scenario("Scenario 4")
+                        .description("avatarUrl để trống")
+                        .setupRequests(createAuthSetupRequests("0980000004"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody(createSetAvatarRequestBody("", "0980000004"))
+                        .expectedCode("2001")
+                        .expectedStatus("FAILURE")
+                        .build(),
+                ApiTestScenario.builder()
+                        .scenario("Scenario 5")
+                        .description("avatarUrl không hợp lệ")
+                        .setupRequests(createAuthSetupRequests("0980000005"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody(createSetAvatarRequestBody("not-a-url", "0980000005"))
+                        .expectedCode("2003")
+                        .expectedStatus("FAILURE")
+                        .build(),
+                ApiTestScenario.builder()
+                        .scenario("Scenario 6")
+                        .description("Thiếu phoneNumber")
+                        .setupRequests(createAuthSetupRequests("0980000006"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody("""
                                 {
                                   "avatarUrl": "https://example.com/avatar6.jpg"
                                 }
-                                """,
-                        "2001",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
-                        "Scenario 7",
-                        "phoneNumber null",
-                        createAuthSetupRequests("0980000007"),
-                        createSetAvatarRequestBody("https://example.com/avatar7.jpg", null),
-                        "2001",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
-                        "Scenario 8",
-                        "phoneNumber để trống",
-                        createAuthSetupRequests("0980000008"),
-                        createSetAvatarRequestBody("https://example.com/avatar8.jpg", ""),
-                        "2001",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
-                        "Scenario 9",
-                        "phoneNumber không hợp lệ",
-                        createAuthSetupRequests("0980000009"),
-                        createSetAvatarRequestBody("https://example.com/avatar9.jpg", "123"),
-                        "2003",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
-                        "Scenario 10",
-                        "User đã signup nhưng chưa login",
-                        List.of(createSignupSetupRequest("0980000010")),
-                        createSetAvatarRequestBody("https://example.com/avatar10.jpg", "0980000010"),
-                        "3009",
-                        "FAILURE"
-                ),
-                new ApiTestScenario(
-                        "Scenario 11",
-                        "User không tồn tại",
-                        createSetAvatarRequestBody("https://example.com/avatar11.jpg", "0980000011"),
-                        "3007",
-                        "FAILURE"
-                )
+                                """)
+                        .expectedCode("2001")
+                        .expectedStatus("FAILURE")
+                        .build(),
+                ApiTestScenario.builder()
+                        .scenario("Scenario 7")
+                        .description("phoneNumber null")
+                        .setupRequests(createAuthSetupRequests("0980000007"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody(createSetAvatarRequestBody("https://example.com/avatar7.jpg", null))
+                        .expectedCode("2001")
+                        .expectedStatus("FAILURE")
+                        .build(),
+                ApiTestScenario.builder()
+                        .scenario("Scenario 8")
+                        .description("phoneNumber để trống")
+                        .setupRequests(createAuthSetupRequests("0980000008"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody(createSetAvatarRequestBody("https://example.com/avatar8.jpg", ""))
+                        .expectedCode("2001")
+                        .expectedStatus("FAILURE")
+                        .build(),
+                ApiTestScenario.builder()
+                        .scenario("Scenario 9")
+                        .description("phoneNumber không hợp lệ")
+                        .setupRequests(createAuthSetupRequests("0980000009"))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody(createSetAvatarRequestBody("https://example.com/avatar9.jpg", "123"))
+                        .expectedCode("2003")
+                        .expectedStatus("FAILURE")
+                        .build(),
+                ApiTestScenario.builder()
+                        .scenario("Scenario 10")
+                        .description("User đã signup nhưng chưa login")
+                        .setupRequests(List.of(createSignupSetupRequest("0980000010")))
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody(createSetAvatarRequestBody("https://example.com/avatar10.jpg", "0980000010"))
+                        .expectedCode("3009")
+                        .expectedStatus("FAILURE")
+                        .build(),
+                ApiTestScenario.builder()
+                        .scenario("Scenario 11")
+                        .description("User không tồn tại")
+                        .headers(Map.of("Authorization", "Bearer ${token}"))
+                        .requestBody(createSetAvatarRequestBody("https://example.com/avatar11.jpg", "0980000011"))
+                        .expectedCode("3007")
+                        .expectedStatus("FAILURE")
+                        .build()
         );
 
         return ApiScenarioDefinition.builder()
@@ -119,36 +127,39 @@ public class SetAvatarScenarioProvider implements ApiScenarioProvider {
                 .scenarios(scenarios)
                 .cleanupRequests(List.of(
                         new ApiCleanupRequest(
-                                "Clean user-test test data",
-                                "DELETE",
-                                "/api/v1/user-test/clean",
-                                "",
-                                List.of("1000", "200", "204", "201"),
-                                false
-                        ),
-                        new ApiCleanupRequest(
                                 "Clean set-avatar test data",
                                 "DELETE",
-                                "/api/v1/set-avatar/clean",
+                                "/api/v1/clean/set-avatar",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 false
                         ),
                         new ApiCleanupRequest(
                                 "Clean login test data",
                                 "DELETE",
-                                "/api/v1/login/clean",
+                                "/api/v1/clean/login",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
                         ),
                         new ApiCleanupRequest(
                                 "Clean signup test data",
                                 "DELETE",
-                                "/api/v1/signup/clean",
+                                "/api/v1/clean/signup",
                                 "",
+                                Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
+                        ), new ApiCleanupRequest(
+                                "Clean user-test test data",
+                                "DELETE",
+                                "/api/v1/clean/user-test",
+                                "",
+                                Map.of("Authorization", "Bearer ${token}"),
+                                List.of("1000", "200", "204", "201"),
+                                false
                         )
                 ))
                 .build();
@@ -162,6 +173,7 @@ public class SetAvatarScenarioProvider implements ApiScenarioProvider {
                         "POST",
                         "api/v1/login",
                         createAuthRequestBody(phoneNumber),
+                        Map.of("Authorization", "Bearer ${token}"),
                         List.of("1000"),
                         true
                 )
@@ -174,6 +186,7 @@ public class SetAvatarScenarioProvider implements ApiScenarioProvider {
                 "POST",
                 "api/v1/signup",
                 createAuthRequestBody(phoneNumber),
+                Map.of("Authorization", "Bearer ${token}"),
                 List.of("1000"),
                 true
         );

@@ -1047,7 +1047,7 @@ public class TestcaseController implements Initializable {
 
     private String buildAuthPhoneNumber() {
         long suffix = Math.abs(UUID.randomUUID().getMostSignificantBits()) % 10_000_000L;
-        return "098" + String.format("%07d", suffix);
+        return "032" + String.format("%07d", suffix);
     }
 
     private String resolveHookUrl(String endpointOrUrl, String testEndpoint) {

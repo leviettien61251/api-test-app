@@ -153,7 +153,7 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                 List.of(new ApiCleanupRequest(
                                 "Clean login test data",
                                 "DELETE",
-                                "/api/v1/login/clean",
+                                "/api/v1/clean/login",
                                 "",
                                 Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
@@ -162,7 +162,16 @@ public class LoginScenarioProvider implements ApiScenarioProvider {
                         new ApiCleanupRequest(
                                 "Clean signup test data",
                                 "DELETE",
-                                "/api/v1/signup/clean",
+                                "/api/v1/clean/signup",
+                                "",
+                                Map.of("Authorization", "Bearer ${token}"),
+                                List.of("1000", "200", "204", "201"),
+                                true
+                        ),
+                        new ApiCleanupRequest(
+                                "Clean user test data",
+                                "DELETE",
+                                "/api/v1/clean/user-test",
                                 "",
                                 Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
