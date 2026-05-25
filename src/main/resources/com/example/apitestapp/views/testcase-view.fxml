@@ -48,7 +48,8 @@
                         <VBox spacing="10.0" styleClass="card">
                             <children>
                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                    <Label style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 3 10; -fx-background-radius: 15;"
+                                    <Label fx:id="requestMethodLabel"
+                                           style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 3 10; -fx-background-radius: 15;"
                                            text="POST">
                                         <font>
                                             <Font name="System Bold" size="12.0"/>

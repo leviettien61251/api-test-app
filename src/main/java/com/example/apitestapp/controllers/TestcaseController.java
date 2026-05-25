@@ -44,7 +44,7 @@ public class TestcaseController implements Initializable {
     @FXML
     private ListView<String> resultLogList;
     @FXML
-    private Label summaryText;
+    private Label summaryText, requestMethodLabel;
     @FXML
     private Button runAllBtn, stopBtn, saveReportBtn, addTestCaseBtn, editTestCaseBtn, deleteTestCaseBtn;
     @FXML
@@ -183,6 +183,7 @@ public class TestcaseController implements Initializable {
         scenarioRegistry.findByApiLabel(apiName)
                 .ifPresentOrElse(this::loadScenarioDefinition, () -> {
                     currentDefinition = null;
+                    updateRequestMethodLabel("");
                     baseUrlField.setText("");
                     headerTextArea.setText("");
                     bodyTextArea.setText("");
@@ -194,6 +195,8 @@ public class TestcaseController implements Initializable {
         currentDefinition = definition;
         currentUserSuite = null;
         List<ApiTestScenario> scenarios = definition.getScenarios();
+        String apiMethod = resolveApiMethod(definition);
+        updateRequestMethodLabel(apiMethod);
         baseUrlField.setText("http://localhost:8080" + definition.getEndpoint());
         baseUrlField.setEditable(true);
 
@@ -205,7 +208,6 @@ public class TestcaseController implements Initializable {
             return;
         }
 
-        String apiMethod = resolveApiMethod(definition);
         for (ApiTestScenario scenario : scenarios) {
             String requestBody = scenario.getRequestBody();
             String testInput = buildTestInput(requestBody, scenario.getHeaders(), scenario.getQueryParams());
@@ -250,6 +252,7 @@ public class TestcaseController implements Initializable {
         testData.clear();
         resultLogList.getItems().clear();
         summaryText.setText("Chưa có dữ liệu thực thi");
+        updateRequestMethodLabel(suite.getMethod());
         baseUrlField.setText(suite.getEndpoint());
         baseUrlField.setEditable(true);
         headerTextArea.setText("");
@@ -313,8 +316,30 @@ public class TestcaseController implements Initializable {
 
     private void showRequestBody(TestCaseRowModel testCase) {
         String requestBody = testCase.getRequestBody();
+        updateRequestMethodLabel(testCase.getMethod());
         headerTextArea.setText(formatHeaders(testCase.getHeaders()));
         bodyTextArea.setText(requestBody == null ? "" : requestBody);
+    }
+
+    private void updateRequestMethodLabel(String method) {
+        if (requestMethodLabel == null) {
+            return;
+        }
+
+        String normalizedMethod = method == null || method.isBlank() ? "POST" : method.trim().toUpperCase();
+        requestMethodLabel.setText(normalizedMethod);
+        requestMethodLabel.setStyle("-fx-background-color: " + methodColor(normalizedMethod)
+                + "; -fx-text-fill: white; -fx-padding: 3 10; -fx-background-radius: 15;");
+    }
+
+    private String methodColor(String method) {
+        return switch (method) {
+            case "GET" -> "#2ecc71";
+            case "POST" -> "#3498db";
+            case "PUT", "PATCH" -> "#f39c12";
+            case "DELETE" -> "#e74c3c";
+            default -> "#7f8c8d";
+        };
     }
 
     @FXML
