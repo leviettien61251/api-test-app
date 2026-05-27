@@ -9,6 +9,7 @@ import com.example.apitestapp.services.flow.FlowBottleneckScenarioProvider;
 import com.example.apitestapp.services.flow.FlowDensityScenarioProvider;
 import com.example.apitestapp.services.flow.FlowHeatmapScenarioProvider;
 import com.example.apitestapp.services.map.*;
+import com.example.apitestapp.services.realapitest.GetMapNodeFromRealApiScenarioProvider;
 import com.example.apitestapp.services.user.SetAvatarScenarioProvider;
 import com.example.apitestapp.services.user.SetUserInfoScenarioProvider;
 import com.example.apitestapp.services.user.TestScenarioProvider;
@@ -41,7 +42,8 @@ public class ApiScenarioRegistry {
                 new FlowAlertScenarioProvider(),
                 new FlowDensityScenarioProvider(),
                 new FlowBottleneckScenarioProvider(),
-                new FlowHeatmapScenarioProvider()
+                new FlowHeatmapScenarioProvider(),
+                new GetMapNodeFromRealApiScenarioProvider()
 
 
         ));
