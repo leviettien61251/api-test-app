@@ -75,7 +75,7 @@ public class TestcaseController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setupTable();
         setupComboBoxes();
-        baseUrl = AppRunConfig.getBaseUrl();
+        baseUrl = resolveConfiguredBaseUrl();
         apiTestService = new ApiTestService();
         userTestSuiteService = new UserTestSuiteService();
         userTestCaseService = new UserTestCaseService();
@@ -197,7 +197,7 @@ public class TestcaseController implements Initializable {
         List<ApiTestScenario> scenarios = definition.getScenarios();
         String apiMethod = resolveApiMethod(definition);
         updateRequestMethodLabel(apiMethod);
-        baseUrlField.setText("http://localhost:8080" + definition.getEndpoint());
+        baseUrlField.setText(resolveScenarioTargetUrl(definition.getEndpoint()));
         baseUrlField.setEditable(true);
 
         if (scenarios.isEmpty()) {
@@ -651,7 +651,7 @@ public class TestcaseController implements Initializable {
                 Map<String, String> runtimeVariables = new LinkedHashMap<>();
                 Platform.runLater(() -> tc.setResult("⏳ Đang test..."));
 
-                boolean setupOk = runDefaultAuthSetup(tc, runtimeVariables) && runScenarioSetup(tc, runtimeVariables);
+                boolean setupOk = runDefaultAuthSetupIfNeeded(tc, runtimeVariables) && runScenarioSetup(tc, runtimeVariables);
                 CaseOutcome outcome = setupOk ? callActualApi(tc, runtimeVariables) : CaseOutcome.failed("Setup thất bại");
                 cleanupRuntimeVariables.putAll(runtimeVariables);
                 boolean isPass = outcome.passed;
@@ -716,13 +716,13 @@ public class TestcaseController implements Initializable {
                 return CaseOutcome.failed("Biến chưa được thay thế");
             }
             ApiTestScenario scenario = tc.getScenario();
-            Map<String, String> queryParams = replaceVariables(
+            Map<String, String> resolvedQueryParams = replaceVariables(
                     scenario == null ? Map.of() : scenario.getQueryParams(),
                     runtimeVariables
             );
             Map<String, String> headers = replaceVariables(tc.getHeaders(), runtimeVariables);
-            if (hasUnresolvedVariables(queryParams)) {
-                Platform.runLater(() -> resultLogList.getItems().add("  Error: Query params have unresolved variables: " + queryParams));
+            if (hasUnresolvedVariables(resolvedQueryParams)) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Error: Query params have unresolved variables: " + resolvedQueryParams));
                 return CaseOutcome.failed("Biến query params chưa được thay thế");
             }
             if (hasUnresolvedVariables(headers)) {
@@ -733,6 +733,7 @@ public class TestcaseController implements Initializable {
             if (targetUrl.isEmpty()) {
                 targetUrl = tc.getEndpoint();
             }
+            Map<String, String> queryParams = targetUrl.contains("?") ? Map.of() : resolvedQueryParams;
 
             String resolvedTargetUrl = targetUrl;
             Platform.runLater(() -> resultLogList.getItems().add("  Sending: " + tc.getMethod() + " " + resolvedTargetUrl));
@@ -1070,6 +1071,37 @@ public class TestcaseController implements Initializable {
         return true;
     }
 
+    private boolean runDefaultAuthSetupIfNeeded(TestCaseRowModel tc, Map<String, String> runtimeVariables) {
+        if (!usesAuthToken(tc)) {
+            return true;
+        }
+        return runDefaultAuthSetup(tc, runtimeVariables);
+    }
+
+    private boolean usesAuthToken(TestCaseRowModel tc) {
+        if (tc == null) {
+            return false;
+        }
+
+        ApiTestScenario scenario = tc.getScenario();
+        return containsAuthToken(tc.getRequestBody())
+                || containsAuthToken(tc.getHeaders())
+                || containsAuthToken(scenario == null ? Map.of() : scenario.getQueryParams())
+                || (scenario != null && scenario.getSetupRequests().stream().anyMatch(setupRequest ->
+                containsAuthToken(setupRequest.getEndpoint())
+                        || containsAuthToken(setupRequest.getRequestBody())
+                        || containsAuthToken(setupRequest.getHeaders())));
+    }
+
+    private boolean containsAuthToken(String value) {
+        return value != null
+                && (value.contains("${token}") || value.contains("${authorizationHeader}"));
+    }
+
+    private boolean containsAuthToken(Map<String, String> values) {
+        return values != null && values.values().stream().anyMatch(this::containsAuthToken);
+    }
+
     private String buildAuthPhoneNumber() {
         long suffix = Math.abs(UUID.randomUUID().getMostSignificantBits()) % 10_000_000L;
         return "032" + String.format("%07d", suffix);
@@ -1100,6 +1132,26 @@ public class TestcaseController implements Initializable {
         }
 
         return endpointOrUrl;
+    }
+
+    private String resolveConfiguredBaseUrl() {
+        return AppRunConfig.normalizeBaseUrl(AppRunConfig.getBaseUrl());
+    }
+
+    private String resolveScenarioTargetUrl(String endpoint) {
+        String configuredBaseUrl = resolveConfiguredBaseUrl();
+        if (configuredBaseUrl.contains("?")) {
+            return configuredBaseUrl;
+        }
+        return configuredBaseUrl + normalizeEndpoint(endpoint);
+    }
+
+    private String normalizeEndpoint(String endpoint) {
+        if (endpoint == null || endpoint.isBlank()) {
+            return "";
+        }
+        String trimmed = endpoint.trim();
+        return trimmed.startsWith("/") ? trimmed : "/" + trimmed;
     }
 
     private String resolveApiMethod(ApiScenarioDefinition definition) {
