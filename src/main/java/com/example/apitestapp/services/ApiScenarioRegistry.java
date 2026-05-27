@@ -4,6 +4,10 @@ import com.example.apitestapp.services.auth.ChangePasswordScenarioProvider;
 import com.example.apitestapp.services.auth.GetUserInfoScenarioProvider;
 import com.example.apitestapp.services.auth.LoginScenarioProvider;
 import com.example.apitestapp.services.auth.SignupScenarioProvider;
+import com.example.apitestapp.services.flow.FlowAlertScenarioProvider;
+import com.example.apitestapp.services.flow.FlowBottleneckScenarioProvider;
+import com.example.apitestapp.services.flow.FlowDensityScenarioProvider;
+import com.example.apitestapp.services.flow.FlowHeatmapScenarioProvider;
 import com.example.apitestapp.services.map.*;
 import com.example.apitestapp.services.user.SetAvatarScenarioProvider;
 import com.example.apitestapp.services.user.SetUserInfoScenarioProvider;
@@ -33,7 +37,11 @@ public class ApiScenarioRegistry {
                 new TestScenarioProvider(),
                 new GetMetaScenarioProvider(),
                 new WardTestScenarioProvider(),
-                new BulkTest1ScenarioProvider()
+                new BulkTest1ScenarioProvider(),
+                new FlowAlertScenarioProvider(),
+                new FlowDensityScenarioProvider(),
+                new FlowBottleneckScenarioProvider(),
+                new FlowHeatmapScenarioProvider()
 
 
         ));
