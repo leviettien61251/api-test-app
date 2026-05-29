@@ -8,6 +8,14 @@ import com.example.apitestapp.services.flow.FlowAlertScenarioProvider;
 import com.example.apitestapp.services.flow.FlowBottleneckScenarioProvider;
 import com.example.apitestapp.services.flow.FlowDensityScenarioProvider;
 import com.example.apitestapp.services.flow.FlowHeatmapScenarioProvider;
+import com.example.apitestapp.services.flow.GetAlertsScenarioProvider;
+import com.example.apitestapp.services.flow.GetBottlenecksScenarioProvider;
+import com.example.apitestapp.services.flow.GetDensityScenarioProvider;
+import com.example.apitestapp.services.flow.GetEdgeStatusScenarioProvider;
+import com.example.apitestapp.services.flow.GetHeatmapScenarioProvider;
+import com.example.apitestapp.services.flow.InsertEdgeDensityScenarioProvider;
+import com.example.apitestapp.services.flow.InsertEdgeScenarioProvider;
+import com.example.apitestapp.services.flow.InsertEdgeStatusScenarioProvider;
 import com.example.apitestapp.services.map.*;
 import com.example.apitestapp.services.realapitest.GetMapNodeFromRealApiScenarioProvider;
 import com.example.apitestapp.services.user.SetAvatarScenarioProvider;
@@ -43,6 +51,14 @@ public class ApiScenarioRegistry {
                 new FlowDensityScenarioProvider(),
                 new FlowBottleneckScenarioProvider(),
                 new FlowHeatmapScenarioProvider(),
+                new InsertEdgeScenarioProvider(),
+                new InsertEdgeStatusScenarioProvider(),
+                new InsertEdgeDensityScenarioProvider(),
+                new GetAlertsScenarioProvider(),
+                new GetDensityScenarioProvider(),
+                new GetHeatmapScenarioProvider(),
+                new GetBottlenecksScenarioProvider(),
+                new GetEdgeStatusScenarioProvider(),
                 new GetMapNodeFromRealApiScenarioProvider()
 
 
