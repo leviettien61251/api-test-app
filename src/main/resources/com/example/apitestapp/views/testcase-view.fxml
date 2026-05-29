@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
+
 <SplitPane xmlns:fx="http://javafx.com/fxml/1" dividerPositions="0.2, 0.75" prefHeight="750.0" prefWidth="1200.0"
            stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/17"
            fx:controller="com.example.apitestapp.controllers.TestcaseController">
@@ -11,6 +12,19 @@
 
         <VBox spacing="10.0" styleClass="left-panel">
             <children>
+                <VBox spacing="6.0">
+                    <children>
+                        <Label style="-fx-font-weight: bold;" text="Base URL"/>
+                        <TextField fx:id="mainBaseUrlField" promptText="https://api.example.com"
+                                   style="-fx-background-color: #ffffff; -fx-border-color: #ccc; -fx-border-radius: 3;"/>
+                        <Button fx:id="saveRunBtn" maxWidth="Infinity"
+                                style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-weight: bold;"
+                                text="Save Run"/>
+                    </children>
+                </VBox>
+
+                <Separator prefWidth="200.0" />
+
                 <Label styleClass="header-text" text="COLLECTIONS"/>
                 <VBox spacing="6.0">
                     <children>
@@ -129,7 +143,7 @@
                     </children>
                 </VBox>
                 <Button fx:id="saveReportBtn" maxWidth="Infinity" onAction="#handleSaveReport" styleClass="btn-primary"
-                          text="💾 Lưu báo cáo"/>
+                        text="💾 Lưu báo cáo"/>
             </children>
         </VBox>
     </items>
