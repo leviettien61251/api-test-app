@@ -19,21 +19,9 @@ public class RequestController implements Initializable {
     @FXML
     private ComboBox<String> methodComboBox;
     @FXML
-    private ComboBox<String> methodComboBox1;
-    @FXML
-    private ComboBox<String> methodComboBox2;
-    @FXML
-    private TextField baseUrlField;
-    @FXML
     private TextField urlField;
     @FXML
     private Button sendButton;
-    @FXML
-    private Button runAllButton;
-    @FXML
-    private Button runSelectedButton;
-    @FXML
-    private Button saveRunButton;
     @FXML
     private ComboBox<String> authTypeComboBox;
     @FXML
@@ -74,18 +62,9 @@ public class RequestController implements Initializable {
     }
 
     private void initGeneralControls() {
-        String configuredBaseUrl = AppRunConfig.getBaseUrl();
-        baseUrlField.setText(configuredBaseUrl == null || configuredBaseUrl.isBlank()
-                ? AppRunConfig.DEFAULT_BASE_URL
-                : configuredBaseUrl);
         methodComboBox.getItems().addAll("GET", "POST", "PUT", "DELETE", "PATCH");
         methodComboBox.setValue("POST");
         urlField.setText("/api/v1/signup");
-
-        methodComboBox1.getItems().addAll("ALL", "SINGLE");
-        methodComboBox2.getItems().addAll("Stop on fail", "Continue");
-        methodComboBox1.setValue(AppRunConfig.getRunMode());
-        methodComboBox2.setValue(AppRunConfig.getAlertMode());
     }
 
     private void initResponseTable() {
@@ -250,7 +229,10 @@ public class RequestController implements Initializable {
             return trimmedUrl;
         }
 
-        String baseUrl = AppRunConfig.normalizeBaseUrl(baseUrlField.getText());
+        String configuredBaseUrl = AppRunConfig.getBaseUrl();
+        String baseUrl = AppRunConfig.normalizeBaseUrl(configuredBaseUrl == null || configuredBaseUrl.isBlank()
+                ? AppRunConfig.DEFAULT_BASE_URL
+                : configuredBaseUrl);
         if (trimmedUrl.startsWith("/")) {
             return baseUrl + trimmedUrl;
         }

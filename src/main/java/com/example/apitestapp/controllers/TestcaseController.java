@@ -50,6 +50,8 @@ public class TestcaseController implements Initializable {
     @FXML
     private Button addTestSuiteBtn, editTestSuiteBtn, deleteTestSuiteBtn, editCleanupDataBtn;
     @FXML
+    private TextField mainBaseUrlField;
+    @FXML
     private TextField baseUrlField; // Thanh URL
     @FXML
     private TextArea headerTextArea; // Header cua testcase
@@ -71,11 +73,17 @@ public class TestcaseController implements Initializable {
     private Instant lastRunStartedAt;
     private boolean lastRunWasAll;
 
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTable();
         setupComboBoxes();
         baseUrl = resolveConfiguredBaseUrl();
+        if (mainBaseUrlField != null) {
+            mainBaseUrlField.setText(baseUrl);
+        }
+        baseUrlField.setText(baseUrl);
         apiTestService = new ApiTestService();
         userTestSuiteService = new UserTestSuiteService();
         userTestCaseService = new UserTestCaseService();
@@ -340,6 +348,16 @@ public class TestcaseController implements Initializable {
             case "DELETE" -> "#e74c3c";
             default -> "#7f8c8d";
         };
+    }
+
+    @FXML
+    private void handleSaveRun() {
+        baseUrl = AppRunConfig.normalizeBaseUrl(mainBaseUrlField == null ? baseUrl : mainBaseUrlField.getText());
+        if (mainBaseUrlField != null) {
+            mainBaseUrlField.setText(baseUrl);
+        }
+        AppRunConfig.configure(baseUrl, AppRunConfig.getRunMode(), AppRunConfig.getAlertMode(), AppRunConfig.getRunner());
+        refreshCurrentTargetUrl();
     }
 
     @FXML
@@ -1135,15 +1153,31 @@ public class TestcaseController implements Initializable {
     }
 
     private String resolveConfiguredBaseUrl() {
+        if (mainBaseUrlField != null && mainBaseUrlField.getText() != null && !mainBaseUrlField.getText().isBlank()) {
+            return AppRunConfig.normalizeBaseUrl(mainBaseUrlField.getText());
+        }
         return AppRunConfig.normalizeBaseUrl(AppRunConfig.getBaseUrl());
     }
 
     private String resolveScenarioTargetUrl(String endpoint) {
+        if (endpoint != null && (endpoint.startsWith("http://") || endpoint.startsWith("https://"))) {
+            return endpoint;
+        }
         String configuredBaseUrl = resolveConfiguredBaseUrl();
         if (configuredBaseUrl.contains("?")) {
             return configuredBaseUrl;
         }
         return configuredBaseUrl + normalizeEndpoint(endpoint);
+    }
+
+    private void refreshCurrentTargetUrl() {
+        if (currentDefinition != null) {
+            baseUrlField.setText(resolveScenarioTargetUrl(currentDefinition.getEndpoint()));
+        } else if (currentUserSuite != null) {
+            baseUrlField.setText(resolveScenarioTargetUrl(currentUserSuite.getEndpoint()));
+        } else {
+            baseUrlField.setText(baseUrl);
+        }
     }
 
     private String normalizeEndpoint(String endpoint) {

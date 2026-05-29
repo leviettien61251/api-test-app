@@ -22,7 +22,14 @@
                     </VBox.margin>
                 </Label>
 
-
+                <ToggleButton fx:id="btnDashboard" onAction="#navigateDashboard" selected="true"
+                              styleClass="header-nav-item" text="📊 Dashboard" toggleGroup="$headerGroup"/>
+                <ToggleButton fx:id="btnTestcase" onAction="#navigateTestcases" styleClass="header-nav-item"
+                              text="🧪 Testcase" toggleGroup="$headerGroup"/>
+                <ToggleButton fx:id="btnRequest" onAction="#navigateRequests" styleClass="header-nav-item"
+                              text="🚀 Request" toggleGroup="$headerGroup"/>
+                <ToggleButton fx:id="btnReport" onAction="#navigateReports" styleClass="header-nav-item"
+                              text="📈 Report" toggleGroup="$headerGroup"/>
                 <ToggleButton fx:id="btnHistory" maxWidth="Infinity" onAction="#navigateHistory" styleClass="nav-item"
                               text="⏳ History" toggleGroup="$sidebarGroup"/>
             </children>
@@ -34,14 +41,14 @@
             <children>
                 <HBox alignment="CENTER_LEFT" minHeight="72.0" prefHeight="72.0" spacing="10.0" styleClass="header">
                     <children>
-                        <ToggleButton fx:id="btnDashboard" onAction="#navigateDashboard" selected="true"
-                                      styleClass="header-nav-item" text="Dashboard" toggleGroup="$headerGroup"/>
-                        <ToggleButton fx:id="btnTestcase" onAction="#navigateTestcases" styleClass="header-nav-item"
-                                      text="Testcase" toggleGroup="$headerGroup"/>
-                        <ToggleButton fx:id="btnRequest" onAction="#navigateRequests" styleClass="header-nav-item"
-                                      text="Request" toggleGroup="$headerGroup"/>
-                        <ToggleButton fx:id="btnReport" onAction="#navigateReports" styleClass="header-nav-item"
-                                      text="Report" toggleGroup="$headerGroup"/>
+<!--                        <ToggleButton fx:id="btnDashboard" onAction="#navigateDashboard" selected="true"-->
+<!--                                      styleClass="header-nav-item" text="Dashboard" toggleGroup="$headerGroup"/>-->
+<!--                        <ToggleButton fx:id="btnTestcase" onAction="#navigateTestcases" styleClass="header-nav-item"-->
+<!--                                      text="Testcase" toggleGroup="$headerGroup"/>-->
+<!--                        <ToggleButton fx:id="btnRequest" onAction="#navigateRequests" styleClass="header-nav-item"-->
+<!--                                      text="Request" toggleGroup="$headerGroup"/>-->
+<!--                        <ToggleButton fx:id="btnReport" onAction="#navigateReports" styleClass="header-nav-item"-->
+<!--                                      text="Report" toggleGroup="$headerGroup"/>-->
 
                         <HBox HBox.hgrow="ALWAYS"/>
                         <MenuButton fx:id="userMenuButton" styleClass="user-menu" text="👤 User">
