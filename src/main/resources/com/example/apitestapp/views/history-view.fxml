@@ -3,73 +3,72 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="800.0" prefWidth="1000.0" spacing="25.0" styleClass="content-area"
-      stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/17"
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="800.0" prefWidth="1150.0" spacing="20.0" styleClass="content-area"
+      stylesheets="@../styles/history.css" xmlns="http://javafx.com/javafx/17"
       fx:controller="com.example.apitestapp.controllers.HistoryController">
+
+    <padding>
+        <Insets bottom="24.0" left="24.0" right="24.0" top="24.0"/>
+    </padding>
+
     <children>
         <Label styleClass="page-title" text="LỊCH SỬ CHẠY"/>
 
-        <VBox spacing="20.0" styleClass="section-bg" VBox.vgrow="ALWAYS">
+        <VBox spacing="24.0" styleClass="section-bg" VBox.vgrow="ALWAYS">
             <padding>
-                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                <Insets bottom="24.0" left="24.0" right="24.0" top="24.0"/>
             </padding>
-            <children>
-                <Label styleClass="section-title" text="NỘI DUNG LỊCH SỬ CHẠY"/>
 
-                <GridPane hgap="15.0" vgap="10.0">
+            <children>
+                <Label styleClass="section-title" text="DANH SÁCH LỊCH SỬ KIỂM THỬ"/>
+
+                <GridPane styleClass="filter-panel" hgap="16.0" vgap="12.0">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0"/>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0"/>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0"/>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="22.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="22.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="22.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="34.0"/>
                     </columnConstraints>
+
                     <children>
-                        <VBox spacing="5.0">
-                            <children>
-                                <Label styleClass="filter-label" text="Từ ngày"/>
-                                <DatePicker fx:id="dpFrom" maxWidth="1.7976931348623157E308"/>
-                            </children>
+                        <VBox spacing="6.0" styleClass="filter-field" GridPane.columnIndex="0">
+                            <Label styleClass="filter-label" text="TỪ NGÀY"/>
+                            <DatePicker fx:id="dpFrom" styleClass="filter-date-picker" promptText="dd/mm/yyyy"/>
                         </VBox>
-                        <VBox spacing="5.0" GridPane.columnIndex="1">
-                            <children>
-                                <Label styleClass="filter-label" text="Đến ngày"/>
-                                <DatePicker fx:id="dpTo" maxWidth="1.7976931348623157E308"/>
-                            </children>
+
+                        <VBox spacing="6.0" styleClass="filter-field" GridPane.columnIndex="1">
+                            <Label styleClass="filter-label" text="ĐẾN NGÀY"/>
+                            <DatePicker fx:id="dpTo" styleClass="filter-date-picker" promptText="dd/mm/yyyy"/>
                         </VBox>
-                        <VBox spacing="5.0" GridPane.columnIndex="2">
-                            <children>
-                                <Label styleClass="filter-label" text="Kết quả"/>
-                                <ComboBox fx:id="cbResult" maxWidth="1.7976931348623157E308" promptText="Tất cả"/>
-                            </children>
+
+                        <VBox spacing="6.0" styleClass="filter-field" GridPane.columnIndex="2">
+                            <Label styleClass="filter-label" text="KẾT QUẢ"/>
+                            <ComboBox fx:id="cbResult" styleClass="filter-combo-box" promptText="Tất cả"/>
                         </VBox>
-                        <VBox spacing="5.0" GridPane.columnIndex="3">
-                            <children>
-                                <Label styleClass="filter-label" text="Tìm kiếm"/>
-                                <HBox spacing="8.0">
-                                    <children>
-                                        <TextField fx:id="txtSearch" promptText="Mã run, người chạy, máy, OS..." HBox.hgrow="ALWAYS"/>
-                                        <Button fx:id="btnFilter" mnemonicParsing="false" onAction="#handleFilter"
-                                                styleClass="btn-primary" text="⚡" textFill="WHITE"/>
-                                    </children>
-                                </HBox>
-                            </children>
+
+                        <VBox spacing="6.0" styleClass="filter-field" GridPane.columnIndex="3">
+                            <Label styleClass="filter-label" text="TÌM KIẾM"/>
+                            <HBox spacing="8.0" styleClass="search-box" alignment="CENTER_LEFT" maxWidth="300.0">
+                                <TextField fx:id="txtSearch" styleClass="search-field" HBox.hgrow="ALWAYS" promptText="Nhập từ khóa..."/>
+                                <Button fx:id="btnFilter" onAction="#handleFilter" styleClass="btn-search" text="🔍"/>
+                            </HBox>
                         </VBox>
                     </children>
                 </GridPane>
 
-                <TableView fx:id="historyTable" VBox.vgrow="ALWAYS">
+                <TableView fx:id="historyTable" styleClass="history-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colId" prefWidth="80.0" text="Mã run"/>
-                        <TableColumn fx:id="colTime" prefWidth="100.0" text="Thời gian"/>
-                        <TableColumn fx:id="colRunner" prefWidth="120.0" text="Người chạy"/>
-                        <TableColumn fx:id="colMachine" prefWidth="100.0" text="Máy chạy"/>
-                        <TableColumn fx:id="colOs" prefWidth="100.0" text="OS"/>
-                        <TableColumn fx:id="colMode" prefWidth="120.0" text="Chế độ"/>
-                        <TableColumn fx:id="colResult" prefWidth="100.0" text="Pass/Fail"/>
-                        <TableColumn fx:id="colStatus" prefWidth="80.0" text="KQ"/>
-
-                        <TableColumn fx:id="colDetails" prefWidth="60.0" style="-fx-alignment: CENTER;" text="CT"/>
-                        <TableColumn fx:id="colDelete" prefWidth="60.0" style="-fx-alignment: CENTER;" text="Xóa"/>
+                        <TableColumn fx:id="colId" styleClass="table-col-id" prefWidth="100.0" text="Mã Run"/>
+                        <TableColumn fx:id="colTime" styleClass="table-col-time" prefWidth="150.0" text="Thời Gian"/>
+                        <TableColumn fx:id="colRunner" styleClass="table-col-runner" prefWidth="110.0" text="Người Chạy"/>
+                        <TableColumn fx:id="colMachine" styleClass="table-col-machine" prefWidth="150.0" text="Máy Chạy"/>
+                        <TableColumn fx:id="colOs" styleClass="table-col-os" prefWidth="120.0" text="Hệ Điều Hành"/>
+                        <TableColumn fx:id="colMode" styleClass="table-col-mode" prefWidth="110.0" text="Chế Độ"/>
+                        <TableColumn fx:id="colResult" styleClass="table-col-result" prefWidth="100.0" text="PASS/FAIL"/>
+                        <TableColumn fx:id="colStatus" styleClass="table-col-status" prefWidth="90.0" text="Kết Quả"/>
+                        <TableColumn fx:id="colDetails" styleClass="table-col-action" prefWidth="100.0" text="Chi Tiết"/>
+                        <TableColumn fx:id="colDelete" styleClass="table-col-action" prefWidth="70.0" text="Xóa"/>
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
@@ -78,7 +77,4 @@
             </children>
         </VBox>
     </children>
-    <padding>
-        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>
-    </padding>
 </VBox>

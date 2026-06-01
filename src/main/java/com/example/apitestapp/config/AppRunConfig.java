@@ -4,44 +4,41 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 
-
 public final class AppRunConfig {
     public static final String DEFAULT_BASE_URL ="http://group3.it4788.sukkaito.id.vn";
-    public static final String DEFAULT_RUN_MODE = "ALL";
+    // ĐÃ XÓA: DEFAULT_RUN_MODE
     public static final String DEFAULT_ALERT_MODE = "Stop on fail";
     public static final String DEFAULT_USER = System.getProperty("user.name", "Unknown");
     public static final String DEFAULT_OS = System.getProperty("os.name", "Unknown OS");
 
     private static String baseUrl = "";
-    private static String runMode = DEFAULT_RUN_MODE;
+    // ĐÃ XÓA: runMode
     private static String alertMode = DEFAULT_ALERT_MODE;
     private static String runner = DEFAULT_USER;
     private static LocalDateTime configuredAt;
     private static boolean configured;
 
-
     private AppRunConfig() {
     }
 
-
     public static void reset() {
         baseUrl = "";
-        runMode = DEFAULT_RUN_MODE;
+        // ĐÃ XÓA: runMode = DEFAULT_RUN_MODE;
         alertMode = DEFAULT_ALERT_MODE;
         runner = DEFAULT_USER;
         configured = false;
         configuredAt = null;
     }
 
-    public static void configure(String selectedBaseUrl, String selectedRunMode, String selectedAlertMode, String selectedRunner) {
+    // ĐÃ XÓA tham số selectedRunMode ở hàm configure
+    public static void configure(String selectedBaseUrl, String selectedAlertMode, String selectedRunner) {
         baseUrl = normalizeBaseUrl(selectedBaseUrl);
-        runMode = selectedRunMode;
+        // ĐÃ XÓA gán runMode
         alertMode = selectedAlertMode;
         runner = selectedRunner == null || selectedRunner.isBlank() ? DEFAULT_USER : selectedRunner.trim();
         configuredAt = LocalDateTime.now();
         configured = true;
     }
-
 
     public static boolean isConfigured() {
         return configured;
@@ -51,9 +48,7 @@ public final class AppRunConfig {
         return baseUrl;
     }
 
-    public static String getRunMode() {
-        return runMode;
-    }
+    // ĐÃ XÓA: hàm getRunMode()
 
     public static String getAlertMode() {
         return alertMode;

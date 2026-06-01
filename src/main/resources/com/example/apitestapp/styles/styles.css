@@ -1,860 +1,264 @@
-/* Main layout  */
-/* Sidebar */
+/* ==========================================================================
+   1. MAIN LAYOUT & NAVIGATION (DARK SIDEBAR MOD)
+   ========================================================================== */
+
+/* Container chính của Sidebar (Đã chuyển sang màu xanh đen tối) */
 .sidebar {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #e5e7eb;
-    -fx-border-width: 0 1 0 0;
+    -fx-background-color: #0f172a; /* Slate 900 cực sang và đầm mắt */
+    -fx-border-color: transparent;
+    -fx-padding: 15 0;
 }
 
+/* Tên ứng dụng / Logo */
 .logo-label {
-    -fx-text-fill: #2563eb;
+    /* Tạo hiệu ứng gradient từ xanh dương sang xanh lá giống chữ DASHBOARD */
+    -fx-text-fill: linear-gradient(to right, #1a73e8, #2ecc71);
     -fx-font-size: 22px;
     -fx-font-weight: bold;
 }
 
-/* Biến ToggleButton thành Item Menu phẳng */
+/* CẬP NHẬT: Nhóm Item điều hướng đồng bộ theo FXML (Dashboard, Testcase...) */
+.header-nav-item {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+    -fx-padding: 10 16;
+    -fx-text-fill: #94a3b8; /* Chữ xám sáng trên nền Sidebar tối */
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.header-nav-item:hover {
+    -fx-background-color: #1e293b; /* Slate 800 */
+    -fx-text-fill: #ffffff;
+}
+
+/* KHI ĐƯỢC ẤN CHỌN: Đổi sang Gradient Xanh dương - Xanh lá */
+.header-nav-item:selected {
+    -fx-background-color: linear-gradient(to right, #0284c7, #10b981);
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.25), 10, 0, 0, 2);
+}
+
+/* Các Item Menu cũ (Giữ lại nếu có dùng ở khu vực khác) */
 .nav-item {
     -fx-background-color: transparent;
     -fx-background-radius: 8;
-    -fx-text-fill: #4b5563; /* Màu xám */
+    -fx-text-fill: #94a3b8;
     -fx-font-size: 14px;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 12 16;
     -fx-cursor: hand;
 }
-
 .nav-item:hover {
-    -fx-background-color: #f3f4f6;
+    -fx-background-color: #1e293b;
+    -fx-text-fill: #ffffff;
 }
-
-/* Trạng thái được chọn (Active/Chìm) */
 .nav-item:selected {
-    -fx-background-color: #dbeafe; /* Xanh nhạt */
-    -fx-text-fill: #2563eb; /* Chữ xanh đậm */
+    -fx-background-color: linear-gradient(to right, #0284c7, #10b981);
+    -fx-text-fill: #ffffff;
     -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.25), 10, 0, 0, 2);
 }
 
-/* Header */
+/* Tiêu đề nhóm nhỏ trong sidebar */
+.sidebar-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748b;
+    -fx-padding: 10 16;
+}
+
+/* Header (Topbar trắng bên phải) */
 .header {
     -fx-background-color: #ffffff;
-    -fx-border-color: #e5e7eb;
+    -fx-border-color: #e2e8f0;
     -fx-border-width: 0 0 1 0;
+    -fx-padding: 10 20;
 }
 
-.header-nav-item {
-    -fx-background-color: transparent;
-    -fx-background-radius: 6;
-    -fx-padding: 8 16;
-    -fx-text-fill: #4b5563;
-    -fx-cursor: hand;
-}
-
-.header-nav-item:selected {
-    -fx-background-color: #f3f4f6;
-    -fx-text-fill: #111827;
-    -fx-font-weight: bold;
-}
-
-.content-area {
-    -fx-background-color: #f9fafb;
+/* Khu vực hiển thị nội dung chính */
+.content-area, .main-container {
+    -fx-background-color: #f8fafc;
 }
 
 
-/* Dashboard  */
-.page-title {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1f2937;
+/* ==========================================================================
+   2. COMMON COMPONENTS (CARDS, BUTTONS, TABLES)
+   ========================================================================== */
+
+.card, .card-white {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12px;
+    -fx-border-color: #f1f5f9;
+    -fx-border-radius: 12px;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 12, 0, 0, 4);
 }
 
-.section-bg {
-    -fx-background-color: white;
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
-}
-
-.section-title {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 0 0 15 0;
-}
-
-/* Cards */
-.card {
-    -fx-background-color: white;
-    -fx-background-radius: 8;
-    -fx-padding: 15;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
-    -fx-border-width: 0 0 0 4;
-}
-
-.card-label {
-    -fx-font-size: 14px;
-    -fx-text-fill: #6b7280;
-}
-
-.card-value {
-    -fx-font-size: 28px;
-    -fx-font-weight: bold;
-}
-
-.card-blue {
-    -fx-border-color: #3b82f6;
-}
-
-.card-purple {
-    -fx-border-color: #8b5cf6;
-}
-
-.card-green {
-    -fx-border-color: #10b981;
-}
-
-.card-green .card-value {
-    -fx-text-fill: #10b981;
-}
-
-.card-red {
-    -fx-border-color: #ef4444;
-}
-
-.card-red .card-value {
-    -fx-text-fill: #ef4444;
-}
-
-/* TableView Styling */
-.table-view {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-}
-
-.table-view .column-header {
-    -fx-background-color: #f9fafb;
-    -fx-border-color: transparent transparent #e5e7eb transparent;
-}
-
-.table-row-cell:hover {
-    -fx-background-color: #f9fafb;
-}
-
-
-/* report */
-/* Custom cho PieChart */
-.chart-pie-label {
-    -fx-fill: #6b7280;
-    -fx-font-size: 11px;
-}
-
-.default-color0.chart-pie {
-    -fx-pie-color: #10b981;
-}
-
-/* Màu Pass */
-.default-color1.chart-pie {
-    -fx-pie-color: #ef4444;
-}
-
-/* Màu Fail */
-
-/* Custom cho BarChart */
-.chart-bar {
-    -fx-bar-fill: #3b82f6;
-}
-
-.chart-plot-background {
-    -fx-background-color: transparent;
-}
-
-.axis {
-    -fx-tick-label-fill: #6b7280;
-}
-
-/* Table Styling đồng bộ thiết kế của Sơn */
-.table-view {
-    -fx-background-color: transparent;
-    -fx-border-color: #e5e7eb;
-    -fx-border-width: 1;
-}
-
-.table-view .column-header {
-    -fx-background-color: #f9fafb;
-    -fx-border-color: transparent transparent #e5e7eb transparent;
-}
-
-
-/* history */
-/* Layout nền xám nhạt */
-.content-area {
-    -fx-background-color: #f3f4f6;
-}
-
-/* Tiêu đề trang LỊCH SỬ CHẠY */
-.page-title {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1f2937;
-}
-
-/* Card trắng bao quanh nội dung */
-.section-bg {
-    -fx-background-color: white;
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
-}
-
-/* Tiêu đề nhỏ bên trong Card */
-.section-title {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #374151;
-}
-
-/* Nhãn chữ (Từ ngày, Đến ngày...) */
-.filter-label {
-    -fx-font-size: 13px;
-    -fx-text-fill: #4b5563;
-    -fx-font-weight: bold;
-}
-
-/* Nút tìm kiếm màu xanh có icon */
+/* Hệ thống nút bấm đồng bộ */
 .btn-primary {
     -fx-background-color: #2563eb;
     -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
     -fx-cursor: hand;
-    -fx-font-size: 14px;
-    -fx-padding: 5 12;
-    -fx-background-radius: 4;
 }
-
-.btn-primary:hover {
-    -fx-background-color: #1d4ed8;
-}
-
-/* Định dạng các ô nhập liệu */
-.text-field, .date-picker, .combo-box {
-    -fx-background-color: white;
-    -fx-border-color: #d1d5db;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-}
-
-/* TableView Styling cho chuyên nghiệp */
-.table-view {
-    -fx-background-color: transparent;
-    -fx-border-color: #e5e7eb;
-}
-
-.table-view .column-header-background {
-    -fx-background-color: #f9fafb;
-}
-
-.table-view .column-header {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent transparent #e5e7eb transparent;
-    -fx-padding: 10 0;
-}
-
-.table-row-cell:hover {
-    -fx-background-color: #f3f4f6;
-}
-
-
-/* environments */
-.main-container {
-    -fx-background-color: #f9fafb;
-}
-
-/* Sidebar bên trái */
-.sidebar {
-    -fx-background-color: white;
-    -fx-border-color: transparent #e5e7eb transparent transparent;
-}
-
-.sidebar-title {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1f2937;
-}
-
-/* Buttons */
-.btn-new {
-    -fx-background-color: #2563eb;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-}
+.btn-primary:hover { -fx-background-color: #1d4ed8; }
 
 .btn-secondary {
-    -fx-background-color: #e5e7eb;
+    -fx-background-color: #f3f4f6;
     -fx-text-fill: #374151;
+    -fx-background-radius: 6;
 }
+.btn-secondary:hover { -fx-background-color: #e5e7eb; }
 
-.btn-save {
-    -fx-background-color: #2563eb;
-    -fx-text-fill: white;
-}
-
-.btn-delete {
-    -fx-background-color: #dc2626;
-    -fx-text-fill: white;
-}
-
-.btn-active {
+.btn-success, .btn-active {
     -fx-background-color: #16a34a;
     -fx-text-fill: white;
+    -fx-background-radius: 6;
 }
+.btn-success:hover { -fx-background-color: #15803d; }
 
-.btn-action {
-    -fx-background-color: #4b5563;
+.btn-danger, .btn-delete {
+    -fx-background-color: #dc2626;
     -fx-text-fill: white;
+    -fx-background-radius: 6;
 }
+.btn-danger:hover { -fx-background-color: #b91c1c; }
 
-/* Card Style */
-.card {
-    -fx-background-color: white;
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
-}
+.btn-action { -fx-background-color: #4b5563; -fx-text-fill: white; -fx-background-radius: 6; }
+.btn-outline { -fx-background-color: #f3f4f6; -fx-text-fill: #374151; -fx-border-color: #d1d5db; -fx-border-radius: 6; }
+.btn-link { -fx-background-color: transparent; -fx-text-fill: #2563eb; -fx-underline: true; }
 
-.page-title {
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-}
-
-.section-subtitle {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #4b5563;
-}
-
-/* Table */
+/* Bảng dữ liệu (Table View) */
 .table-view {
     -fx-background-color: transparent;
-    -fx-border-color: #e5e7eb;
-    -fx-font-family: "Monospaced";
+    -fx-border-color: #e2e8f0;
+    -fx-font-family: "Segoe UI", sans-serif;
 }
-
 .table-view .column-header-background {
-    -fx-background-color: #f9fafb;
+    -fx-background-color: #f8fafc;
 }
 
-/* List View */
-.env-list-view {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
+/* Form nhập liệu chung */
+.text-field, .combo-box, .text-area, .form-input, .form-select {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px;
 }
-
-.env-list-view .list-cell:filled:selected {
-    -fx-background-color: #dbeafe;
-    -fx-text-fill: #1d4ed8;
-    -fx-font-weight: bold;
+.text-field:focused, .form-input:focused {
+    -fx-border-color: #3b82f6;
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.15), 4, 0, 0, 0);
 }
-
-/* Trạng thái bình thường */
-.env-item {
-    -fx-background-radius: 8;
-    -fx-cursor: hand;
-    -fx-transition: all 0.2s ease;
-}
-
-/* Hiệu ứng khi di chuột qua (Hover) */
-.env-item:hover {
-    -fx-background-color: #f5f5f5;
-}
-
-/* Hiệu ứng "CHÌM XUỐNG" khi được CHỌN (Selected) */
-.env-item-selected {
-    -fx-background-color: #e7f1ff; /* Màu xanh nhạt */
-    -fx-border-color: transparent transparent transparent #0d6efd; /* Vạch xanh bên trái */
-    -fx-border-width: 0 0 0 4;
-    -fx-effect: innershadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 1, 1); /* Tạo cảm giác chìm */
-}
-
-/* Đổi màu chữ cho đẹp khi được chọn */
-.env-item-selected Label {
-    -fx-text-fill: #0d6efd;
-    -fx-font-weight: bold;
-}
+.text-area-mono { -fx-font-family: "Consolas", monospace; }
 
 
-/* collections */
-/* Sidebar & Layout */
+/* ==========================================================================
+   3. ENVIRONMENTS & COLLECTIONS MODULES
+   ========================================================================== */
+
 .sidebar-white {
     -fx-background-color: white;
     -fx-border-color: #e5e7eb;
     -fx-border-width: 0 1 0 0;
 }
 
-.content-area {
-    -fx-background-color: #f9fafb;
+.env-list-view {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
 }
 
-/* Cards */
-.card-white {
-    -fx-background-color: white;
+.env-item {
     -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 2);
-    -fx-border-color: #f3f4f6;
-    -fx-border-radius: 8;
-}
-
-/* Buttons */
-.btn-primary {
-    -fx-background-color: #2563eb;
-    -fx-text-fill: white;
-    -fx-background-radius: 4;
     -fx-cursor: hand;
 }
+.env-item:hover { -fx-background-color: #f1f5f9; }
 
-.btn-primary:hover {
-    -fx-background-color: #1d4ed8;
+.env-item-selected {
+    -fx-background-color: #eff6ff;
+    -fx-border-color: transparent transparent transparent #2563eb;
+    -fx-border-width: 0 0 0 4;
+    -fx-effect: innershadow(three-pass-box, rgba(0, 0, 0, 0.05), 4, 0, 1, 1);
 }
-
-.btn-secondary {
-    -fx-background-color: #f3f4f6;
-    -fx-text-fill: #374151;
-    -fx-background-radius: 4;
-}
-
-.btn-success {
-    -fx-background-color: #16a34a;
-    -fx-text-fill: white;
-}
-
-.btn-danger {
-    -fx-background-color: #dc2626;
-    -fx-text-fill: white;
-}
-
-/* Text styles */
-.text-muted {
-    -fx-text-fill: #6b7280;
-}
-
-.text-bold {
+.env-item-selected Label {
+    -fx-text-fill: #2563eb;
     -fx-font-weight: bold;
 }
 
-/* Customizing TreeView */
-.custom-tree-view {
+/* Cấu trúc TreeView (Collections & Testcases) */
+.custom-tree-view, .suite-tree {
     -fx-background-color: transparent;
     -fx-border-width: 0;
 }
-
-.custom-tree-view .tree-cell {
-    -fx-padding: 5 0 5 0;
+.custom-tree-view .tree-cell, .suite-tree .tree-cell {
+    -fx-padding: 6 4;
     -fx-background-color: transparent;
 }
-
-.custom-tree-view .tree-cell:selected {
+.custom-tree-view .tree-cell:selected, .suite-tree .tree-cell:selected {
     -fx-background-color: #dbeafe;
     -fx-text-fill: #1e40af;
-}
-
-
-/*profile */
-
-/* Container chính */
-.main-scroll-pane {
-    -fx-background-color: #f8fafc;
-}
-
-.root-container {
-    -fx-background-color: #f8fafc;
-}
-
-/* Tiêu đề trang */
-.page-title {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1e293b;
-    -fx-padding: 0 0 10 0;
-}
-
-/* Các thẻ Card trắng */
-.card {
-    -fx-background-color: white;
-    -fx-background-radius: 12px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 5);
-}
-
-/* Phần Avatar */
-.profile-avatar-container {
-    -fx-padding: 10px;
-}
-
-.profile-name {
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #0f172a;
-}
-
-.profile-role-tag {
-    -fx-background-color: #dbeafe;
-    -fx-text-fill: #1e40af;
-    -fx-padding: 4px 12px;
-    -fx-background-radius: 20px;
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-}
-
-/* Danh sách thông tin & Icon Unicode */
-.info-list {
-    -fx-padding: 15 0 15 0;
-}
-
-.unicode-icon {
-    -fx-font-size: 16px;
-    -fx-text-fill: #64748b;
-    -fx-min-width: 20px;
-}
-
-.text-small {
-    -fx-font-size: 13px;
-    -fx-text-fill: #475569;
-}
-
-/* Header của từng phần */
-.section-header {
-    -fx-font-size: 15px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #334155;
-}
-
-/* Form inputs */
-.form-label {
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #64748b;
-}
-
-.form-input, .form-select {
-    -fx-background-color: #f1f5f9;
-    -fx-background-radius: 6px;
-    -fx-border-color: #e2e8f0;
-    -fx-border-radius: 6px;
-    -fx-padding: 8px;
-}
-
-.form-input:focused {
-    -fx-background-color: white;
-    -fx-border-color: #3b82f6;
-}
-
-/* Nút bấm */
-.btn-primary {
-    -fx-background-color: #2563eb;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-padding: 10px 20px;
-    -fx-background-radius: 8px;
-    -fx-cursor: hand;
-}
-
-.btn-primary:hover {
-    -fx-background-color: #1d4ed8;
-}
-
-.btn-secondary {
-    -fx-background-color: transparent;
-    -fx-text-fill: #64748b;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 8px;
-    -fx-padding: 10px 20px;
-}
-
-/* Thống kê */
-.stat-item {
-    -fx-padding: 5 0;
-}
-
-.stat-label {
-    -fx-text-fill: #64748b;
-    -fx-font-size: 13px;
-}
-
-.stat-value {
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-}
-
-.text-blue {
-    -fx-text-fill: #3b82f6;
-}
-
-.text-green {
-    -fx-text-fill: #22c55e;
-}
-
-.text-emerald {
-    -fx-text-fill: #10b981;
-}
-
-.text-small {
-    -fx-font-size: 12px;
-    -fx-text-fill: #6b7280; /* Màu xám nhạt */
-}
-
-/* Tăng khoảng cách cho các card nếu Sơn thấy chúng dính nhau quá */
-.card {
-    -fx-background-color: white;
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 4);
-}
-
-
-/*testcase*/
-
-/* Tổng thể */
-.root {
-    -fx-font-family: "Segoe UI", sans-serif;
-    -fx-background-color: #f9fafb;
-}
-
-.header-text {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1f2937;
-}
-
-.sub-header {
-    -fx-font-weight: bold;
-    -fx-text-fill: #374151;
-}
-
-/* Card layout */
-.card {
-    -fx-background-color: white;
-    -fx-background-radius: 8;
-    -fx-border-color: #e5e7eb;
-    -fx-border-radius: 8;
-    -fx-padding: 15;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 5, 0, 0, 2);
-}
-
-/* Buttons */
-.btn-primary {
-    -fx-background-color: #2563eb;
-    -fx-text-fill: white;
-    -fx-cursor: hand;
-}
-
-.btn-primary:hover {
-    -fx-background-color: #1d4ed8;
-}
-
-.btn-success {
-    -fx-background-color: #16a34a;
-    -fx-text-fill: white;
-    -fx-cursor: hand;
-}
-
-.btn-success:hover {
-    -fx-background-color: #15803d;
-}
-
-.btn-danger {
-    -fx-background-color: #dc2626;
-    -fx-text-fill: white;
-}
-
-.btn-outline {
-    -fx-background-color: #f3f4f6;
-    -fx-text-fill: #374151;
-    -fx-border-color: #d1d5db;
-    -fx-border-radius: 4;
-}
-
-.btn-link {
-    -fx-background-color: transparent;
-    -fx-text-fill: #2563eb;
-    -fx-underline: true;
-}
-
-/* Form controls */
-.text-field, .combo-box, .text-area {
-    -fx-background-color: white;
-    -fx-border-color: #d1d5db;
-    -fx-border-radius: 4;
-    -fx-padding: 5;
-}
-
-.text-area-mono {
-    -fx-font-family: "Consolas", monospace;
-}
-
-/* Left Panel & TreeView */
-.left-panel {
-    -fx-background-color: white;
-}
-
-.suite-tree {
-    -fx-background-color: transparent;
-}
-
-.suite-tree .tree-cell {
-    -fx-padding: 5 0 5 5;
+    -fx-background-radius: 4;
 }
 
 .body-mode-btn {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-text-fill: #757575;
+    -fx-text-fill: #64748b;
     -fx-cursor: hand;
     -fx-font-weight: bold;
 }
-
 .body-mode-btn:selected {
-    -fx-text-fill: #2196f3;
-    -fx-border-color: transparent transparent #2196f3 transparent;
-    -fx-border-width: 0 0 2 0;
-}
-
-.body-mode-btn:hover {
-    -fx-background-color: #f5f5f5;
-}
-
-
-/*REQUEST*/
-/* Tổng thể */
-.root {
-    -fx-font-family: "Segoe UI", sans-serif;
-    -fx-background-color: #f8fafc;
-}
-
-/* Panel bên trái */
-.left-panel {
-    -fx-background-color: white;
-    -fx-border-color: #e2e8f0;
-    -fx-border-width: 0 1 0 0;
-}
-
-.header-text {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1e293b;
-}
-
-.label-form {
-    -fx-font-size: 12px;
-    -fx-text-fill: #475569;
-    -fx-font-weight: bold;
-}
-
-/* Buttons */
-.btn-run-all {
-    -fx-background-color: #16a34a;
-    -fx-text-fill: white;
-    -fx-cursor: hand;
-}
-
-.btn-run-all:hover {
-    -fx-background-color: #15803d;
-}
-
-.btn-run-selected {
-    -fx-background-color: #2563eb;
-    -fx-text-fill: white;
-    -fx-cursor: hand;
-}
-
-.btn-send {
-    -fx-background-color: #2563eb;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-padding: 8 20;
-}
-
-.btn-secondary {
-    -fx-background-color: #e2e8f0;
-    -fx-text-fill: #475569;
-}
-
-.btn-link {
-    -fx-background-color: transparent;
     -fx-text-fill: #2563eb;
-    -fx-underline: true;
-    -fx-cursor: hand;
-}
-
-/* Card style */
-.card {
-    -fx-background-color: white;
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
-}
-
-/* Input & TextArea */
-.input-field {
-    -fx-background-color: white;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 4;
-}
-
-.text-area-mono {
-    -fx-font-family: "Consolas", monospace;
-    -fx-font-size: 12px;
-}
-
-.response-body {
-    -fx-font-family: "Consolas", monospace;
-    -fx-background-color: #f1f5f9;
-    -fx-control-inner-background: #f1f5f9;
-}
-
-/* Test Results */
-.test-pass {
-    -fx-text-fill: #16a34a;
-    -fx-background-color: #f0fdf4;
-    -fx-padding: 5;
-    -fx-background-radius: 4;
-}
-
-.test-fail {
-    -fx-text-fill: #dc2626;
-    -fx-background-color: #fef2f2;
-    -fx-padding: 5;
-    -fx-background-radius: 4;
-}
-
-/* TabPane Styling */
-.tab-pane .tab-header-area .tab-header-background {
-    -fx-opacity: 0;
-}
-
-.tab {
-    -fx-background-color: transparent;
-}
-
-.tab:selected {
-    -fx-border-color: #2563eb;
+    -fx-border-color: transparent transparent #2563eb transparent;
     -fx-border-width: 0 0 2 0;
 }
 
-/* login */
-.login-root {
-    -fx-background-color: #eef2f7;
-}
 
+/* ==========================================================================
+   4. PROFILE & TEXT STYLES
+   ========================================================================== */
+
+.main-scroll-pane, .root-container { -fx-background-color: #f8fafc; }
+
+.page-title { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a; -fx-padding: 0 0 10 0; }
+.section-header { -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #334155; }
+.section-subtitle { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #4b5563; }
+.form-label { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #64748b; }
+
+/* Profile Tags & Stats */
+.profile-name { -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a; }
+.profile-role-tag { -fx-background-color: #dbeafe; -fx-text-fill: #1e40af; -fx-padding: 4px 12px; -fx-background-radius: 20px; -fx-font-size: 12px; -fx-font-weight: bold; }
+.unicode-icon { -fx-font-size: 16px; -fx-text-fill: #64748b; -fx-min-width: 20px; }
+
+.stat-label { -fx-text-fill: #64748b; -fx-font-size: 13px; }
+.stat-value { -fx-font-weight: bold; -fx-font-size: 14px; }
+
+.text-muted { -fx-text-fill: #6b7280; }
+.text-small { -fx-font-size: 12px; -fx-text-fill: #6b7280; }
+.text-bold { -fx-font-weight: bold; }
+.text-blue { -fx-text-fill: #3b82f6; }
+.text-green { -fx-text-fill: #22c55e; }
+.text-emerald { -fx-text-fill: #10b981; }
+
+
+/* ==========================================================================
+   5. AUTHENTICATION (LOGIN SCREEN)
+   ========================================================================== */
+
+.login-root { -fx-background-color: #eef2f7; }
 .login-card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 14;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.12), 18, 0, 0, 8);
 }
-
-.login-title {
-    -fx-font-size: 30px;
-    -fx-font-weight: 800;
-    -fx-text-fill: #111827;
-    -fx-alignment: CENTER;
-    -fx-padding: 6 0 10 0;
-}
-
-.login-label {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #374151;
-}
-
+.login-title { -fx-font-size: 30px; -fx-font-weight: 800; -fx-text-fill: #111827; -fx-alignment: CENTER; -fx-padding: 6 0 10 0; }
+.login-label { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #374151; }
 .login-input {
     -fx-background-color: #ffffff;
     -fx-border-color: #d1d5db;
@@ -863,11 +267,7 @@
     -fx-padding: 10 12;
     -fx-font-size: 14px;
 }
-
-.login-input:focused {
-    -fx-border-color: #2563eb;
-}
-
+.login-input:focused { -fx-border-color: #2563eb; }
 .login-btn {
     -fx-background-color: #2563eb;
     -fx-text-fill: white;
@@ -877,33 +277,20 @@
     -fx-background-radius: 8;
     -fx-cursor: hand;
 }
+.login-btn:hover { -fx-background-color: #1d4ed8; }
+.login-muted { -fx-text-fill: #6b7280; }
+.login-error { -fx-text-fill: #dc2626; -fx-font-weight: bold; }
 
-.login-btn:hover {
-    -fx-background-color: #1d4ed8;
-}
 
-.login-muted {
-    -fx-text-fill: #6b7280;
-}
+/* ==========================================================================
+   6. USER PROFILE DROPDOWN MENU
+   ========================================================================== */
 
-.login-error {
-    -fx-text-fill: #dc2626;
-    -fx-font-weight: bold;
-}
-
-/* user menu (logout dropdown) */
 .user-menu {
     -fx-background-color: #f3f4f6;
     -fx-background-radius: 8;
     -fx-padding: 6 12;
     -fx-cursor: hand;
 }
-
-.user-menu:hover {
-    -fx-background-color: #e5e7eb;
-}
-
-.user-menu .label {
-    -fx-text-fill: #111827;
-    -fx-font-weight: 700;
-}
+.user-menu:hover { -fx-background-color: #e5e7eb; }
+.user-menu .label { -fx-text-fill: #111827; -fx-font-weight: 700; }

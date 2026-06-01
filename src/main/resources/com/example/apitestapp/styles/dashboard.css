@@ -1,0 +1,214 @@
+/* Dashboard Modern Styles */
+.content-area {
+    -fx-background-color: #f0f2f8;
+}
+
+/* Page Title */
+.page-title {
+    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 28px;
+    -fx-font-weight: 700;
+    /* Đổ dải màu Gradient mượt từ trái sang phải */
+    -fx-text-fill: linear-gradient(to right, #1e62d0, #158a43);
+    -fx-padding: 0 0 8px 0;
+    -fx-margin: 0 0 12px 0;
+}
+
+/* Section Background - có thêm margin dưới để tách biệt */
+.section-bg {
+    -fx-background-color: white;
+    -fx-background-radius: 24px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 20, 0, 0, 2);
+    -fx-border-color: #eef2f6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 24px;
+    -fx-margin: 0 0 8px 0;
+}
+
+.section-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f172a;
+    -fx-padding: 0 0 16px 12px;
+    -fx-border-color: transparent transparent transparent #3b82f6;
+    -fx-border-width: 0 0 0 4px;
+    -fx-margin: 0 0 8px 0;
+}
+
+/* Cards Base - tăng padding và margin */
+/* Card Base - Đặt nền mặc định hoặc xóa bỏ viền trái cũ */
+/* Card Base - Sử dụng AnchorPane giúp định vị icon góc phải tốt hơn */
+.card {
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
+    -fx-margin: 4px;
+}
+
+.card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 24, 0, 0, 8);
+    -fx-transition: all 0.2s ease-in-out;
+    -fx-cursor: hand;
+    -fx-translate-y: -6px;
+}
+
+/* Tiêu đề của Card: chữ to rõ ràng hơn, màu trắng mờ sang trọng */
+.card .card-label {
+    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 15px;      /* Tăng từ 13px lên 15px */
+    -fx-font-weight: 700;     /* Đậm hẳn lên */
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+}
+
+/* Số liệu chính: Tăng size lớn hẳn làm điểm nhấn */
+.card .card-value {
+    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 42px;      /* Tăng từ 34px lên 42px để cực kỳ nổi bật */
+    -fx-font-weight: 800;
+    -fx-text-fill: #ffffff;
+}
+
+/* Icon mờ đặt ở góc phải dưới - không dùng translate gây lỗi lệch layout nữa */
+.card-icon-text {
+    -fx-font-size: 54px;      /* Tăng size icon cho tương xứng */
+    -fx-opacity: 0.14;        /* Giữ độ mờ vừa phải để không đè chữ */
+}
+
+/* ========== BIẾN THỂ MÀU NỀN CỦA CARD ========== */
+.card-blue {
+    -fx-background-color: #2563eb; /* Màu xanh Royal blue hiện đại */
+}
+.card-blue:hover {
+    -fx-background-color: #1d4ed8;
+}
+
+.card-purple {
+    -fx-background-color: #a855f7;
+}
+.card-purple:hover {
+    -fx-background-color: #9333ea;
+}
+
+.card-green {
+    -fx-background-color: #10b981;
+}
+.card-green:hover {
+    -fx-background-color: #059669;
+}
+
+.card-red {
+    -fx-background-color: #ef4444;
+}
+.card-red:hover {
+    -fx-background-color: #dc2626;
+}
+
+/* ========== TABLEVIEW STYLES ========== */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+}
+
+/* Header container */
+.table-view .column-header-background {
+    -fx-background-color: #f8fafc;
+}
+
+/* Mỗi column header */
+.table-view .column-header {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: transparent transparent #e2e8f0 transparent;
+    -fx-border-width: 0 0 2px 0;
+    -fx-padding: 16px 0 16px 12px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Label bên trong column header */
+.table-view .column-header .label {
+    -fx-text-fill: #1e293b;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 0;
+    -fx-alignment: CENTER_LEFT;
+    -fx-wrap-text: true;
+    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+}
+
+/* Table cell */
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-padding: 8px 0;
+}
+
+.table-row-cell .table-cell {
+    -fx-padding: 12px 12px;
+    -fx-text-fill: #334155;
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-border-color: transparent transparent #f1f5f9 transparent;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Tăng khoảng cách giữa các dòng table */
+.table-row-cell:empty {
+    -fx-padding: 8px;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #f8fafc;
+}
+
+/* ScrollBar */
+.table-view .scroll-bar:vertical {
+    -fx-pref-width: 8px;
+    -fx-padding: 0;
+}
+
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #cbd5e1;
+    -fx-background-radius: 10px;
+}
+
+/* ========== PIECHART STYLES ========== */
+.chart-pie {
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+    -fx-padding: 12px;
+}
+
+.chart-pie.data0 {
+    -fx-pie-color: #10b981;
+}
+
+.chart-pie.data1 {
+    -fx-pie-color: #ef4444;
+}
+
+/* Legend styling - cách xa biểu đồ hơn */
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 16px 0 0 0;
+}
+
+.chart-legend-item {
+    -fx-text-fill: #334155;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-padding: 4px 8px;
+}
+
+/* Tăng khoảng cách giữa các item trong legend */
+.chart-legend-item-symbol {
+    -fx-padding: 6px;
+}
+
+/* Page Subtitle */
+.page-subtitle {
+    -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-size: 20px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #64748b; /* Màu xám Slate mờ sang trọng */
+    -fx-padding: 0 0 0 4px;  /* Đẩy nhẹ sang phải để thẳng hàng với chữ DASHBOARD */
+}

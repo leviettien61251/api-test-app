@@ -16,7 +16,7 @@
                 <Insets bottom="20" left="15" right="15" top="20"/>
             </padding>
             <children>
-                <Label styleClass="logo-label" text="API Tester">
+                <Label styleClass="logo-label" text=" 🔰 API Tester">
                     <VBox.margin>
                         <Insets bottom="30.0" left="10.0"/>
                     </VBox.margin>
@@ -30,8 +30,8 @@
                               text="🚀 Request" toggleGroup="$headerGroup"/>
                 <ToggleButton fx:id="btnReport" onAction="#navigateReports" styleClass="header-nav-item"
                               text="📈 Report" toggleGroup="$headerGroup"/>
-                <ToggleButton fx:id="btnHistory" maxWidth="Infinity" onAction="#navigateHistory" styleClass="nav-item"
-                              text="⏳ History" toggleGroup="$sidebarGroup"/>
+                <ToggleButton fx:id="btnHistory" onAction="#navigateHistory"
+                              styleClass="header-nav-item" text="⏳ History" toggleGroup="$headerGroup"/>
             </children>
         </VBox>
     </left>
