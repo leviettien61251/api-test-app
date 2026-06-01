@@ -1,371 +1,124 @@
-# Signup Test System Architecture
+# Kien truc
 
-## Component Diagram
+## 1. Tong the
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    JavaFX GUI Application                       │
-│                                                                  │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │ TestcaseController                                       │  │
-│  │ ─────────────────────────────────────────────────────── │  │
-│  │ • TreeView (Collections/APIs)                           │  │
-│  │ • TableView (Test Cases with ✅/❌ results)            │  │
-│  │ • ListView (Execution Log)                             │  │
-│  │ • Buttons (Run All, Run Selected, Stop)                │  │
-│  │ • Summary (Pass/Fail counts)                           │  │
-│  │                                                          │  │
-│  │ handleApiSelection(apiName)                            │  │
-│  │  └─> Loads SignupTestScenarios                         │  │
-│  │      Populates TableView with 7 test cases             │  │
-│  │                                                          │  │
-│  │ runTests(all)                                           │  │
-│  │  └─> Thread.start()                                    │  │
-│  │      └─> For each TestCaseModel                        │  │
-│  │          └─> callActualApi(tc)                         │  │
-│  └──────────────────────────────────────────────────────────┘  │
-│                              │                                   │
-│                              │ Creates instances of             │
-│                              ▼                                   │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │ ApiTestService                                           │  │
-│  │ ─────────────────────────────────────────────────────── │  │
-│  │ • OkHttpClient (HTTP communication)                     │  │
-│  │ • baseUrl = "http://localhost:8080"                     │  │
-│  │                                                          │  │
-│  │ callSignupApi(phone, password)                          │  │
-│  │  ├─> Create JSON request body                           │  │
-│  │  ├─> POST to /api/v1/signup                            │  │
-│  │  ├─> Execute HTTP request (10s timeout)                │  │
-│  │  ├─> Parse JSON response                               │  │
-│  │  └─> Return ApiResponse                                │  │
-│  │                                                          │  │
-│  │ ApiResponse                                             │  │
-│  │  ├─ httpCode: int (200, 400, 422, etc)                │  │
-│  │  ├─ isSuccess: boolean                                 │  │
-│  │  ├─ responseBody: String (JSON)                        │  │
-│  │  └─ statusMessage: String (OK, Bad Request, etc)       │  │
-│  └──────────────────────────────────────────────────────────┘  │
-│                              ▲                                   │
-│                              │ Uses                              │
-└──────────────────────────────┼─────────────────────────────────┘
-                               │
-                               │ Uses
-                               ▼
-              ┌─────────────────────────────────┐
-              │  SignupTestScenarios            │
-              │ ─────────────────────────────── │
-              │ getSignupScenarios()            │
-              │  └─> Returns List<SignupTestData>
-              │                                  │
-              │ Scenario 1: Valid data → 1000   │
-              │ Scenario 2: Duplicate → 2001    │
-              │ Scenario 3: No password → 3006  │
-              │ Scenario 4: Bad phone → 3007    │
-              │ Scenario 5: Bad phone+dup → 3007│
-              │ Test 6: Weak password → 3008    │
-              │ Test 7: Valid special → 1000    │
-              └─────────────────────────────────┘
-                        ▲
-                        │ Uses
-                        ▼
-              ┌─────────────────────────────────┐
-              │  SignupTestData (Model)         │
-              │ ─────────────────────────────── │
-              │ • scenario: String              │
-              │ • phone: String                 │
-              │ • password: String              │
-              │ • expectedCode: String          │
-              │ • expectedStatus: String        │
-              │ • description: String           │
-              │ • @Builder (Lombok)             │
-              └─────────────────────────────────┘
-                        ▲
-                        │
-                        │ Contains (7 instances)
-                        │
-                ┌───────┴───────┬──────────┬──────────┬──────────┐
-                │               │          │          │          │
-            S1: 1000        S2: 2001  S3: 3006  S4: 3007  T6,7
+Ung dung di theo cau truc JavaFX desktop truyen thong:
+
+- `views` (`.fxml`) cho giao dien
+- `controllers` cho event va binding UI
+- `services` cho logic test, orchestration va storage
+- `repository` cho truy cap PostgreSQL
+- `models` cho object nghiep vu
+- `config` cho session va runtime state
+
+## 2. Cau truc package
+
+```text
+src/main/java/com/example/apitestapp
+|-- MainApplication.java
+|-- MainController.java
+|-- config/
+|-- controllers/
+|-- db/
+|-- models/
+|-- repository/
+`-- services/
 ```
 
-## Data Flow Diagram
+## 3. Luong mo man hinh
 
-```
-User Interface
-      │
-      ├─► Select "POST /api/v1/signup" in tree
-      │
-      ▼
-TestcaseController.handleApiSelection()
-      │
-      ├─► SignupTestScenarios.getSignupScenarios()
-      │       │
-      │       └─► Returns List<SignupTestData> (7 items)
-      │
-      ▼
-Load tests into TableView
-      │
-      ├─► TestCaseModel (with phone, password fields)
-      ├─► TestCaseModel
-      ├─► ... (7 total)
-      │
-      ▼
-User clicks "Run All"
-      │
-      ▼
-TestcaseController.runTests(true)
-      │
-      ├─► Start new Thread
-      │       │
-      │       └─► For each TestCaseModel in testData:
-      │               │
-      │               ├─► callActualApi(tc)
-      │               │     │
-      │               │     ├─► ApiTestService.callSignupApi(phone, password)
-      │               │     │     │
-      │               │     │     ├─► Build JSON request
-      │               │     │     ├─► POST to http://localhost:8080/api/v1/signup
-      │               │     │     ├─► Wait for response (max 10s)
-      │               │     │     ├─► Parse response code
-      │               │     │     │
-      │               │     │     └─► Return ApiResponse
-      │               │     │
-      │               │     ├─► Compare expectedCode vs actualCode
-      │               │     │
-      │               │     └─► Return boolean (PASS/FAIL)
-      │               │
-      │               ├─► Update UI on JavaFX thread:
-      │               │   ├─ Set result (✅ PASS or ❌ FAIL)
-      │               │   ├─ Set status (response code)
-      │               │   └─ Log result with details
-      │               │
-      │               └─► Sleep 500ms
-      │
-      ▼
-Test Suite Complete
-      │
-      └─► Display Summary
-            ├─ Pass: X
-            ├─ Fail: Y
-            └─ Total: 7
+```text
+MainApplication
+  -> login-view.fxml
+  -> LoginController
+  -> MainApplication.showMainView()
+  -> main-view.fxml
+  -> MainController
 ```
 
-## Request/Response Flow
+`MainController` cache cac view con va goi `refresh()` neu controller implement `RefreshableView`.
 
-```
-┌─────────────────────────────────────┐
-│  Test Case                          │
-│  ├─ Phone: "84901234567"           │
-│  ├─ Password: "Password@123"        │
-│  └─ Expected Code: "1000"           │
-└──────────────┬──────────────────────┘
-               │
-               ▼
-    ┌────────────────────────┐
-    │ HTTP POST Request      │
-    ├────────────────────────┤
-    │ URL: http://localhost: │
-    │      8080/api/v1/signup│
-    │                        │
-    │ Headers:              │
-    │ Content-Type:         │
-    │ application/json      │
-    │                        │
-    │ Body:                 │
-    │ {                      │
-    │  "phone":             │
-    │   "84901234567",      │
-    │  "password":          │
-    │   "Password@123"      │
-    │ }                      │
-    └────────────┬───────────┘
-                 │
-                 │ (Network)
-                 ▼
-    ┌────────────────────────┐
-    │ Backend API Server     │
-    │ localhost:8080         │
-    └────────────┬───────────┘
-                 │
-                 │ Validate & Process
-                 │ ├─ Check phone format
-                 │ ├─ Check password strength
-                 │ ├─ Query database
-                 │ └─ Insert or return error
-                 │
-                 ▼
-    ┌────────────────────────┐
-    │ HTTP Response          │
-    ├────────────────────────┤
-    │ Status Code: 200 OK    │
-    │                        │
-    │ Body:                  │
-    │ {                      │
-    │  "code": 1000,         │
-    │  "message":            │
-    │   "User registered",   │
-    │  "status": "SUCCESS"   │
-    │ }                      │
-    └────────────┬───────────┘
-                 │
-                 │ (Network)
-                 ▼
-    ┌────────────────────────┐
-    │ Parse Response         │
-    │ ├─ Extract code: 1000  │
-    │ ├─ Get HTTP code: 200  │
-    │ └─ Get message: OK     │
-    └────────────┬───────────┘
-                 │
-                 ▼
-    ┌────────────────────────┐
-    │ Compare & Validate     │
-    │ Expected: 1000         │
-    │ Actual: 1000           │
-    │ Match: ✅ YES → PASS   │
-    └────────────┬───────────┘
-                 │
-                 ▼
-    ┌────────────────────────┐
-    │ Update UI              │
-    │ Result: ✅ PASS        │
-    │ Status: 1000           │
-    │ Message: Code: 1000,   │
-    │          HTTP: 200     │
-    └────────────────────────┘
-```
+## 4. Luong chay testcase
 
-## Class Dependencies
-
-```
+```text
 TestcaseController
-    │
-    ├─ depends on ─► ApiTestService
-    │                  │
-    │                  └─ depends on ─► OkHttp3
-    │                                   Gson
-    │
-    └─ depends on ─► SignupTestScenarios
-                       │
-                       └─ uses ────────► SignupTestData
-                                         (Lombok @Builder)
-
-Module Imports:
-  • javafx.* (UI components)
-  • okhttp3.* (HTTP client)
-  • com.google.gson.* (JSON processing)
-  • java.util.* (Collections)
+  -> ApiScenarioRegistry / UserTestSuiteService / UserTestCaseService
+  -> ApiTestService
+  -> ApiPayloadAssertionEvaluator
+  -> RunStorage
 ```
 
-## Testing Scenarios Hierarchy
+Chi tiet:
 
-```
-SignupTestScenarios (7 Test Cases)
-│
-├─ Scenario 1: SUCCESS PATH ✅
-│  ├─ Phone: 84901234567 (Valid)
-│  ├─ Password: Password@123 (Valid)
-│  └─ Expected: 1000 (Success)
-│
-├─ Scenario 2: DUPLICATE USER ❌
-│  ├─ Phone: 84901234567 (Same as S1)
-│  ├─ Password: Password@123
-│  └─ Expected: 2001 (Already registered)
-│
-├─ Scenario 3: MISSING FIELD ❌
-│  ├─ Phone: 84901234567 (Valid)
-│  ├─ Password: (Empty)
-│  └─ Expected: 3006 (Missing field)
-│
-├─ Scenario 4: INVALID PHONE ❌
-│  ├─ Phone: 123 (Too short)
-│  ├─ Password: Password@123 (Valid)
-│  └─ Expected: 3007 (Invalid phone)
-│
-├─ Scenario 5: INVALID PHONE + DUPLICATE ❌
-│  ├─ Phone: invalid (Invalid format)
-│  ├─ Password: Password@123 (Valid)
-│  └─ Expected: 3007 (Invalid phone)
-│
-├─ Test 6: WEAK PASSWORD ❌
-│  ├─ Phone: 84901234567 (Valid)
-│  ├─ Password: 123 (Too short)
-│  └─ Expected: 3008 (Weak password)
-│
-└─ Test 7: SPECIAL CHARS ✅
-   ├─ Phone: 84909876543 (Valid, different)
-   ├─ Password: P@ssw0rd!#$% (Valid with special chars)
-   └─ Expected: 1000 (Success)
-```
+1. Nguoi dung chon scenario hoac user suite.
+2. `TestcaseController` nap `ApiTestScenario` vao `TableView`.
+3. Khi run:
+   - setup requests duoc goi truoc
+   - response variable duoc capture theo `jsonPath`
+   - token auth duoc tu sinh neu body/header dung placeholder auth
+   - API chinh duoc goi bang `ApiTestService`
+   - payload assertion va expected code duoc doi chieu
+   - cleanup requests duoc goi sau cung
+4. `TestRun` va `TestResult` duoc luu qua `RunStorage`.
 
-## Execution Flow (Sequence Diagram)
+## 5. Persistence
 
-```
-User              Controller         Service           API
-  │                  │                 │                │
-  ├─ Click API ─────►│                 │                │
-  │                  │                 │                │
-  │                  ├─ Load scenarios─►│                │
-  │                  │                 │                │
-  │◄─ Display tests ─┤                 │                │
-  │                  │                 │                │
-  ├─ Click Run ─────►│                 │                │
-  │                  │                 │                │
-  │                  ├─ Thread.start()─┤                │
-  │                  │                 │                │
-  │                  ├─ For each test ─┤                │
-  │                  │                 │                │
-  │                  │  ├─ callApi() ──────► POST req ─►│
-  │                  │  │                    │           │
-  │                  │  │                    │ Process   │
-  │                  │  │                    │ Validate  │
-  │                  │  │                    │           │
-  │                  │  │◄─ Response ───────◄│
-  │                  │  │                    │
-  │                  │  ├─ Compare codes    │
-  │                  │  │                    │
-  │                  │  └─ Return PASS/FAIL │
-  │                  │                      │
-  │◄─ Update UI ─────┤ (every 500ms)        │
-  │                  │                      │
-  │                  └─ Summary when done   │
-  │                                          │
-  ├─ View results ──────────────────────────┤
-  │                                          │
-```
+### PostgreSQL
 
----
+`repository/` xu ly CRUD cho:
 
-## Technology Stack
+- `UserRepository`
+- `RoleRepository`
+- `ClientMachineRepository`
+- `UserTestSuiteRepository`
+- `UserTestCaseRepository`
 
-```
-Framework Layer:
-  └─ JavaFX (UI Controls, Layouts, Bindings)
+### File JSON local
 
-Business Logic Layer:
-  ├─ TestcaseController (Orchestration)
-  ├─ ApiTestService (HTTP Communication)
-  └─ SignupTestScenarios (Test Data)
+`RunStorage` luu lich su run vao file JSON o `%LOCALAPPDATA%`.
 
-Data Layer:
-  ├─ SignupTestData (Model)
-  └─ TestCaseModel (UI Model)
+Dieu nay tach ket qua test khoi database va khoi workspace, nhung van cho UI doc lai nhanh.
 
-External Libraries:
-  ├─ OkHttp3 (HTTP Client)
-  ├─ Gson (JSON Processing)
-  └─ Lombok (Code Generation)
+## 6. Runtime state
 
-Network Layer:
-  └─ HTTP/JSON API @ http://localhost:8080
-```
+- `AppSession`: nguoi dung hien tai, username, role
+- `AppRunConfig`: base URL, alert mode, runner, thoi diem config
+- `SelectedRunContext`: run dang duoc mo tren `Report`
 
-This architecture ensures:
+## 7. Thanh phan can luu y
 
-- ✅ Separation of concerns
-- ✅ Easy testing and mocking
-- ✅ Extensible design
-- ✅ UI responsiveness (threading)
-- ✅ Error handling
-- ✅ Real API integration
+### Scenario providers
+
+`ApiScenarioRegistry` dang ky cac provider cho nhieu nhom API:
+
+- auth
+- user
+- map
+- flow
+- real API
+- bulk test
+
+Moi provider tra ve `ApiScenarioDefinition`, trong do co:
+
+- collection name
+- module name
+- api label
+- endpoint
+- sample request body
+- danh sach scenario
+- cleanup requests
+
+### Hook requests
+
+`ApiSetupRequest` va `ApiCleanupRequest` cho phep testcase co lifecycle day du:
+
+- tao du lieu truoc khi test
+- xoa hoac rollback sau khi test
+- capture bien runtime tu response setup
+
+## 8. Diem ky thuat can cai thien
+
+- chuan hoa ten collection/module trong cac provider
+- tach `database.sql` thanh migration/seed ro rang
+- bo sung phan quyen thuc te neu role `Admin/Tester` can hanh vi khac nhau
+- tang test coverage cho controller/service phuc tap, dac biet `TestcaseController`
