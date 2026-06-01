@@ -134,7 +134,7 @@
             </padding>
             <children>
                 <Label style="-fx-font-weight: bold;" text="📋 KẾT QUẢ THỰC THI"/>
-                <ListView fx:id="resultLogList" VBox.vgrow="ALWAYS"/>
+                <ListView fx:id="resultLogList" styleClass="execution-log-list" VBox.vgrow="ALWAYS"/>
                 <VBox fx:id="summaryBox" spacing="5.0"
                       style="-fx-background-color: #f1f2f6; -fx-padding: 10; -fx-background-radius: 5;">
                     <children>

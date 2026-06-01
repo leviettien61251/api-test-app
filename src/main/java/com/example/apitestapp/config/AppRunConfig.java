@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 
 public final class AppRunConfig {
-    public static final String DEFAULT_BASE_URL ="http://group3.it4788.sukkaito.id.vn";
+    public static final String DEFAULT_BASE_URL ="http://group3.it4788.sukkaito.id.vn/api";
     public static final String DEFAULT_RUN_MODE = "ALL";
     public static final String DEFAULT_ALERT_MODE = "Stop on fail";
     public static final String DEFAULT_USER = System.getProperty("user.name", "Unknown");
