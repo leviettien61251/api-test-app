@@ -124,13 +124,14 @@
             </padding>
 
             <children>
-                <Label styleClass="right-panel-title" text="📋 KẾT QUẢ THỰC THI"/>
-
-                <ListView fx:id="resultLogList" styleClass="terminal-log-list" VBox.vgrow="ALWAYS"/>
-
-                <VBox fx:id="summaryBox" spacing="6.0" styleClass="summary-box-premium">
-                    <Label styleClass="summary-header" text="📊 TỔNG KẾT"/>
-                    <Label fx:id="summaryText" styleClass="summary-body" text="Chưa có dữ liệu"/>
+                <Label style="-fx-font-weight: bold;" text="📋 KẾT QUẢ THỰC THI"/>
+                <ListView fx:id="resultLogList" styleClass="execution-log-list" VBox.vgrow="ALWAYS"/>
+                <VBox fx:id="summaryBox" spacing="5.0"
+                      style="-fx-background-color: #f1f2f6; -fx-padding: 10; -fx-background-radius: 5;">
+                    <children>
+                        <Label style="-fx-font-weight: bold;" text="📊 TỔNG KẾT"/>
+                        <Label fx:id="summaryText" text="Chưa có dữ liệu"/>
+                    </children>
                 </VBox>
 
                 <Button fx:id="saveReportBtn" maxWidth="Infinity" styleClass="btn-gradient-indigo"

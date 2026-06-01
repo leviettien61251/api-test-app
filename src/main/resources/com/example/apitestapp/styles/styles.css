@@ -214,6 +214,113 @@
     -fx-font-weight: bold;
 }
 .body-mode-btn:selected {
+    -fx-text-fill: #2196f3;
+    -fx-border-color: transparent transparent #2196f3 transparent;
+    -fx-border-width: 0 0 2 0;
+}
+
+.body-mode-btn:hover {
+    -fx-background-color: #f5f5f5;
+}
+
+/* Testcase execution row states */
+.table-row-cell:test-pass {
+    -fx-background-color: #dcfce7;
+    -fx-text-background-color: #166534;
+}
+
+.table-row-cell:test-fail {
+    -fx-background-color: #fee2e2;
+    -fx-text-background-color: #991b1b;
+}
+
+.table-row-cell:test-running {
+    -fx-background-color: #fef3c7;
+    -fx-text-background-color: #92400e;
+}
+
+.table-row-cell:test-pending {
+    -fx-background-color: #f3f4f6;
+    -fx-text-background-color: #4b5563;
+}
+
+/* Execution log states */
+.execution-log-list .list-cell {
+    /*-fx-border-color: #d1d5db;*/
+    /*-fx-border-width: 1;*/
+    /*-fx-border-radius: 4;*/
+    /*-fx-background-radius: 4;*/
+    /*-fx-padding: 6 8;*/
+}
+
+.execution-log-list .list-cell:log-success {
+    -fx-background-color: #dcfce7;
+    -fx-border-color: #86efac;
+}
+
+.execution-log-list .list-cell:log-error {
+    -fx-background-color: #fee2e2;
+    -fx-border-color: #fca5a5;
+}
+
+
+/*REQUEST*/
+/* Tổng thể */
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #f8fafc;
+}
+
+/* Panel bên trái */
+.left-panel {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 0 1 0 0;
+}
+
+.header-text {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.label-form {
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+}
+
+/* Buttons */
+.btn-run-all {
+    -fx-background-color: #16a34a;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.btn-run-all:hover {
+    -fx-background-color: #15803d;
+}
+
+.btn-run-selected {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.btn-send {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+}
+
+.btn-secondary {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #475569;
+}
+
+.btn-link {
+    -fx-background-color: transparent;
     -fx-text-fill: #2563eb;
     -fx-border-color: transparent transparent #2563eb transparent;
     -fx-border-width: 0 0 2 0;
@@ -292,5 +399,12 @@
     -fx-padding: 6 12;
     -fx-cursor: hand;
 }
-.user-menu:hover { -fx-background-color: #e5e7eb; }
-.user-menu .label { -fx-text-fill: #111827; -fx-font-weight: 700; }
+
+.user-menu:hover {
+    -fx-background-color: #e5e7eb;
+}
+
+.user-menu .label {
+    -fx-text-fill: #111827;
+    -fx-font-weight: 700;
+}

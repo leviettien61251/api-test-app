@@ -13,6 +13,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.beans.value.ChangeListener;
+import javafx.css.PseudoClass;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -28,6 +30,12 @@ public class TestcaseController implements Initializable {
     private static final String CONTINUE_ALERT_MODE = "Continue";
     private static final String RUN_UNTIL_FINISHED_LABEL = "Chạy liên tục đến hết";
     private static final String STOP_ON_FAIL_LABEL = "Dừng ngay khi có FAIL";
+    private static final PseudoClass TEST_PASS_STATE = PseudoClass.getPseudoClass("test-pass");
+    private static final PseudoClass TEST_FAIL_STATE = PseudoClass.getPseudoClass("test-fail");
+    private static final PseudoClass TEST_RUNNING_STATE = PseudoClass.getPseudoClass("test-running");
+    private static final PseudoClass TEST_PENDING_STATE = PseudoClass.getPseudoClass("test-pending");
+    private static final PseudoClass LOG_SUCCESS_STATE = PseudoClass.getPseudoClass("log-success");
+    private static final PseudoClass LOG_ERROR_STATE = PseudoClass.getPseudoClass("log-error");
 
     private final ObservableList<TestCaseRowModel> testData = FXCollections.observableArrayList();
     private String baseUrl;
@@ -88,6 +96,7 @@ public class TestcaseController implements Initializable {
         userTestSuiteService = new UserTestSuiteService();
         userTestCaseService = new UserTestCaseService();
         scenarioRegistry = new ApiScenarioRegistry();
+        setupExecutionLogStyles();
         initTreeView();
 
         testCaseTable.setItems(testData);
@@ -103,12 +112,75 @@ public class TestcaseController implements Initializable {
         colExpected.setCellValueFactory(new PropertyValueFactory<>("expected"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colResult.setCellValueFactory(new PropertyValueFactory<>("result"));
+        setupTestCaseRowStyles();
 
         testCaseTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, selectedTestCase) -> {
             if (selectedTestCase != null) {
                 showRequestBody(selectedTestCase);
             }
         });
+    }
+
+    private void setupTestCaseRowStyles() {
+        testCaseTable.setRowFactory(table -> new TableRow<>() {
+            private final ChangeListener<String> resultListener = (observable, oldValue, newValue) ->
+                    updateTestCaseRowState(this, newValue);
+
+            @Override
+            protected void updateItem(TestCaseRowModel item, boolean empty) {
+                TestCaseRowModel previousItem = getItem();
+                if (previousItem != null) {
+                    previousItem.resultProperty().removeListener(resultListener);
+                }
+
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    updateTestCaseRowState(this, null);
+                    return;
+                }
+
+                item.resultProperty().addListener(resultListener);
+                updateTestCaseRowState(this, item.resultProperty().get());
+            }
+        });
+    }
+
+    private void updateTestCaseRowState(TableRow<TestCaseRowModel> row, String result) {
+        String normalizedResult = result == null ? "" : result;
+        row.pseudoClassStateChanged(TEST_PASS_STATE, normalizedResult.contains("PASS"));
+        row.pseudoClassStateChanged(TEST_FAIL_STATE, normalizedResult.contains("FAIL"));
+        row.pseudoClassStateChanged(TEST_RUNNING_STATE, normalizedResult.contains("Đang test"));
+        row.pseudoClassStateChanged(TEST_PENDING_STATE, !normalizedResult.contains("PASS")
+                && !normalizedResult.contains("FAIL")
+                && !normalizedResult.contains("Đang test")
+                && !normalizedResult.isBlank());
+    }
+
+    private void setupExecutionLogStyles() {
+        resultLogList.setCellFactory(list -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item);
+                updateExecutionLogState(this, empty ? null : item);
+            }
+        });
+    }
+
+    private void updateExecutionLogState(ListCell<String> cell, String message) {
+        String normalizedMessage = message == null ? "" : message.toLowerCase(Locale.ROOT);
+        boolean hasError = normalizedMessage.contains("fail")
+                || normalizedMessage.contains("❌")
+                || normalizedMessage.contains("dừng")
+                || normalizedMessage.contains("không nạp được")
+                || normalizedMessage.contains("không lấy được token")
+                || normalizedMessage.contains("thất bại")
+                || normalizedMessage.contains("lỗi");
+        boolean hasSuccess = !hasError && (normalizedMessage.contains("pass") || normalizedMessage.contains("✅"));
+
+        cell.pseudoClassStateChanged(LOG_SUCCESS_STATE, hasSuccess);
+        cell.pseudoClassStateChanged(LOG_ERROR_STATE, hasError);
     }
 
 
@@ -695,6 +767,7 @@ public class TestcaseController implements Initializable {
                 boolean setupOk = runDefaultAuthSetupIfNeeded(tc, runtimeVariables) && runScenarioSetup(tc, runtimeVariables);
                 CaseOutcome outcome = setupOk ? callActualApi(tc, runtimeVariables) : CaseOutcome.failed("Setup thất bại");
                 cleanupRuntimeVariables.putAll(runtimeVariables);
+                runDefaultCleanupAuthSetupIfNeeded(definitionToRun, tc, cleanupRuntimeVariables);
                 boolean isPass = outcome.passed;
 
                 TestResult result = toTestResult(tc, outcome);
@@ -1117,6 +1190,25 @@ public class TestcaseController implements Initializable {
             return true;
         }
         return runDefaultAuthSetup(tc, runtimeVariables);
+    }
+
+    private void runDefaultCleanupAuthSetupIfNeeded(ApiScenarioDefinition definition,
+                                                    TestCaseRowModel tc,
+                                                    Map<String, String> runtimeVariables) {
+        if (!cleanupUsesAuthToken(definition) || runtimeVariables.containsKey("token")) {
+            return;
+        }
+
+        if (!runDefaultAuthSetup(tc, runtimeVariables)) {
+            Platform.runLater(() -> resultLogList.getItems().add("  Cleanup auth setup: FAIL"));
+        }
+    }
+
+    private boolean cleanupUsesAuthToken(ApiScenarioDefinition definition) {
+        return definition != null && definition.getCleanupRequests().stream().anyMatch(cleanupRequest ->
+                containsAuthToken(cleanupRequest.getEndpoint())
+                        || containsAuthToken(cleanupRequest.getRequestBody())
+                        || containsAuthToken(cleanupRequest.getHeaders()));
     }
 
     private boolean usesAuthToken(TestCaseRowModel tc) {
