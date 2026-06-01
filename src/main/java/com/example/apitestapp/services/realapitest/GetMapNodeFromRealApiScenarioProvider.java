@@ -108,8 +108,8 @@ public class GetMapNodeFromRealApiScenarioProvider implements ApiScenarioProvide
         return ApiScenarioDefinition.builder()
                 .collectionName("Collections")
                 .moduleName("Real API")
-                .apiLabel("GET /api/map/nodes")
-                .endpoint("/api/map/nodes")
+                .apiLabel("GET /map/nodes")
+                .endpoint("/map/nodes")
                 .sampleRequestBody(null)
                 .scenarios(scenarios)
                 .build();
