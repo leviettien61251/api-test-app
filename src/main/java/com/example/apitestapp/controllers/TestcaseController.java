@@ -424,12 +424,35 @@ public class TestcaseController implements Initializable {
 
     @FXML
     private void handleSaveRun() {
-        baseUrl = AppRunConfig.normalizeBaseUrl(mainBaseUrlField == null ? baseUrl : mainBaseUrlField.getText());
-        if (mainBaseUrlField != null) {
-            mainBaseUrlField.setText(baseUrl);
+        try {
+            String newBaseUrl = AppRunConfig.normalizeBaseUrl(mainBaseUrlField == null ? baseUrl : mainBaseUrlField.getText());
+            baseUrl = newBaseUrl;
+
+            if (mainBaseUrlField != null) {
+                mainBaseUrlField.setText(baseUrl);
+            }
+
+            AppRunConfig.configure(baseUrl, AppRunConfig.getAlertMode(), AppRunConfig.getRunner());
+            refreshCurrentTargetUrl();
+
+            // Hiển thị dialog thông báo thành công - Cách 1: Dùng Alert trực tiếp
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Thành công");
+            alert.setHeaderText("Base URL đã được lưu");
+            alert.setContentText(baseUrl);
+            alert.showAndWait();
+
+            // Hoặc cách 2: Dùng showInfo (bỏ comment dòng dưới và comment cách 1 nếu muốn dùng)
+            // showInfo("Thành công", "Base URL đã được lưu:\n" + baseUrl);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Lỗi");
+            errorAlert.setHeaderText("Không thể lưu Base URL");
+            errorAlert.setContentText(e.getMessage());
+            errorAlert.showAndWait();
         }
-        AppRunConfig.configure(baseUrl, AppRunConfig.getRunMode(), AppRunConfig.getAlertMode(), AppRunConfig.getRunner());
-        refreshCurrentTargetUrl();
     }
 
     @FXML

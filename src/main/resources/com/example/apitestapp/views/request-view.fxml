@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <ScrollPane xmlns:fx="http://javafx.com/fxml/1" fitToWidth="true" prefHeight="700.0" prefWidth="1000.0"
-            styleClass="right-panel" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/17"
+            styleClass="right-panel" stylesheets="@../styles/request.css" xmlns="http://javafx.com/javafx/17"
             fx:controller="com.example.apitestapp.controllers.RequestController">
     <content>
         <VBox spacing="20.0">
@@ -14,7 +14,7 @@
 
                 <HBox spacing="10.0" styleClass="card">
                     <children>
-                        <ComboBox fx:id="methodComboBox" prefWidth="100.0" promptText="GET"/>
+                        <ComboBox fx:id="methodComboBox" styleClass="method-combobox" prefWidth="100.0" promptText="GET"/>
                         <TextField fx:id="urlField" HBox.hgrow="ALWAYS" promptText="Enter request URL"
                                    styleClass="input-field"/>
                         <Button fx:id="sendButton" styleClass="btn-send" text="Send"/>
@@ -89,27 +89,20 @@
                                     <children>
                                         <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 0 5 0 5;">
                                             <children>
-                                                <Region prefWidth="25.0"/>
-                                                <Label prefWidth="150.0"
-                                                       style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Key"/>
-                                                <Label prefWidth="150.0"
-                                                       style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Value"/>
-                                                <Label HBox.hgrow="ALWAYS"
-                                                       style="-fx-font-weight: bold; -fx-text-fill: #555;"
-                                                       text="Description"/>
+                                                <Label prefWidth="150.0" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Key"/>
+                                                <Label prefWidth="150.0" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Value"/>
+                                                <Label HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Description"/>
                                                 <Button styleClass="btn-link" text="Bulk Edit"/>
                                             </children>
                                         </HBox>
                                         <VBox spacing="5.0">
                                             <children>
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                    <children>
-                                                        <TextField prefWidth="150.0" text="Authorization"/>
-                                                        <TextField prefWidth="150.0" text="Bearer ..."/>
-                                                        <TextField HBox.hgrow="ALWAYS" promptText="Description"/>
-                                                        <Button style="-fx-background-color: transparent; -fx-cursor: hand;"
-                                                                text="Delete" textFill="#e74c3c"/>
-                                                    </children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 0 5 0 5;"> <children>
+                                                    <TextField prefWidth="150.0" text="Authorization"/>
+                                                    <TextField prefWidth="150.0" text="Bearer ..."/>
+                                                    <TextField HBox.hgrow="ALWAYS" promptText="Description"/>
+                                                    <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="Delete" textFill="#e74c3c"/>
+                                                </children>
                                                 </HBox>
                                             </children>
                                         </VBox>

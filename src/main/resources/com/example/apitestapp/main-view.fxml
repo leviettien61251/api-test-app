@@ -16,7 +16,7 @@
                 <Insets bottom="20" left="15" right="15" top="20"/>
             </padding>
             <children>
-                <Label styleClass="logo-label" text="API Tester">
+                <Label styleClass="logo-label" text=" 🔰 API Tester">
                     <VBox.margin>
                         <Insets bottom="30.0" left="10.0"/>
                     </VBox.margin>

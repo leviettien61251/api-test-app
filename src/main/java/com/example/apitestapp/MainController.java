@@ -35,7 +35,6 @@ public class MainController implements Initializable {
     @FXML
     private StackPane contentArea;
 
-    // Khai báo đầy đủ các ToggleButton để điều khiển trạng thái "lún" (selected)
     @FXML
     private ToggleButton btnDashboard, btnTestcase, btnRequest, btnReport;
 
@@ -47,7 +46,6 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Mặc định nạp Dashboard khi ứng dụng khởi chạy
         navigateTo("views/dashboard-view.fxml", btnDashboard);
         Platform.runLater(this::showDefaultRunConfigDialog);
 
@@ -62,7 +60,6 @@ public class MainController implements Initializable {
         }
     }
 
-    // Các hàm chuyển đổi View cho Header
     @FXML
     private void navigateDashboard() {
         navigateTo("views/dashboard-view.fxml", btnDashboard);
@@ -83,7 +80,6 @@ public class MainController implements Initializable {
         navigateTo("views/report-view.fxml", btnReport);
     }
 
-    // Các hàm chuyển đổi View cho Sidebar
     @FXML
     private void navigateHistory() {
         navigateTo("views/history-view.fxml", btnHistory);
@@ -97,20 +93,11 @@ public class MainController implements Initializable {
     @FXML
     private void handleLogout() {
         AppSession.clear();
-        AppRunConfig.reset(); // THÊM DÒNG NÀY: Xóa sạch cấu hình cũ khi đăng xuất
-
-        // Xóa luôn cache các view để khi người sau vào nó nạp mới hoàn toàn
+        AppRunConfig.reset();
         viewCache.clear();
-
         MainApplication.showLoginView();
     }
 
-    /**
-     * Hàm dùng chung để nạp file FXML vào vùng nội dung chính
-     *
-     * @param fxmlPath Đường dẫn file fxml tính từ thư mục resources
-     * @param button   Nút được nhấn để cập nhật trạng thái hiển thị
-     */
     private void navigateTo(String fxmlPath, ToggleButton button) {
         try {
             if (!viewCache.containsKey(fxmlPath)) {
@@ -144,7 +131,6 @@ public class MainController implements Initializable {
         } catch (NullPointerException e) {
             System.err.println("Đường dẫn file FXML bị sai: " + fxmlPath);
         }
-
     }
 
     public void openReportForRun(String runId) {
@@ -162,13 +148,11 @@ public class MainController implements Initializable {
     }
 
     private void setActiveButton(ToggleButton button) {
-        // Deselect all buttons then select the active one
         btnDashboard.setSelected(false);
         btnTestcase.setSelected(false);
         btnRequest.setSelected(false);
         btnReport.setSelected(false);
         btnHistory.setSelected(false);
-        // Set the clicked button as selected to apply CSS styling
         button.setSelected(true);
     }
 
@@ -184,20 +168,14 @@ public class MainController implements Initializable {
         dialog.setTitle("Default run config");
         dialog.setHeaderText("Nhap cau hinh mac dinh truoc khi chay testcase");
 
-        // 1. Thêm nút Cancel để khi ấn X hoặc Cancel sẽ không chạy logic lưu
         ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(okButtonType, cancelButtonType);
 
-        // 2. Lấy giá trị hiện tại (nếu trống thì hiện mặc định làm gợi ý)
         TextField baseUrlField = new TextField(AppRunConfig.getBaseUrl().isEmpty() ? AppRunConfig.DEFAULT_BASE_URL : AppRunConfig.getBaseUrl());
         baseUrlField.setPromptText("http://localhost:8080");
 
-        // ... (Giữ nguyên phần khởi tạo ComboBox runModeBox, alertModeBox và GridPane như cũ) ...
-        ComboBox<String> runModeBox = new ComboBox<>();
-        runModeBox.getItems().addAll("ALL", "SINGLE");
-        runModeBox.setValue(AppRunConfig.getRunMode());
-        runModeBox.setMaxWidth(Double.MAX_VALUE);
+        // ĐÃ XÓA TOÀN BỘ ĐOẠN KHỞI TẠO runModeBox TẠI ĐÂY
 
         ComboBox<String> alertModeBox = new ComboBox<>();
         alertModeBox.getItems().addAll("Stop on fail", "Continue");
@@ -210,38 +188,42 @@ public class MainController implements Initializable {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(10, 10, 0, 10));
+
+        // Hàng 0: Base URL
         grid.add(new Label("Base URL"), 0, 0);
         grid.add(baseUrlField, 1, 0);
-        grid.add(new Label("Run mode"), 0, 1);
-        grid.add(runModeBox, 1, 1);
-        grid.add(new Label("Alert mode"), 0, 2);
-        grid.add(alertModeBox, 1, 2);
-        grid.add(new Label("Runner"), 0, 3);
-        grid.add(runnerField, 1, 3);
-        grid.add(new Label("Machine"), 0, 4);
-        grid.add(new Label(AppRunConfig.getMachineName()), 1, 4);
-        grid.add(new Label("OS"), 0, 5);
-        grid.add(new Label(AppRunConfig.getOs()), 1, 5);
+
+        // ĐÃ XÓA: Dòng add Run mode ở hàng 1 cũ.
+
+        // Cập nhật lại số hàng (Row Index) dịch lên trên 1 dòng để tránh trống khoảng cách
+        grid.add(new Label("Alert mode"), 0, 1);
+        grid.add(alertModeBox, 1, 1);
+
+        grid.add(new Label("Runner"), 0, 2);
+        grid.add(runnerField, 1, 2);
+
+        grid.add(new Label("Machine"), 0, 3);
+        grid.add(new Label(AppRunConfig.getMachineName()), 1, 3);
+
+        grid.add(new Label("OS"), 0, 4);
+        grid.add(new Label(AppRunConfig.getOs()), 1, 4);
 
         dialog.getDialogPane().setContent(grid);
 
         dialog.showAndWait().ifPresent(button -> {
             if (button == okButtonType) {
-                // CHỈ LƯU KHI ẤN OK
+                // Gọi hàm configure mới đã bỏ đi đối số runModeBox.getValue()
                 AppRunConfig.configure(
                         baseUrlField.getText(),
-                        runModeBox.getValue(),
                         alertModeBox.getValue(),
                         runnerField.getText()
                 );
 
-                // 3. XÓA CACHE ĐỂ TRANG TESTCASE HIỆN DỮ LIỆU MỚI
                 viewCache.remove("views/testcase-view.fxml");
                 viewCache.remove("views/request-view.fxml");
 
                 navigateTo("views/testcase-view.fxml", btnTestcase);
             }
-            // Nhấn X hoặc Cancel sẽ không chạy vào đây -> Không bao giờ lưu!
         });
     }
 
@@ -267,6 +249,5 @@ public class MainController implements Initializable {
                 .build();
 
         clientMachineRepository.save(cm);
-
     }
 }

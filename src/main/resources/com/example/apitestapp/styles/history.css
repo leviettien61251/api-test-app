@@ -1,0 +1,168 @@
+/* --- TOÀN BỘ VÙNG CHỨA --- */
+.content-area {
+    -fx-background-color: #f8fafc; /* Nền xám rất nhẹ giúp nổi bật khối trắng */
+}
+
+.page-title {
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    /* Đổ dải màu Gradient mượt từ trái sang phải */
+    -fx-text-fill: linear-gradient(to right, #1e62d0, #158a43);
+}
+
+.section-bg {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    /* Đổ bóng mịn màng chuẩn Modern UI */
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.05), 15, 0, 0, 4);
+}
+
+.section-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #64748b; /* Màu xám tinh tế cho tiêu đề phụ */
+    -fx-letter-spacing: 0.5px;
+}
+
+/* --- BỘ LỌC (FILTER PANEL) --- */
+.filter-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #475569;
+}
+
+/* Style chung cho DatePicker và ComboBox */
+.filter-date-picker, .filter-combo-box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 6 12;
+    -fx-font-size: 13px;
+    -fx-text-fill: #334155;
+    -fx-pref-width: 2000; /* Để tự động giãn hết độ rộng ô GridPane */
+}
+
+/* Style riêng cho ô tìm kiếm (Để khống chế chiều cao tương thích với nút bấm) */
+.search-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8 12;            /* Cân đối lại padding dọc cho thoáng */
+    -fx-font-size: 13px;
+    -fx-text-fill: #334155;
+    -fx-pref-height: 36px;        /* Cố định chiều cao đồng bộ với nút sấm sét */
+}
+
+/* Hiệu ứng khi click chọn vào ô nhập liệu */
+.filter-date-picker:focused, .filter-combo-box:focused, .search-field:focused {
+    -fx-border-color: #3b82f6;
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.15), 4, 0, 0, 0);
+}
+
+/* Tinh chỉnh riêng nút bấm bên trong DatePicker và ComboBox */
+.filter-date-picker > .arrow-button, .filter-combo-box > .arrow-button {
+    -fx-background-color: transparent;
+}
+.filter-date-picker > .arrow-button > .cell, .filter-combo-box > .arrow {
+    -fx-background-color: #64748b;
+}
+
+/* NÚT TÌM KIẾM SẤM SÉT ĐƯỢC PHÓNG TO VÀ THU GỌN THÀNH KHỐI VUÔNG ⚡ */
+.btn-search {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;          /* Tăng size sấm sét to rõ ràng, không lo lọt thỏm */
+
+    -fx-padding: 0;               /* Xóa padding để ép kích thước vuông tuyệt đối */
+    -fx-pref-width: 36px;         /* Chiều rộng bằng chiều cao tạo khối vuông */
+    -fx-pref-height: 36px;        /* Chiều cao ăn khớp hoàn hảo với ô TextField */
+
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-alignment: center;        /* Đưa biểu tượng sấm sét vào giữa tâm nút */
+}
+
+/* Hiệu ứng hover cho nút bấm sinh động */
+.btn-search:hover {
+    -fx-background-color: #2563eb;
+    -fx-scale-x: 1.05;            /* Phóng to nhẹ 5% khi rê chuột tạo hiệu ứng mượt */
+    -fx-scale-y: 1.05;
+}
+
+/* --- THIẾT KẾ LẠI BẢNG (TABLE VIEW) --- */
+.history-table {
+    -fx-background-color: transparent;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 0;
+}
+
+/* Thanh tiêu đề của bảng */
+.history-table .column-header-background {
+    -fx-background-color: #f1f5f9; /* Màu nền tiêu đề sạch sẽ */
+    -fx-background-radius: 8 8 0 0;
+}
+
+.history-table .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #e2e8f0 transparent transparent; /* Chỉ kẻ vạch đứng mờ ở tiêu đề */
+    -fx-padding: 12 8;
+}
+
+.history-table .column-header .label {
+    -fx-text-fill: #475569;
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}
+
+/* Các dòng dữ liệu */
+.history-table .table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #f1f5f9 transparent; /* Đường gạch ngang mờ phân cách các dòng */
+    -fx-padding: 4 0;
+}
+
+/* Dòng xen kẽ (Zebra striping) cho dễ nhìn */
+.history-table .table-row-cell:odd {
+    -fx-background-color: #f8fafc;
+}
+
+/* Khi di chuột qua dòng */
+.history-table .table-row-cell:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+/* Khi dòng được chọn */
+.history-table .table-row-cell:selected {
+    -fx-background-color: #e0f2fe;
+}
+.history-table .table-row-cell:selected .label {
+    -fx-text-fill: #0369a1;
+}
+
+/* Ô chứa chữ (Cell) */
+.history-table .table-cell {
+    -fx-text-fill: #334155;
+    -fx-font-size: 13px;
+    -fx-padding: 8;
+    -fx-alignment: center-left; /* Căn trái mặc định cho đẹp */
+}
+
+/* Loại bỏ phần thừa thừa khi bảng trống hoặc scroll */
+.history-table .placeholder .label {
+    -fx-text-fill: #94a3b8;
+}
+.history-table .corner {
+    -fx-background-color: transparent;
+}
