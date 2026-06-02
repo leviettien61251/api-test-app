@@ -23,6 +23,8 @@ public class TestCaseRowModel {
     private final String endpoint;
     private final String method;
     private final Map<String, String> headers;
+    private final Map<String, List<String>> queryParams;
+    private final Map<String, String> pathParams;
     private final String requestBody;
     private final ApiTestScenario scenario;
     private final String userTestCaseId;
@@ -73,6 +75,22 @@ public class TestCaseRowModel {
                             ApiTestScenario scenario,
                             String userTestCaseId,
                             List<ApiCleanupRequest> cleanupRequests) {
+        this(name, input, expected, endpoint, method, headers, requestBody, scenario, userTestCaseId,
+                cleanupRequests, Map.of(), Map.of());
+    }
+
+    public TestCaseRowModel(String name,
+                            String input,
+                            String expected,
+                            String endpoint,
+                            String method,
+                            Map<String, String> headers,
+                            String requestBody,
+                            ApiTestScenario scenario,
+                            String userTestCaseId,
+                            List<ApiCleanupRequest> cleanupRequests,
+                            Map<String, List<String>> queryParams,
+                            Map<String, String> pathParams) {
         this.name = new SimpleStringProperty(name);
         this.input = new SimpleStringProperty(input);
         this.expected = new SimpleStringProperty(expected);
@@ -81,6 +99,8 @@ public class TestCaseRowModel {
         this.endpoint = endpoint;
         this.method = method == null || method.isBlank() ? "POST" : method.trim().toUpperCase();
         this.headers = headers == null ? Map.of() : Collections.unmodifiableMap(new LinkedHashMap<>(headers));
+        this.queryParams = queryParams == null ? Map.of() : Collections.unmodifiableMap(new LinkedHashMap<>(queryParams));
+        this.pathParams = pathParams == null ? Map.of() : Collections.unmodifiableMap(new LinkedHashMap<>(pathParams));
         this.requestBody = requestBody;
         this.scenario = scenario;
         this.userTestCaseId = userTestCaseId;
@@ -145,6 +165,14 @@ public class TestCaseRowModel {
 
     public String getRequestBody() {
         return requestBody;
+    }
+
+    public Map<String, List<String>> getQueryParams() {
+        return queryParams;
+    }
+
+    public Map<String, String> getPathParams() {
+        return pathParams;
     }
 
     public ApiTestScenario getScenario() {

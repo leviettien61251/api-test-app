@@ -58,6 +58,7 @@ Chi tiet thiet lap va canh bao ve file SQL nam trong [docs/THIET_LAP_VA_VAN_HANH
 
 - [Chi muc tai lieu](/D:/code/api-test-app/docs/DOCUMENTATION_INDEX.md)
 - [Tai lieu he thong](/D:/code/api-test-app/docs/TAI_LIEU_HE_THONG.md)
+- [Use case tong quat](/D:/code/api-test-app/docs/USECASE_TONG_QUAT.md)
 - [Thiet lap va van hanh](/D:/code/api-test-app/docs/THIET_LAP_VA_VAN_HANH.md)
 - [Huong dan su dung](/D:/code/api-test-app/docs/HUONG_DAN_SU_DUNG.md)
 - [Kien truc](/D:/code/api-test-app/docs/ARCHITECTURE.md)

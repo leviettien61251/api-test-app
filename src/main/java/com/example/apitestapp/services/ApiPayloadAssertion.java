@@ -3,8 +3,13 @@ package com.example.apitestapp.services;
 public class ApiPayloadAssertion {
     public enum Operator {
         EQUALS,
+        NOT_EQUALS,
         GREATER_THAN,
+        LESS_THAN,
         STARTS_WITH,
+        CONTAINS,
+        EXISTS,
+        ARRAY_LENGTH,
         JSON_TYPE
     }
 

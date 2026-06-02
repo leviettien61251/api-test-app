@@ -47,4 +47,44 @@ class ApiPayloadAssertionEvaluatorTest {
 
         assertFalse(evaluation.passed());
     }
+
+    @Test
+    void supportsExtendedPayloadOperators() {
+        ApiPayloadAssertionEvaluator.Evaluation evaluation = evaluator.evaluate(
+                """
+                        {
+                          "data": {
+                            "name": "Building Alpha",
+                            "count": 2,
+                            "items": ["indoor", "priority"]
+                          }
+                        }
+                        """,
+                List.of(
+                        new ApiPayloadAssertion("data.name", ApiPayloadAssertion.Operator.NOT_EQUALS, "Building Beta"),
+                        new ApiPayloadAssertion("data.count", ApiPayloadAssertion.Operator.LESS_THAN, "3"),
+                        new ApiPayloadAssertion("data.name", ApiPayloadAssertion.Operator.CONTAINS, "Alpha"),
+                        new ApiPayloadAssertion("data.items", ApiPayloadAssertion.Operator.CONTAINS, "priority"),
+                        new ApiPayloadAssertion("data.items", ApiPayloadAssertion.Operator.ARRAY_LENGTH, "2"),
+                        new ApiPayloadAssertion("data.missing", ApiPayloadAssertion.Operator.EXISTS, "false")
+                )
+        );
+
+        assertTrue(evaluation.passed());
+    }
+
+    @Test
+    void comparesFullResponseJsonWithoutDependingOnObjectKeyOrder() {
+        ApiPayloadAssertionEvaluator.Evaluation evaluation = evaluator.evaluate(
+                """
+                        { "code": 1000, "data": { "id": 12, "name": "Map" } }
+                        """,
+                List.of(),
+                """
+                        { "data": { "name": "Map", "id": 12 }, "code": 1000 }
+                        """
+        );
+
+        assertTrue(evaluation.passed());
+    }
 }

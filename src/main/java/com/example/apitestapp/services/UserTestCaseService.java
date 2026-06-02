@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,10 +29,13 @@ public class UserTestCaseService {
                                String method,
                                String endpoint,
                                Map<String, String> headers,
-                               Map<String, String> queryParams,
+                               Map<String, List<String>> queryParams,
+                               Map<String, String> pathParams,
                                String requestBody,
                                List<ApiSetupRequest> setupRequests,
                                List<ApiCleanupRequest> cleanupRequests,
+                               List<ApiPayloadAssertion> payloadAssertions,
+                               String expectedResponseBody,
                                int expectedStatusCode) throws SQLException {
         validateRequired(apiLabel, "API");
         validateRequired(name, "Tên testcase");
@@ -39,6 +43,7 @@ public class UserTestCaseService {
         validateRequired(endpoint, "Endpoint");
         validateStatusCode(expectedStatusCode);
         validateJsonBody(requestBody);
+        validateJsonBody(expectedResponseBody);
 
         User currentUser = AppSession.getInstance().getCurrentUser();
         String ownerName = AppSession.getUsername();
@@ -54,9 +59,12 @@ public class UserTestCaseService {
         testCase.setEndpoint(endpoint.trim());
         testCase.setRequestHeaders(headers);
         testCase.setQueryParams(queryParams);
+        testCase.setPathParams(pathParams);
         testCase.setRequestBody(normalizeBlank(requestBody));
         testCase.setSetupRequests(setupRequests);
         testCase.setCleanupRequests(cleanupRequests);
+        testCase.setPayloadAssertions(payloadAssertions);
+        testCase.setExpectedResponseBody(normalizeBlank(expectedResponseBody));
         testCase.setExpectedStatusCode(expectedStatusCode);
         return repository.save(testCase);
     }
@@ -67,10 +75,13 @@ public class UserTestCaseService {
                                String method,
                                String endpoint,
                                Map<String, String> headers,
-                               Map<String, String> queryParams,
+                               Map<String, List<String>> queryParams,
+                               Map<String, String> pathParams,
                                String requestBody,
                                List<ApiSetupRequest> setupRequests,
                                List<ApiCleanupRequest> cleanupRequests,
+                               List<ApiPayloadAssertion> payloadAssertions,
+                               String expectedResponseBody,
                                int expectedStatusCode) throws SQLException {
         validateRequired(id, "Testcase");
         validateRequired(name, "Tên testcase");
@@ -78,6 +89,7 @@ public class UserTestCaseService {
         validateRequired(endpoint, "Endpoint");
         validateStatusCode(expectedStatusCode);
         validateJsonBody(requestBody);
+        validateJsonBody(expectedResponseBody);
 
         UserTestCase testCase = new UserTestCase();
         testCase.setId(id);
@@ -87,9 +99,12 @@ public class UserTestCaseService {
         testCase.setEndpoint(endpoint.trim());
         testCase.setRequestHeaders(headers);
         testCase.setQueryParams(queryParams);
+        testCase.setPathParams(pathParams);
         testCase.setRequestBody(normalizeBlank(requestBody));
         testCase.setSetupRequests(setupRequests);
         testCase.setCleanupRequests(cleanupRequests);
+        testCase.setPayloadAssertions(payloadAssertions);
+        testCase.setExpectedResponseBody(normalizeBlank(expectedResponseBody));
         testCase.setExpectedStatusCode(expectedStatusCode);
         return repository.update(testCase);
     }
@@ -169,6 +184,128 @@ public class UserTestCaseService {
             array.add(object);
         }
         return array.toString();
+    }
+
+    public RequestParams parseRequestParams(String json) {
+        if (json == null || json.isBlank()) {
+            return new RequestParams(Map.of(), Map.of());
+        }
+
+        JsonElement root = JsonParser.parseString(json);
+        if (!root.isJsonObject()) {
+            throw new IllegalArgumentException("Params phải là JSON object.");
+        }
+
+        JsonObject object = root.getAsJsonObject();
+        return new RequestParams(
+                readMultiValueMap(object.get("queryParams"), "queryParams"),
+                readStringMap(object.get("pathParams"))
+        );
+    }
+
+    public String requestParamsToJson(Map<String, List<String>> queryParams, Map<String, String> pathParams) {
+        JsonObject object = new JsonObject();
+        object.add("queryParams", multiValueMapToJson(queryParams));
+        object.add("pathParams", stringMapToJson(pathParams));
+        return object.toString();
+    }
+
+    public List<ApiPayloadAssertion> parsePayloadAssertions(String json) {
+        if (json == null || json.isBlank()) {
+            return List.of();
+        }
+
+        JsonElement root = JsonParser.parseString(json);
+        if (!root.isJsonArray()) {
+            throw new IllegalArgumentException("Response assertions phải là JSON array.");
+        }
+
+        List<ApiPayloadAssertion> assertions = new ArrayList<>();
+        for (JsonElement item : root.getAsJsonArray()) {
+            if (!item.isJsonObject()) {
+                throw new IllegalArgumentException("Mỗi response assertion phải là JSON object.");
+            }
+            JsonObject object = item.getAsJsonObject();
+            String jsonPath = getString(object, "jsonPath", "");
+            String operatorText = getString(object, "operator", "");
+            validateRequired(jsonPath, "JSON path");
+            validateRequired(operatorText, "Assertion operator");
+            ApiPayloadAssertion.Operator operator;
+            try {
+                operator = ApiPayloadAssertion.Operator.valueOf(operatorText.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Assertion operator không hỗ trợ: " + operatorText);
+            }
+            String expectedValue = object.has("expectedValue") && !object.get("expectedValue").isJsonNull()
+                    ? object.get("expectedValue").getAsString()
+                    : null;
+            assertions.add(new ApiPayloadAssertion(jsonPath.trim(), operator, expectedValue));
+        }
+        return assertions;
+    }
+
+    public String payloadAssertionsToJson(List<ApiPayloadAssertion> assertions) {
+        JsonArray array = new JsonArray();
+        if (assertions == null) {
+            return array.toString();
+        }
+        for (ApiPayloadAssertion assertion : assertions) {
+            JsonObject object = new JsonObject();
+            object.addProperty("jsonPath", assertion.getJsonPath());
+            object.addProperty("operator", assertion.getOperator().name());
+            object.addProperty("expectedValue", assertion.getExpectedValue());
+            array.add(object);
+        }
+        return array.toString();
+    }
+
+    private Map<String, List<String>> readMultiValueMap(JsonElement element, String fieldName) {
+        if (element == null || element.isJsonNull()) {
+            return Map.of();
+        }
+        if (!element.isJsonObject()) {
+            throw new IllegalArgumentException(fieldName + " phải là JSON object.");
+        }
+
+        Map<String, List<String>> values = new LinkedHashMap<>();
+        for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet()) {
+            JsonElement value = entry.getValue();
+            List<String> items = new ArrayList<>();
+            if (value != null && value.isJsonArray()) {
+                for (JsonElement item : value.getAsJsonArray()) {
+                    items.add(item == null || item.isJsonNull() ? "" : item.getAsString());
+                }
+            } else {
+                items.add(value == null || value.isJsonNull() ? "" : value.getAsString());
+            }
+            values.put(entry.getKey(), List.copyOf(items));
+        }
+        return values;
+    }
+
+    private JsonObject multiValueMapToJson(Map<String, List<String>> values) {
+        JsonObject object = new JsonObject();
+        if (values == null) {
+            return object;
+        }
+        values.forEach((key, items) -> {
+            if (key == null || key.isBlank()) {
+                return;
+            }
+            JsonArray array = new JsonArray();
+            if (items != null) {
+                items.forEach(value -> array.add(value == null ? "" : value));
+            }
+            if (array.size() == 1) {
+                object.addProperty(key, array.get(0).getAsString());
+            } else {
+                object.add(key, array);
+            }
+        });
+        return object;
+    }
+
+    public record RequestParams(Map<String, List<String>> queryParams, Map<String, String> pathParams) {
     }
 
     private List<? extends ApiSetupRequest> parseHookRequests(String json, boolean cleanup) {

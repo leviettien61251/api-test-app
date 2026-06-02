@@ -15,6 +15,8 @@ Ngoai chuc nang chay test, ung dung con cung cap:
 - report cho tung lan chay
 - history de loc, xem va xoa ket qua da luu
 
+So do use case muc cao nam tai [USECASE_TONG_QUAT.md](/D:/code/api-test-app/docs/USECASE_TONG_QUAT.md).
+
 ## 2. Thanh phan chinh
 
 ### 2.1 Entry point va dieu huong
