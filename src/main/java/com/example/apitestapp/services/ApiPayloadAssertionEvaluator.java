@@ -12,8 +12,18 @@ import java.util.Optional;
 public class ApiPayloadAssertionEvaluator {
 
     public Evaluation evaluate(String responseBody, List<ApiPayloadAssertion> assertions) {
-        if (assertions == null || assertions.isEmpty()) {
-            return Evaluation.passed(List.of());
+        return evaluate(responseBody, assertions, null);
+    }
+
+    public Evaluation evaluate(String responseBody,
+                               List<ApiPayloadAssertion> assertions,
+                               String expectedResponseBody) {
+        List<ApiPayloadAssertion> normalizedAssertions = assertions == null ? List.of() : assertions;
+        boolean hasExpectedResponse = expectedResponseBody != null && !expectedResponseBody.isBlank();
+        if (normalizedAssertions.isEmpty()) {
+            if (!hasExpectedResponse) {
+                return Evaluation.passed(List.of());
+            }
         }
         if (responseBody == null || responseBody.isBlank()) {
             return Evaluation.failed(List.of("Response body rỗng nên không thể so sánh payload."));
@@ -28,7 +38,19 @@ public class ApiPayloadAssertionEvaluator {
 
         List<String> messages = new ArrayList<>();
         boolean passed = true;
-        for (ApiPayloadAssertion assertion : assertions) {
+        if (hasExpectedResponse) {
+            try {
+                JsonElement expectedJson = JsonParser.parseString(expectedResponseBody);
+                boolean fullResponsePassed = expectedJson.equals(responseJson);
+                messages.add(fullResponsePassed
+                        ? "Full response JSON khớp expected response."
+                        : "Full response JSON không khớp expected response.");
+                passed = fullResponsePassed;
+            } catch (Exception e) {
+                return Evaluation.failed(List.of("Expected response body không phải JSON hợp lệ."));
+            }
+        }
+        for (ApiPayloadAssertion assertion : normalizedAssertions) {
             AssertionCheck check = check(responseJson, assertion);
             messages.add(check.message());
             if (!check.passed()) {
@@ -44,6 +66,12 @@ public class ApiPayloadAssertionEvaluator {
         }
 
         Optional<JsonElement> actualValue = findJsonValue(responseJson, assertion.getJsonPath());
+        if (assertion.getOperator() == ApiPayloadAssertion.Operator.EXISTS) {
+            boolean shouldExist = assertion.getExpectedValue() == null
+                    || Boolean.parseBoolean(assertion.getExpectedValue());
+            boolean exists = actualValue.isPresent();
+            return comparisonResult(exists == shouldExist, assertion, String.valueOf(exists), String.valueOf(shouldExist));
+        }
         if (actualValue.isEmpty()) {
             return AssertionCheck.failed("Payload thiếu path `" + assertion.getJsonPath() + "`.");
         }
@@ -51,9 +79,14 @@ public class ApiPayloadAssertionEvaluator {
         JsonElement actual = actualValue.get();
         return switch (assertion.getOperator()) {
             case EQUALS -> equalsCheck(assertion, actual);
+            case NOT_EQUALS -> notEqualsCheck(assertion, actual);
             case GREATER_THAN -> greaterThanCheck(assertion, actual);
+            case LESS_THAN -> lessThanCheck(assertion, actual);
             case STARTS_WITH -> startsWithCheck(assertion, actual);
+            case CONTAINS -> containsCheck(assertion, actual);
+            case ARRAY_LENGTH -> arrayLengthCheck(assertion, actual);
             case JSON_TYPE -> jsonTypeCheck(assertion, actual);
+            case EXISTS -> throw new IllegalStateException("EXISTS phải được xử lý trước khi đọc payload.");
         };
     }
 
@@ -74,6 +107,14 @@ public class ApiPayloadAssertionEvaluator {
     }
 
     private AssertionCheck greaterThanCheck(ApiPayloadAssertion assertion, JsonElement actual) {
+        return numericComparisonCheck(assertion, actual, true);
+    }
+
+    private AssertionCheck lessThanCheck(ApiPayloadAssertion assertion, JsonElement actual) {
+        return numericComparisonCheck(assertion, actual, false);
+    }
+
+    private AssertionCheck numericComparisonCheck(ApiPayloadAssertion assertion, JsonElement actual, boolean greaterThan) {
         Optional<BigDecimal> actualNumber = actualNumber(actual);
         Optional<BigDecimal> expectedNumber = parseNumber(assertion.getExpectedValue());
         if (actualNumber.isEmpty() || expectedNumber.isEmpty()) {
@@ -81,8 +122,14 @@ public class ApiPayloadAssertionEvaluator {
                     + assertion.getExpectedValue() + "`.");
         }
 
-        boolean passed = actualNumber.get().compareTo(expectedNumber.get()) > 0;
+        int comparison = actualNumber.get().compareTo(expectedNumber.get());
+        boolean passed = greaterThan ? comparison > 0 : comparison < 0;
         return comparisonResult(passed, assertion, actualNumber.get().toPlainString(), assertion.getExpectedValue());
+    }
+
+    private AssertionCheck notEqualsCheck(ApiPayloadAssertion assertion, JsonElement actual) {
+        AssertionCheck equals = equalsCheck(assertion, actual);
+        return comparisonResult(!equals.passed(), assertion, asText(actual), assertion.getExpectedValue());
     }
 
     private AssertionCheck startsWithCheck(ApiPayloadAssertion assertion, JsonElement actual) {
@@ -94,6 +141,32 @@ public class ApiPayloadAssertionEvaluator {
         String expectedPrefix = assertion.getExpectedValue() == null ? "" : assertion.getExpectedValue();
         boolean passed = actualText.startsWith(expectedPrefix);
         return comparisonResult(passed, assertion, actualText, expectedPrefix);
+    }
+
+    private AssertionCheck containsCheck(ApiPayloadAssertion assertion, JsonElement actual) {
+        String expected = assertion.getExpectedValue() == null ? "" : assertion.getExpectedValue();
+        boolean passed;
+        if (actual.isJsonArray()) {
+            passed = actual.getAsJsonArray().asList().stream().anyMatch(item -> expected.equals(asText(item)));
+        } else if (actual.isJsonPrimitive() && actual.getAsJsonPrimitive().isString()) {
+            passed = actual.getAsString().contains(expected);
+        } else {
+            return AssertionCheck.failed("Payload `" + assertion.getJsonPath() + "` không hỗ trợ kiểm tra contains.");
+        }
+        return comparisonResult(passed, assertion, asText(actual), expected);
+    }
+
+    private AssertionCheck arrayLengthCheck(ApiPayloadAssertion assertion, JsonElement actual) {
+        if (!actual.isJsonArray()) {
+            return AssertionCheck.failed("Payload `" + assertion.getJsonPath() + "` không phải array.");
+        }
+        Optional<BigDecimal> expectedLength = parseNumber(assertion.getExpectedValue());
+        if (expectedLength.isEmpty()) {
+            return AssertionCheck.failed("Array length mong đợi không hợp lệ: `" + assertion.getExpectedValue() + "`.");
+        }
+        int actualLength = actual.getAsJsonArray().size();
+        boolean passed = BigDecimal.valueOf(actualLength).compareTo(expectedLength.get()) == 0;
+        return comparisonResult(passed, assertion, String.valueOf(actualLength), assertion.getExpectedValue());
     }
 
     private AssertionCheck jsonTypeCheck(ApiPayloadAssertion assertion, JsonElement actual) {

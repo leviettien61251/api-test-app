@@ -373,13 +373,19 @@ public class TestcaseController implements Initializable {
                 .description(testCase.getDescription())
                 .setupRequests(testCase.getSetupRequests())
                 .headers(testCase.getRequestHeaders())
-                .queryParams(testCase.getQueryParams())
                 .requestBody(testCase.getRequestBody())
+                .payloadAssertions(testCase.getPayloadAssertions())
+                .expectedResponseBody(testCase.getExpectedResponseBody())
                 .expectedCode(String.valueOf(testCase.getExpectedStatusCode()))
                 .expectedStatus("User testcase")
                 .build();
 
-        String input = buildTestInput(testCase.getRequestBody(), testCase.getRequestHeaders(), testCase.getQueryParams());
+        String input = buildTestInput(
+                testCase.getRequestBody(),
+                testCase.getRequestHeaders(),
+                testCase.getQueryParams(),
+                testCase.getPathParams()
+        );
         return new TestCaseRowModel(
                 "[User] " + testCase.getName(),
                 input,
@@ -390,7 +396,9 @@ public class TestcaseController implements Initializable {
                 testCase.getRequestBody(),
                 scenario,
                 testCase.getId(),
-                testCase.getCleanupRequests()
+                testCase.getCleanupRequests(),
+                testCase.getQueryParams(),
+                testCase.getPathParams()
         );
     }
 
@@ -591,6 +599,27 @@ public class TestcaseController implements Initializable {
                     "Setup requests JSON array",
                     sampleSetupRequestsJson()
             ));
+            Optional<UserTestCaseService.RequestParams> requestParams = promptRequestParams(
+                    "Params",
+                    "Query params và path params JSON object",
+                    sampleRequestParamsJson()
+            );
+            if (requestParams.isEmpty()) return;
+            Optional<String> payloadAssertionsJson = promptOptionalJson(
+                    "Response assertions",
+                    "JSON path assertions array. Có thể để [] nếu không cần.",
+                    samplePayloadAssertionsJson(),
+                    320
+            );
+            if (payloadAssertionsJson.isEmpty()) return;
+            List<ApiPayloadAssertion> payloadAssertions = userTestCaseService.parsePayloadAssertions(payloadAssertionsJson.get());
+            Optional<String> expectedResponseBody = promptOptionalJson(
+                    "Expected full response",
+                    "JSON response mong đợi. Để trống nếu không cần so sánh toàn bộ response.",
+                    "",
+                    320
+            );
+            if (expectedResponseBody.isEmpty()) return;
 
             UserTestCase saved = userTestCaseService.create(
                     currentDefinition.getApiLabel(),
@@ -600,10 +629,13 @@ public class TestcaseController implements Initializable {
                     resolveApiMethod(currentDefinition),
                     resolveEndpointFromUrl(),
                     parseHeaders(headerTextArea.getText()),
-                    Map.of(),
+                    requestParams.get().queryParams(),
+                    requestParams.get().pathParams(),
                     bodyTextArea.getText(),
                     setupRequests,
                     List.of(),
+                    payloadAssertions,
+                    expectedResponseBody.get(),
                     statusCode
             );
 
@@ -644,6 +676,29 @@ public class TestcaseController implements Initializable {
                     "Setup requests JSON array",
                     userTestCaseService.toJson(selected.getScenario() == null ? List.of() : selected.getScenario().getSetupRequests())
             ));
+            Optional<UserTestCaseService.RequestParams> requestParams = promptRequestParams(
+                    "Params",
+                    "Query params và path params JSON object",
+                    userTestCaseService.requestParamsToJson(selected.getQueryParams(), selected.getPathParams())
+            );
+            if (requestParams.isEmpty()) return;
+            Optional<String> payloadAssertionsJson = promptOptionalJson(
+                    "Response assertions",
+                    "JSON path assertions array. Có thể để [] nếu không cần.",
+                    userTestCaseService.payloadAssertionsToJson(selected.getScenario() == null
+                            ? List.of()
+                            : selected.getScenario().getPayloadAssertions()),
+                    320
+            );
+            if (payloadAssertionsJson.isEmpty()) return;
+            List<ApiPayloadAssertion> payloadAssertions = userTestCaseService.parsePayloadAssertions(payloadAssertionsJson.get());
+            Optional<String> expectedResponseBody = promptOptionalJson(
+                    "Expected full response",
+                    "JSON response mong đợi. Để trống nếu không cần so sánh toàn bộ response.",
+                    selected.getScenario() == null ? "" : selected.getScenario().getExpectedResponseBody(),
+                    320
+            );
+            if (expectedResponseBody.isEmpty()) return;
 
             userTestCaseService.update(
                     selected.getUserTestCaseId(),
@@ -652,10 +707,13 @@ public class TestcaseController implements Initializable {
                     selected.getMethod(),
                     resolveEndpointFromUrl(),
                     parseHeaders(headerTextArea.getText()),
-                    Map.of(),
+                    requestParams.get().queryParams(),
+                    requestParams.get().pathParams(),
                     bodyTextArea.getText(),
                     setupRequests,
                     List.of(),
+                    payloadAssertions,
+                    expectedResponseBody.get(),
                     statusCode
             );
             reloadCurrentSelection();
@@ -830,12 +888,13 @@ public class TestcaseController implements Initializable {
                 return CaseOutcome.failed("Biến chưa được thay thế");
             }
             ApiTestScenario scenario = tc.getScenario();
-            Map<String, String> resolvedQueryParams = replaceVariables(
-                    scenario == null ? Map.of() : scenario.getQueryParams(),
+            Map<String, List<String>> resolvedQueryParams = replaceQueryVariables(
+                    tc.isUserCreated() ? tc.getQueryParams() : toMultiValueMap(scenario == null ? Map.of() : scenario.getQueryParams()),
                     runtimeVariables
             );
+            Map<String, String> resolvedPathParams = replaceVariables(tc.getPathParams(), runtimeVariables);
             Map<String, String> headers = replaceVariables(tc.getHeaders(), runtimeVariables);
-            if (hasUnresolvedVariables(resolvedQueryParams)) {
+            if (hasUnresolvedQueryVariables(resolvedQueryParams)) {
                 Platform.runLater(() -> resultLogList.getItems().add("  Error: Query params have unresolved variables: " + resolvedQueryParams));
                 return CaseOutcome.failed("Biến query params chưa được thay thế");
             }
@@ -843,13 +902,21 @@ public class TestcaseController implements Initializable {
                 Platform.runLater(() -> resultLogList.getItems().add("  Error: Headers have unresolved variables: " + headers));
                 return CaseOutcome.failed("Biến header chưa được thay thế");
             }
+            if (hasUnresolvedVariables(resolvedPathParams)) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Error: Path params have unresolved variables: " + resolvedPathParams));
+                return CaseOutcome.failed("Biến path params chưa được thay thế");
+            }
             String targetUrl = baseUrlField.getText().trim();
             if (targetUrl.isEmpty()) {
                 targetUrl = tc.getEndpoint();
             }
-            Map<String, String> queryParams = targetUrl.contains("?") ? Map.of() : resolvedQueryParams;
+            Map<String, List<String>> queryParams = targetUrl.contains("?") ? Map.of() : resolvedQueryParams;
 
-            String resolvedTargetUrl = targetUrl;
+            String resolvedTargetUrl = replacePathParams(targetUrl, resolvedPathParams);
+            if (hasUnresolvedPathParams(resolvedTargetUrl)) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Error: URL has unresolved path params: " + resolvedTargetUrl));
+                return CaseOutcome.failed("Path params chưa được thay thế");
+            }
             Platform.runLater(() -> resultLogList.getItems().add("  Sending: " + tc.getMethod() + " " + resolvedTargetUrl));
             if (!queryParams.isEmpty()) {
                 Platform.runLater(() -> resultLogList.getItems().add("  Query Params: " + queryParams));
@@ -862,9 +929,22 @@ public class TestcaseController implements Initializable {
             String expectedCode = tc.getExpected();
             String actualCode = response.getResponseCode();
             boolean codePassed = expectedCode.equals(actualCode);
+            List<ApiPayloadAssertion> resolvedAssertions = replaceAssertionVariables(
+                    scenario == null ? List.of() : scenario.getPayloadAssertions(),
+                    runtimeVariables
+            );
+            String resolvedExpectedResponse = replaceVariables(
+                    scenario == null ? null : scenario.getExpectedResponseBody(),
+                    runtimeVariables
+            );
+            if (hasUnresolvedAssertionVariables(resolvedAssertions) || hasUnresolvedVariables(resolvedExpectedResponse)) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Error: Expected response còn biến chưa được thay thế."));
+                return CaseOutcome.failed("Biến expected response chưa được thay thế");
+            }
             ApiPayloadAssertionEvaluator.Evaluation payloadEvaluation = payloadAssertionEvaluator.evaluate(
                     response.getResponseBody(),
-                    scenario == null ? List.of() : scenario.getPayloadAssertions()
+                    resolvedAssertions,
+                    resolvedExpectedResponse
             );
             boolean isPass = codePassed && payloadEvaluation.passed();
             long elapsed = System.currentTimeMillis() - started;
@@ -948,6 +1028,40 @@ public class TestcaseController implements Initializable {
         return dialog.showAndWait().orElse("");
     }
 
+    private Optional<UserTestCaseService.RequestParams> promptRequestParams(String title,
+                                                                            String header,
+                                                                            String defaultValue) {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        TextArea textArea = new TextArea(defaultValue == null ? "" : defaultValue);
+        textArea.setPrefWidth(700);
+        textArea.setPrefHeight(240);
+        textArea.setWrapText(false);
+        textArea.setStyle("-fx-font-family: 'Courier New';");
+        dialog.getDialogPane().setContent(textArea);
+        dialog.setResultConverter(button -> button == ButtonType.OK ? textArea.getText() : null);
+        return dialog.showAndWait().map(userTestCaseService::parseRequestParams);
+    }
+
+    private Optional<String> promptOptionalJson(String title, String header, String defaultValue, double height) {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        TextArea textArea = new TextArea(defaultValue == null ? "" : defaultValue);
+        textArea.setPrefWidth(700);
+        textArea.setPrefHeight(height);
+        textArea.setWrapText(false);
+        textArea.setStyle("-fx-font-family: 'Courier New';");
+        dialog.getDialogPane().setContent(textArea);
+        dialog.setResultConverter(button -> button == ButtonType.OK ? textArea.getText() : null);
+        return dialog.showAndWait();
+    }
+
     private String sampleSetupRequestsJson() {
         return """
                 [
@@ -978,6 +1092,37 @@ public class TestcaseController implements Initializable {
                     "headers": {},
                     "expectedCodes": ["1000", "200", "204"],
                     "required": true
+                  }
+                ]
+                """;
+    }
+
+    private String sampleRequestParamsJson() {
+        return """
+                {
+                  "queryParams": {
+                    "filter": "active",
+                    "tag": ["indoor", "priority"]
+                  },
+                  "pathParams": {
+                    "id": "123"
+                  }
+                }
+                """;
+    }
+
+    private String samplePayloadAssertionsJson() {
+        return """
+                [
+                  {
+                    "jsonPath": "data.id",
+                    "operator": "EQUALS",
+                    "expectedValue": "${mapId}"
+                  },
+                  {
+                    "jsonPath": "data.items",
+                    "operator": "ARRAY_LENGTH",
+                    "expectedValue": "1"
                   }
                 ]
                 """;
@@ -1219,6 +1364,8 @@ public class TestcaseController implements Initializable {
         ApiTestScenario scenario = tc.getScenario();
         return containsAuthToken(tc.getRequestBody())
                 || containsAuthToken(tc.getHeaders())
+                || containsAuthTokenValues(tc.getQueryParams())
+                || containsAuthToken(tc.getPathParams())
                 || containsAuthToken(scenario == null ? Map.of() : scenario.getQueryParams())
                 || (scenario != null && scenario.getSetupRequests().stream().anyMatch(setupRequest ->
                 containsAuthToken(setupRequest.getEndpoint())
@@ -1321,10 +1468,18 @@ public class TestcaseController implements Initializable {
         };
     }
 
-    private String buildTestInput(String requestBody, Map<String, String> headers, Map<String, String> queryParams) {
+    private String buildTestInput(String requestBody, Map<String, String> headers, Map<String, ?> queryParams) {
+        return buildTestInput(requestBody, headers, queryParams, Map.of());
+    }
+
+    private String buildTestInput(String requestBody,
+                                  Map<String, String> headers,
+                                  Map<String, ?> queryParams,
+                                  Map<String, String> pathParams) {
         boolean hasRequestBody = requestBody != null && !requestBody.isBlank();
         boolean hasHeaders = headers != null && !headers.isEmpty();
         boolean hasQueryParams = queryParams != null && !queryParams.isEmpty();
+        boolean hasPathParams = pathParams != null && !pathParams.isEmpty();
         List<String> inputParts = new ArrayList<>();
 
         if (hasHeaders) {
@@ -1332,6 +1487,9 @@ public class TestcaseController implements Initializable {
         }
         if (hasQueryParams) {
             inputParts.add("Query Params: " + queryParams);
+        }
+        if (hasPathParams) {
+            inputParts.add("Path Params: " + pathParams);
         }
         if (hasRequestBody) {
             inputParts.add(requestBody);
@@ -1476,11 +1634,85 @@ public class TestcaseController implements Initializable {
         return resolvedValues;
     }
 
+    private Map<String, List<String>> replaceQueryVariables(Map<String, List<String>> values,
+                                                             Map<String, String> runtimeVariables) {
+        if (values == null || values.isEmpty()) {
+            return Map.of();
+        }
+
+        Map<String, List<String>> resolvedValues = new LinkedHashMap<>();
+        values.forEach((key, items) -> resolvedValues.put(
+                key,
+                items == null ? List.of() : items.stream()
+                        .map(value -> replaceVariables(value, runtimeVariables))
+                        .toList()
+        ));
+        return resolvedValues;
+    }
+
+    private List<ApiPayloadAssertion> replaceAssertionVariables(List<ApiPayloadAssertion> assertions,
+                                                                Map<String, String> runtimeVariables) {
+        if (assertions == null || assertions.isEmpty()) {
+            return List.of();
+        }
+        return assertions.stream()
+                .map(assertion -> new ApiPayloadAssertion(
+                        assertion.getJsonPath(),
+                        assertion.getOperator(),
+                        replaceVariables(assertion.getExpectedValue(), runtimeVariables)
+                ))
+                .toList();
+    }
+
+    private boolean hasUnresolvedAssertionVariables(List<ApiPayloadAssertion> assertions) {
+        return assertions != null && assertions.stream()
+                .map(ApiPayloadAssertion::getExpectedValue)
+                .anyMatch(this::hasUnresolvedVariables);
+    }
+
+    private Map<String, List<String>> toMultiValueMap(Map<String, String> values) {
+        if (values == null || values.isEmpty()) {
+            return Map.of();
+        }
+
+        Map<String, List<String>> multiValueMap = new LinkedHashMap<>();
+        values.forEach((key, value) -> multiValueMap.put(key, List.of(value == null ? "" : value)));
+        return multiValueMap;
+    }
+
+    private String replacePathParams(String targetUrl, Map<String, String> pathParams) {
+        String resolvedUrl = targetUrl;
+        for (Map.Entry<String, String> entry : pathParams.entrySet()) {
+            String value = entry.getValue() == null ? "" : entry.getValue();
+            resolvedUrl = resolvedUrl.replace("{" + entry.getKey() + "}", value);
+            resolvedUrl = resolvedUrl.replace("${" + entry.getKey() + "}", value);
+        }
+        return resolvedUrl;
+    }
+
+    private boolean hasUnresolvedPathParams(String targetUrl) {
+        return targetUrl != null && targetUrl.matches("(?s).*(\\$\\{[A-Za-z0-9_]+}|\\{[A-Za-z0-9_]+}).*");
+    }
+
     private boolean hasUnresolvedVariables(String requestBody) {
         return requestBody != null && requestBody.matches("(?s).*\\$\\{[A-Za-z0-9_]+}.*");
     }
 
     private boolean hasUnresolvedVariables(Map<String, String> values) {
         return values != null && values.values().stream().anyMatch(this::hasUnresolvedVariables);
+    }
+
+    private boolean hasUnresolvedQueryVariables(Map<String, List<String>> values) {
+        return values != null && values.values().stream()
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .anyMatch(this::hasUnresolvedVariables);
+    }
+
+    private boolean containsAuthTokenValues(Map<String, List<String>> values) {
+        return values != null && values.values().stream()
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .anyMatch(this::containsAuthToken);
     }
 }

@@ -2,7 +2,6 @@ insert into users(role_id, full_name, phone, email, password)
 values
     ('2', 'TESTER 3', '0980000004', 'b', 'b'),
     ('2', 'TESTER 2', '0980000003', 'a', 'a'),
-       ('2', 'TESTER 3', '0980000004', 'b', 'b'),
        ('2', 'TESTER 1', '0980000001', 'tester1@tester.com', 'tester1@tester.com'),
        ('1', 'ADMIN 1', '0980000002', 'admin1@tester.com', 'SuperSecurePassword123@');
 
@@ -109,9 +108,12 @@ CREATE TABLE user_test_cases
     endpoint             VARCHAR(2048) NOT NULL,
     request_headers      JSONB         NOT NULL   DEFAULT '{}',
     query_params         JSONB         NOT NULL   DEFAULT '{}',
+    path_params          JSONB         NOT NULL   DEFAULT '{}',
     request_body         TEXT,
     setup_requests       JSONB         NOT NULL   DEFAULT '[]',
     cleanup_requests     JSONB         NOT NULL   DEFAULT '[]',
+    payload_assertions   JSONB         NOT NULL   DEFAULT '[]',
+    expected_response_body TEXT,
     expected_status_code INTEGER       NOT NULL,
     is_active            BOOLEAN       NOT NULL   DEFAULT TRUE,
     created_at           TIMESTAMP     NOT NULL   DEFAULT NOW(),

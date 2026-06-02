@@ -3,6 +3,7 @@ package com.example.apitestapp.repository;
 import com.example.apitestapp.db.ConnectionManager;
 import com.example.apitestapp.models.UserTestCase;
 import com.example.apitestapp.services.ApiCleanupRequest;
+import com.example.apitestapp.services.ApiPayloadAssertion;
 import com.example.apitestapp.services.ApiResponseVariable;
 import com.example.apitestapp.services.ApiSetupRequest;
 import com.google.gson.Gson;
@@ -10,9 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,18 +24,16 @@ import java.util.List;
 import java.util.Map;
 
 public class UserTestCaseRepository {
-    private static final Type STRING_MAP_TYPE = new TypeToken<Map<String, String>>() {
-    }.getType();
-
     private final Gson gson = new Gson();
 
     public UserTestCase save(UserTestCase testCase) throws SQLException {
         String sql = """
                 INSERT INTO user_test_cases (
                     user_id, suite_id, owner_name, api_label, name, description, method, endpoint,
-                    request_headers, query_params, request_body, setup_requests, cleanup_requests, expected_status_code
+                    request_headers, query_params, path_params, request_body, setup_requests, cleanup_requests,
+                    payload_assertions, expected_response_body, expected_status_code
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::jsonb, ?::jsonb, ?, ?::jsonb, ?::jsonb, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::jsonb, ?::jsonb, ?::jsonb, ?, ?::jsonb, ?::jsonb, ?::jsonb, ?, ?)
                 RETURNING *
                 """;
 
@@ -52,10 +49,13 @@ public class UserTestCaseRepository {
             ps.setString(8, testCase.getEndpoint());
             ps.setString(9, gson.toJson(nonNullMap(testCase.getRequestHeaders())));
             ps.setString(10, gson.toJson(nonNullMap(testCase.getQueryParams())));
-            setNullableJson(ps, 11, testCase.getRequestBody());
-            ps.setString(12, hookRequestsToJson(testCase.getSetupRequests()));
-            ps.setString(13, hookRequestsToJson(testCase.getCleanupRequests()));
-            ps.setInt(14, testCase.getExpectedStatusCode());
+            ps.setString(11, gson.toJson(nonNullMap(testCase.getPathParams())));
+            setNullableJson(ps, 12, testCase.getRequestBody());
+            ps.setString(13, hookRequestsToJson(testCase.getSetupRequests()));
+            ps.setString(14, hookRequestsToJson(testCase.getCleanupRequests()));
+            ps.setString(15, payloadAssertionsToJson(testCase.getPayloadAssertions()));
+            setNullableJson(ps, 16, testCase.getExpectedResponseBody());
+            ps.setInt(17, testCase.getExpectedStatusCode());
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -71,9 +71,9 @@ public class UserTestCaseRepository {
         String sql = """
                 UPDATE user_test_cases
                 SET name = ?, description = ?, method = ?, endpoint = ?,
-                    request_headers = ?::jsonb, query_params = ?::jsonb, request_body = ?,
-                    setup_requests = ?::jsonb, cleanup_requests = ?::jsonb,
-                    expected_status_code = ?, updated_at = NOW()
+                    request_headers = ?::jsonb, query_params = ?::jsonb, path_params = ?::jsonb, request_body = ?,
+                    setup_requests = ?::jsonb, cleanup_requests = ?::jsonb, payload_assertions = ?::jsonb,
+                    expected_response_body = ?, expected_status_code = ?, updated_at = NOW()
                 WHERE id = ?
                 RETURNING *
                 """;
@@ -86,11 +86,14 @@ public class UserTestCaseRepository {
             ps.setString(4, testCase.getEndpoint());
             ps.setString(5, gson.toJson(nonNullMap(testCase.getRequestHeaders())));
             ps.setString(6, gson.toJson(nonNullMap(testCase.getQueryParams())));
-            setNullableJson(ps, 7, testCase.getRequestBody());
-            ps.setString(8, hookRequestsToJson(testCase.getSetupRequests()));
-            ps.setString(9, hookRequestsToJson(testCase.getCleanupRequests()));
-            ps.setInt(10, testCase.getExpectedStatusCode());
-            ps.setString(11, testCase.getId());
+            ps.setString(7, gson.toJson(nonNullMap(testCase.getPathParams())));
+            setNullableJson(ps, 8, testCase.getRequestBody());
+            ps.setString(9, hookRequestsToJson(testCase.getSetupRequests()));
+            ps.setString(10, hookRequestsToJson(testCase.getCleanupRequests()));
+            ps.setString(11, payloadAssertionsToJson(testCase.getPayloadAssertions()));
+            setNullableJson(ps, 12, testCase.getExpectedResponseBody());
+            ps.setInt(13, testCase.getExpectedStatusCode());
+            ps.setString(14, testCase.getId());
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -177,11 +180,14 @@ public class UserTestCaseRepository {
         testCase.setDescription(rs.getString("description"));
         testCase.setMethod(rs.getString("method"));
         testCase.setEndpoint(rs.getString("endpoint"));
-        testCase.setRequestHeaders(readMap(rs.getString("request_headers")));
-        testCase.setQueryParams(readMap(rs.getString("query_params")));
+        testCase.setRequestHeaders(readStringMap(rs.getString("request_headers")));
+        testCase.setQueryParams(readMultiValueMap(rs.getString("query_params")));
+        testCase.setPathParams(readStringMap(rs.getString("path_params")));
         testCase.setRequestBody(rs.getString("request_body"));
         testCase.setSetupRequests(readSetupRequests(rs.getString("setup_requests")));
         testCase.setCleanupRequests(readCleanupRequests(rs.getString("cleanup_requests")));
+        testCase.setPayloadAssertions(readPayloadAssertions(rs.getString("payload_assertions")));
+        testCase.setExpectedResponseBody(rs.getString("expected_response_body"));
         testCase.setExpectedStatusCode(rs.getInt("expected_status_code"));
         testCase.setActive(rs.getBoolean("is_active"));
         testCase.setCreatedAt(readLocalDateTime(rs, "created_at"));
@@ -189,13 +195,35 @@ public class UserTestCaseRepository {
         return testCase;
     }
 
-    private Map<String, String> readMap(String json) {
+    private Map<String, String> readStringMap(String json) {
         if (json == null || json.isBlank()) {
             return new LinkedHashMap<>();
         }
 
-        Map<String, String> parsed = gson.fromJson(json, STRING_MAP_TYPE);
-        return parsed == null ? new LinkedHashMap<>() : new LinkedHashMap<>(parsed);
+        return readStringMap(JsonParser.parseString(json));
+    }
+
+    private Map<String, List<String>> readMultiValueMap(String json) {
+        Map<String, List<String>> values = new LinkedHashMap<>();
+        if (json == null || json.isBlank()) {
+            return values;
+        }
+
+        JsonElement root = JsonParser.parseString(json);
+        if (!root.isJsonObject()) {
+            return values;
+        }
+        for (Map.Entry<String, JsonElement> entry : root.getAsJsonObject().entrySet()) {
+            JsonElement value = entry.getValue();
+            List<String> items = new ArrayList<>();
+            if (value != null && value.isJsonArray()) {
+                value.getAsJsonArray().forEach(item -> items.add(item == null || item.isJsonNull() ? "" : item.getAsString()));
+            } else {
+                items.add(value == null || value.isJsonNull() ? "" : value.getAsString());
+            }
+            values.put(entry.getKey(), items);
+        }
+        return values;
     }
 
     private List<ApiSetupRequest> readSetupRequests(String json) {
@@ -208,6 +236,48 @@ public class UserTestCaseRepository {
         return readHookRequests(json, true).stream()
                 .map(request -> (ApiCleanupRequest) request)
                 .toList();
+    }
+
+    private List<ApiPayloadAssertion> readPayloadAssertions(String json) {
+        List<ApiPayloadAssertion> assertions = new ArrayList<>();
+        if (json == null || json.isBlank()) {
+            return assertions;
+        }
+        JsonElement root = JsonParser.parseString(json);
+        if (!root.isJsonArray()) {
+            return assertions;
+        }
+        for (JsonElement item : root.getAsJsonArray()) {
+            if (!item.isJsonObject()) {
+                continue;
+            }
+            JsonObject object = item.getAsJsonObject();
+            try {
+                assertions.add(new ApiPayloadAssertion(
+                        getString(object, "jsonPath", ""),
+                        ApiPayloadAssertion.Operator.valueOf(getString(object, "operator", "")),
+                        getNullableString(object, "expectedValue")
+                ));
+            } catch (IllegalArgumentException ignored) {
+                // Ignore malformed legacy assertions instead of blocking testcase loading.
+            }
+        }
+        return assertions;
+    }
+
+    private String payloadAssertionsToJson(List<ApiPayloadAssertion> assertions) {
+        JsonArray array = new JsonArray();
+        if (assertions == null) {
+            return array.toString();
+        }
+        for (ApiPayloadAssertion assertion : assertions) {
+            JsonObject object = new JsonObject();
+            object.addProperty("jsonPath", assertion.getJsonPath());
+            object.addProperty("operator", assertion.getOperator().name());
+            object.addProperty("expectedValue", assertion.getExpectedValue());
+            array.add(object);
+        }
+        return array.toString();
     }
 
     private String hookRequestsToJson(List<? extends ApiSetupRequest> requests) {
@@ -350,6 +420,11 @@ public class UserTestCaseRepository {
         return value == null || value.isJsonNull() ? defaultValue : value.getAsString();
     }
 
+    private String getNullableString(JsonObject object, String key) {
+        JsonElement value = object.get(key);
+        return value == null || value.isJsonNull() ? null : value.getAsString();
+    }
+
     private boolean getBoolean(JsonObject object, String key, boolean defaultValue) {
         JsonElement value = object.get(key);
         return value == null || value.isJsonNull() ? defaultValue : value.getAsBoolean();
@@ -360,7 +435,7 @@ public class UserTestCaseRepository {
         return value == null ? null : value.toLocalDateTime();
     }
 
-    private Map<String, String> nonNullMap(Map<String, String> values) {
+    private Map<?, ?> nonNullMap(Map<?, ?> values) {
         return values == null ? Map.of() : values;
     }
 

@@ -1,6 +1,7 @@
 package com.example.apitestapp.models;
 
 import com.example.apitestapp.services.ApiCleanupRequest;
+import com.example.apitestapp.services.ApiPayloadAssertion;
 import com.example.apitestapp.services.ApiSetupRequest;
 
 import java.time.LocalDateTime;
@@ -19,10 +20,13 @@ public class UserTestCase {
     private String method;
     private String endpoint;
     private Map<String, String> requestHeaders = new LinkedHashMap<>();
-    private Map<String, String> queryParams = new LinkedHashMap<>();
+    private Map<String, List<String>> queryParams = new LinkedHashMap<>();
+    private Map<String, String> pathParams = new LinkedHashMap<>();
     private String requestBody;
     private List<ApiSetupRequest> setupRequests = List.of();
     private List<ApiCleanupRequest> cleanupRequests = List.of();
+    private List<ApiPayloadAssertion> payloadAssertions = List.of();
+    private String expectedResponseBody;
     private int expectedStatusCode;
     private boolean active = true;
     private LocalDateTime createdAt;
@@ -108,12 +112,20 @@ public class UserTestCase {
         this.requestHeaders = requestHeaders == null ? new LinkedHashMap<>() : new LinkedHashMap<>(requestHeaders);
     }
 
-    public Map<String, String> getQueryParams() {
+    public Map<String, List<String>> getQueryParams() {
         return queryParams;
     }
 
-    public void setQueryParams(Map<String, String> queryParams) {
+    public void setQueryParams(Map<String, List<String>> queryParams) {
         this.queryParams = queryParams == null ? new LinkedHashMap<>() : new LinkedHashMap<>(queryParams);
+    }
+
+    public Map<String, String> getPathParams() {
+        return pathParams;
+    }
+
+    public void setPathParams(Map<String, String> pathParams) {
+        this.pathParams = pathParams == null ? new LinkedHashMap<>() : new LinkedHashMap<>(pathParams);
     }
 
     public String getRequestBody() {
@@ -138,6 +150,22 @@ public class UserTestCase {
 
     public void setCleanupRequests(List<ApiCleanupRequest> cleanupRequests) {
         this.cleanupRequests = cleanupRequests == null ? List.of() : List.copyOf(cleanupRequests);
+    }
+
+    public List<ApiPayloadAssertion> getPayloadAssertions() {
+        return payloadAssertions;
+    }
+
+    public void setPayloadAssertions(List<ApiPayloadAssertion> payloadAssertions) {
+        this.payloadAssertions = payloadAssertions == null ? List.of() : List.copyOf(payloadAssertions);
+    }
+
+    public String getExpectedResponseBody() {
+        return expectedResponseBody;
+    }
+
+    public void setExpectedResponseBody(String expectedResponseBody) {
+        this.expectedResponseBody = expectedResponseBody;
     }
 
     public int getExpectedStatusCode() {

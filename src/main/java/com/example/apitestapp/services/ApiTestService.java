@@ -33,14 +33,14 @@ public class ApiTestService {
         return callApi(method, endpointOrUrl, jsonBody, Map.of());
     }
 
-    public ApiResponse callApi(String method, String endpointOrUrl, String jsonBody, Map<String, String> queryParams) {
+    public ApiResponse callApi(String method, String endpointOrUrl, String jsonBody, Map<String, ?> queryParams) {
         return callApi(method, endpointOrUrl, jsonBody, queryParams, Map.of());
     }
 
     public ApiResponse callApi(String method,
                                String endpointOrUrl,
                                String jsonBody,
-                               Map<String, String> queryParams,
+                               Map<String, ?> queryParams,
                                Map<String, String> headers) {
         try {
             String normalizedMethod = method == null || method.isBlank() ? "POST" : method.trim().toUpperCase();
@@ -99,7 +99,7 @@ public class ApiTestService {
         return resolveUrl(endpointOrUrl, Map.of());
     }
 
-    private String resolveUrl(String endpointOrUrl, Map<String, String> queryParams) {
+    private String resolveUrl(String endpointOrUrl, Map<String, ?> queryParams) {
         String resolvedUrl;
         if (endpointOrUrl == null || endpointOrUrl.isBlank()) {
             resolvedUrl = baseUrl;
@@ -113,7 +113,7 @@ public class ApiTestService {
         return appendQueryParams(resolvedUrl, queryParams);
     }
 
-    private String appendQueryParams(String url, Map<String, String> queryParams) {
+    private String appendQueryParams(String url, Map<String, ?> queryParams) {
         if (queryParams == null || queryParams.isEmpty()) {
             return url;
         }
@@ -126,7 +126,11 @@ public class ApiTestService {
         HttpUrl.Builder builder = parsedUrl.newBuilder();
         queryParams.forEach((key, value) -> {
             if (key != null && !key.isBlank()) {
-                builder.addQueryParameter(key, value == null ? "" : value);
+                if (value instanceof Iterable<?> values) {
+                    values.forEach(item -> builder.addQueryParameter(key, item == null ? "" : item.toString()));
+                } else {
+                    builder.addQueryParameter(key, value == null ? "" : value.toString());
+                }
             }
         });
         return builder.build().toString();
