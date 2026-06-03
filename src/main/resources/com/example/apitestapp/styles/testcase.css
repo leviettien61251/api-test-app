@@ -63,9 +63,13 @@
 
 /* Nhãn chữ tiêu đề của Base URL */
 .left-panel .panel-sub-title {
-    -fx-text-fill: #475569; /* Chữ màu Slate 700 tối để nổi bật trên nền trắng */
     -fx-font-size: 12px;
     -fx-font-weight: bold;
+    -fx-background-color: #ffffff;
+    -fx-background-clip: text;
+    -fx-text-fill: transparent;
+
+
 }
 
 .left-panel .label {
@@ -182,16 +186,86 @@
 }
 
 /* Combobox cấu hình chạy */
+/* ==========================================================================
+   TÙY BIẾN HIỆU ỨNG ĐỔI MÀU CHO COMBOBOX CẤU HÌNH TRÊN WORKSPACE
+   ========================================================================== */
+
+/* 1. Trạng thái bình thường */
 .combo-box {
     -fx-background-color: #ffffff;
     -fx-border-color: #cbd5e1;
+    -fx-border-width: 1px;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
-    -fx-padding: 2px 6px;
+    -fx-padding: 4px 8px; /* Tăng padding một chút cho thoáng ô bấm */
+    -fx-cursor: hand;
+    /* Hiệu ứng chuyển màu mượt mà khi tương tác */
+    -fx-transition: all 0.2s ease-in-out;
 }
+
 .combo-box .list-cell {
     -fx-text-fill: #334155;
     -fx-font-size: 13px;
+    -fx-background-color: transparent;
+}
+
+/* 2. HIỆU ỨNG KHI RÊ CHUỘT QUA (HOVER): Đổi viền sang màu xanh biển nhẹ */
+.combo-box:hover {
+    -fx-border-color: #0284c7; /* Đổi màu viền sang xanh da trời */
+    -fx-background-color: #f8fafc; /* Nền chuyển sang xám trắng cực mịn */
+}
+
+/* 3. HIỆU ỨNG KHI ĐƯỢC CLICK CHỌN HOẶC ĐANG MỞ (FOCUSED/ARMED)
+   Ăn hiệu ứng chìm nhẹ và dải viền xanh đậm rực rỡ */
+.combo-box:focused,
+.combo-box:armed {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #0284c7;
+    /* Đổ bóng nhẹ dạng phát quang (Glow) quanh hộp ComboBox */
+    -fx-effect: dropshadow(three-pass-box, rgba(2, 132, 199, 0.15), 6, 0, 0, 0);
+}
+
+/* Tùy biến nút mũi tên nhỏ: Đổi sang màu xanh khi tương tác */
+.combo-box:hover .arrow-button .arrow,
+.combo-box:focused .arrow-button .arrow {
+    -fx-background-color: #0284c7;
+}
+
+
+/* ==========================================================================
+   BẢNG DANH SÁCH THẢ XUỐNG (POPUP) CỦA COMBOBOX
+   ========================================================================== */
+
+/* Khung viền bao quanh bảng danh sách xổ xuống */
+.combo-box .combo-box-popup .list-view {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.08), 15, 0, 0, 4);
+    -fx-padding: 4px 0;
+}
+
+/* Từng dòng item bên trong (Lần lượt, Song song...) */
+.combo-box .combo-box-popup .list-cell {
+    -fx-padding: 8px 12px;
+    -fx-text-fill: #475569;
+    -fx-background-color: transparent;
+}
+
+/* HIỆU ỨNG HOVER TỪNG DÒNG ITEM: Đổi sang nền xanh da trời loãng cực sang */
+.combo-box .combo-box-popup .list-cell:filled:hover {
+    -fx-background-color: rgba(2, 132, 199, 0.08); /* Xanh biển trong suốt siêu nhẹ */
+    -fx-text-fill: #0284c7; /* Chữ chuyển màu xanh da trời */
+}
+
+/* HIỆU ỨNG KHI ITEM ĐƯỢC CHỌN TRONG DANH SÁCH
+   Ăn dải màu Gradient chéo nhẹ nhàng từ xanh dương sang xanh lá */
+.combo-box .combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: linear-gradient(to right, rgba(2, 132, 199, 0.12), rgba(16, 185, 129, 0.12));
+    -fx-text-fill: #10b981; /* Chữ chuyển màu xanh lá */
+    -fx-font-weight: bold;
 }
 
 /* --- BẢNG DỮ LIỆU TESTCASE --- */
@@ -288,7 +362,7 @@
 
 /* Nút lưu báo cáo ở góc dưới cùng bên phải (Đổ màu Gradient Tím Lam cao cấp) */
 #saveReportBtn {
-    -fx-background-color: linear-gradient(to right, #4f46e5, #a855f7);
+    -fx-background-color: linear-gradient(to right, #10b981, #3b82f6);
     -fx-text-fill: white;
     -fx-padding: 10px 0;
 }

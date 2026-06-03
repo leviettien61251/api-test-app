@@ -47,15 +47,34 @@
     -fx-background-color: linear-gradient(to right, #1e40af, #2563eb);
 }
 
+/* ==========================================================================
+   TÙY BIẾN NÚT SEND (GRADIENT XANH DƯƠNG - XANH LÁ) TRONG REQUEST.CSS
+   ========================================================================== */
 .btn-send {
-    -fx-background-color: linear-gradient(to right, #2563eb, #1e40af);
+    /* Đổi sang cấu trúc rgba truyền thống ngăn lỗi biên dịch JavaFX */
+    -fx-background-color: linear-gradient(to right, #3b82f6, #22c55e);
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-padding: 8 20;
-    -fx-background-radius: 8;
+    -fx-font-size: 13px;
+    -fx-padding: 8px 22px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    /* Hiệu ứng chuyển động mượt mà khi di chuột */
+    -fx-transition: all 0.2s ease-in-out;
 }
+
+/* HIỆU ỨNG CHẠM VÀO / RÊ CHUỘT QUA (HOVER) */
 .btn-send:hover {
-    -fx-background-color: linear-gradient(to right, #1e40af, #2563eb);
+    /* Đảo dải màu tươi sáng và rực rỡ hơn hẳn để người dùng nhận biết */
+    -fx-background-color: linear-gradient(to right, #3b82f6, #22c55e);
+    /* Đổ thêm bóng sáng lan tỏa nhẹ xung quanh nút */
+    -fx-effect: dropshadow(three-pass-box, rgba(34, 197, 94, 0.4), 12, 0, 0, 3);
+}
+
+/* HIỆU ỨNG KHI ẤN GIỮ CHUỘT (PRESSED) */
+.btn-send:pressed {
+    /* Tone màu sẫm lại một chút tạo cảm giác nút bị lún xuống thật */
+    -fx-background-color: linear-gradient(to right, #1d4ed8, #15803d);
 }
 
 .btn-secondary {
