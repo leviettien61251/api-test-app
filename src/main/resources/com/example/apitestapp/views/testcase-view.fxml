@@ -5,13 +5,15 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane xmlns:fx="http://javafx.com/fxml/1" dividerPositions="0.22, 0.76" prefHeight="750.0" prefWidth="1300.0"
+<StackPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="750.0" prefWidth="1300.0"
            stylesheets="@../styles/testcase.css" xmlns="http://javafx.com/javafx/17"
            fx:controller="com.example.apitestapp.controllers.TestcaseController">
-    <items>
+    <children>
+        <SplitPane fx:id="testcaseContent" dividerPositions="0.22, 0.76">
+            <items>
 
-        <!-- ==================== CỘT TRÁI: SIDEBAR NỀN TRẮNG SÁNG ==================== -->
-        <VBox spacing="12.0" styleClass="left-panel">
+                <!-- ==================== CỘT TRÁI: SIDEBAR NỀN TRẮNG SÁNG ==================== -->
+                <VBox spacing="12.0" styleClass="left-panel">
             <padding>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
             </padding>
@@ -46,10 +48,10 @@
                 <!-- TreeView Collections -->
                 <TreeView fx:id="testSuiteTree" styleClass="dark-tree-view" showRoot="false" VBox.vgrow="ALWAYS"/>
             </children>
-        </VBox>
+                </VBox>
 
-        <!-- ==================== CỘT GIỮA: WORKSPACE CHÍNH ==================== -->
-        <ScrollPane fitToWidth="true" styleClass="workspace-scroll">
+                <!-- ==================== CỘT GIỮA: WORKSPACE CHÍNH ==================== -->
+                <ScrollPane fitToWidth="true" styleClass="workspace-scroll">
             <content>
                 <VBox spacing="20.0" styleClass="workspace-container">
                     <padding>
@@ -115,10 +117,10 @@
                     </children>
                 </VBox>
             </content>
-        </ScrollPane>
+                </ScrollPane>
 
-        <!-- ==================== CỘT PHẢI: CONSOLE & TỔNG KẾT ==================== -->
-        <VBox spacing="15.0" styleClass="right-panel">
+                <!-- ==================== CỘT PHẢI: CONSOLE & TỔNG KẾT ==================== -->
+                <VBox spacing="15.0" styleClass="right-panel">
             <padding>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
             </padding>
@@ -137,7 +139,22 @@
                 <Button fx:id="saveReportBtn" maxWidth="Infinity" styleClass="btn-gradient-indigo"
                         text="💾 Lưu báo cáo" onAction="#handleSaveReport"/>
             </children>
-        </VBox>
+                </VBox>
 
-    </items>
-</SplitPane>
+            </items>
+        </SplitPane>
+
+        <StackPane fx:id="runningOverlay" managed="false" visible="false" styleClass="running-overlay">
+            <children>
+                <VBox alignment="CENTER" prefWidth="340.0" spacing="16.0" styleClass="running-overlay-card">
+                    <children>
+                        <ProgressIndicator prefHeight="56.0" prefWidth="56.0"/>
+                        <Label styleClass="running-overlay-title" text="Đang chạy testcase..."/>
+                        <Label styleClass="running-overlay-subtitle" text="Vui lòng chờ, cleanup data vẫn sẽ chạy nếu bạn dừng."/>
+                        <Button fx:id="overlayStopBtn" styleClass="btn-stop-execution" text="■ Stop" onAction="#handleStop"/>
+                    </children>
+                </VBox>
+            </children>
+        </StackPane>
+    </children>
+</StackPane>

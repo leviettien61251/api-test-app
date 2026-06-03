@@ -2,12 +2,17 @@ package com.example.apitestapp;
 
 import atlantafx.base.theme.PrimerLight;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class MainApplication extends Application {
     private static Stage primaryStage;
@@ -56,5 +61,25 @@ public class MainApplication extends Application {
         stage.sizeToScene();
         stage.centerOnScreen();
         stage.show();
+
+        stage.setOnCloseRequest(event -> {
+            Alert closeAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            closeAlert.setTitle("Thoát ứng dụng");
+            closeAlert.setHeaderText("Bạn có chắc chắn muốn thoát ứng dụng?");
+
+            ButtonType yesButton = new ButtonType("Có");
+
+            ButtonType cancelButton = new ButtonType("Không", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            closeAlert.getButtonTypes().setAll(yesButton, cancelButton);
+
+            Optional<ButtonType> result = closeAlert.showAndWait();
+            if (result.get() == yesButton) {
+                Platform.exit();
+            } else if (result.get() == cancelButton) {
+                event.consume();
+            }
+
+        });
     }
 }

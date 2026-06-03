@@ -17,6 +17,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.css.PseudoClass;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.layout.StackPane;
 
 import java.net.URI;
 import java.net.URL;
@@ -58,6 +60,10 @@ public class TestcaseController implements Initializable {
     @FXML
     private Button addTestSuiteBtn, editTestSuiteBtn, deleteTestSuiteBtn, editCleanupDataBtn;
     @FXML
+    private SplitPane testcaseContent;
+    @FXML
+    private StackPane runningOverlay;
+    @FXML
     private TextField mainBaseUrlField;
     @FXML
     private TextField baseUrlField; // Thanh URL
@@ -98,6 +104,7 @@ public class TestcaseController implements Initializable {
         scenarioRegistry = new ApiScenarioRegistry();
         setupExecutionLogStyles();
         initTreeView();
+        setRunningUiState(false);
 
         testCaseTable.setItems(testData);
     }
@@ -475,8 +482,11 @@ public class TestcaseController implements Initializable {
 
     @FXML
     private void handleStop() {
+        if (!isRunning) {
+            return;
+        }
         isRunning = false;
-        resultLogList.getItems().add("⏹ Đã dừng thực thi");
+        resultLogList.getItems().add("⏹ Đang dừng thực thi, cleanup data sẽ tiếp tục chạy nếu có.");
     }
 
     @FXML
@@ -799,6 +809,7 @@ public class TestcaseController implements Initializable {
     private void runTests(boolean all) {
         if (isRunning || testData.isEmpty()) return;
         isRunning = true;
+        setRunningUiState(true);
         lastRunWasAll = all;
         lastRunStartedAt = Instant.now();
         lastRunResults.clear();
@@ -806,61 +817,68 @@ public class TestcaseController implements Initializable {
         lastFailCount = 0;
         resultLogList.getItems().clear();
         ApiScenarioDefinition definitionToRun = currentDefinition;
+        String stopConditionToRun = stopConditionCombo.getValue();
 
-        new Thread(() -> {
+        Thread runnerThread = new Thread(() -> {
             int pass = 0, fail = 0;
             boolean executedAny = false;
-            String stopCond = stopConditionCombo.getValue();
             List<TestResult> collectedResults = new ArrayList<>();
             Map<String, String> cleanupRuntimeVariables = new LinkedHashMap<>();
 
-            for (TestCaseRowModel tc : testData) {
-                if (!isRunning) break;
-                if (!all && !tc.isSelected()) continue;
-                executedAny = true;
+            try {
+                for (TestCaseRowModel tc : testData) {
+                    if (!isRunning) break;
+                    if (!all && !tc.isSelected()) continue;
+                    executedAny = true;
 
-                Map<String, String> runtimeVariables = new LinkedHashMap<>();
-                Platform.runLater(() -> tc.setResult("⏳ Đang test..."));
+                    Map<String, String> runtimeVariables = new LinkedHashMap<>();
+                    Platform.runLater(() -> tc.setResult("⏳ Đang test..."));
 
-                boolean setupOk = runDefaultAuthSetupIfNeeded(tc, runtimeVariables) && runScenarioSetup(tc, runtimeVariables);
-                CaseOutcome outcome = setupOk ? callActualApi(tc, runtimeVariables) : CaseOutcome.failed("Setup thất bại");
-                cleanupRuntimeVariables.putAll(runtimeVariables);
-                runDefaultCleanupAuthSetupIfNeeded(definitionToRun, tc, cleanupRuntimeVariables);
-                boolean isPass = outcome.passed;
+                    boolean setupOk = runDefaultAuthSetupIfNeeded(tc, runtimeVariables) && runScenarioSetup(tc, runtimeVariables);
+                    CaseOutcome outcome = setupOk ? callActualApi(tc, runtimeVariables) : CaseOutcome.failed("Setup thất bại");
+                    cleanupRuntimeVariables.putAll(runtimeVariables);
+                    runDefaultCleanupAuthSetupIfNeeded(definitionToRun, tc, cleanupRuntimeVariables);
+                    boolean isPass = outcome.passed;
 
-                TestResult result = toTestResult(tc, outcome);
-                collectedResults.add(result);
+                    TestResult result = toTestResult(tc, outcome);
+                    collectedResults.add(result);
 
-                Platform.runLater(() -> {
-                    tc.setResult(isPass ? "✅ PASS" : "❌ FAIL");
-                    tc.setStatus(outcome.actualCodeText);
-                    resultLogList.getItems().add((isPass ? "✅ " : "❌ ") + tc.getName());
-                });
+                    Platform.runLater(() -> {
+                        tc.setResult(isPass ? "✅ PASS" : "❌ FAIL");
+                        tc.setStatus(outcome.actualCodeText);
+                        resultLogList.getItems().add((isPass ? "✅ " : "❌ ") + tc.getName());
+                    });
 
-                if (isPass) pass++;
-                else fail++;
+                    if (isPass) pass++;
+                    else fail++;
 
-                if (!isPass && STOP_ON_FAIL_LABEL.equals(stopCond)) {
-                    isRunning = false;
-                    Platform.runLater(() -> resultLogList.getItems().add("⛔ DỪNG: Phát hiện lỗi tại " + tc.getName()));
-                    break;
+                    if (!isPass && STOP_ON_FAIL_LABEL.equals(stopConditionToRun)) {
+                        isRunning = false;
+                        Platform.runLater(() -> resultLogList.getItems().add("⛔ DỪNG: Phát hiện lỗi tại " + tc.getName()));
+                        break;
+                    }
+
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
                 }
 
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    break;
+                if (executedAny) {
+                    runScenarioCleanup(definitionToRun, cleanupRuntimeVariables);
                 }
+            } catch (Exception e) {
+                Platform.runLater(() -> resultLogList.getItems().add("  Error: " + e.getMessage()));
+            } finally {
+                final int p = pass, f = fail;
+                final List<TestResult> resultsSnapshot = new ArrayList<>(collectedResults);
+                Platform.runLater(() -> finishRun(p, f, resultsSnapshot));
             }
-
-            if (executedAny) {
-                runScenarioCleanup(definitionToRun, cleanupRuntimeVariables);
-            }
-
-            final int p = pass, f = fail;
-            final List<TestResult> resultsSnapshot = new ArrayList<>(collectedResults);
-            Platform.runLater(() -> finishRun(p, f, resultsSnapshot));
-        }).start();
+        }, "api-test-runner");
+        runnerThread.setDaemon(true);
+        runnerThread.start();
     }
 
     private void finishRun(int pass, int fail, List<TestResult> resultsSnapshot) {
@@ -869,6 +887,7 @@ public class TestcaseController implements Initializable {
         lastPassCount = pass;
         lastFailCount = fail;
         isRunning = false;
+        setRunningUiState(false);
 
         int total = pass + fail;
         if (total == 0) {
@@ -876,6 +895,17 @@ public class TestcaseController implements Initializable {
         } else {
             summaryText.setText("Pass: " + pass + " | Fail: " + fail + " | Tổng: " + total
                     + " — Bấm «Lưu báo cáo» để ghi History");
+        }
+    }
+
+    private void setRunningUiState(boolean running) {
+        if (runningOverlay != null) {
+            runningOverlay.setVisible(running);
+            runningOverlay.setManaged(running);
+        }
+        if (testcaseContent != null) {
+            testcaseContent.setDisable(running);
+            testcaseContent.setEffect(running ? new GaussianBlur(8) : null);
         }
     }
 

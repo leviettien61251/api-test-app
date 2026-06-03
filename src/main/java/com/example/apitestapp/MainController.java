@@ -250,4 +250,6 @@ public class MainController implements Initializable {
 
         clientMachineRepository.save(cm);
     }
+
+    
 }
