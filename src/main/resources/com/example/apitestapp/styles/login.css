@@ -1,0 +1,249 @@
+/* Nền gradient chéo xanh dương - xanh lá */
+.login-root {
+    -fx-background-color: linear-gradient(to bottom right, #0284c7, #10b981);
+}
+
+/* KHU VỰC ĐĂNG NHẬP: Hiệu ứng kính mờ (Glassmorphism) đã thu gọn */
+.login-card {
+    /* Nền trắng trong suốt tạo hiệu ứng kính */
+    -fx-background-color: rgba(255, 255, 255, 0.14);
+    /* Viền hiệu ứng ánh sáng bám vào mép kính */
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+    -fx-border-width: 1.2;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+
+    /* Đổ bóng đậm một chút để cái card nhìn như đang "nổi" hẳn lên trên mặt nền */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.18), 30, 0, 0, 10);
+}
+
+/* Tiêu đề chính - Màu trắng nổi bật */
+.login-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #ffffff;
+    -fx-alignment: CENTER;
+}
+
+/* Tiêu đề phụ - Đã đẩy độ sáng lên (0.75 -> 0.85) để dễ đọc hơn */
+.login-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+}
+
+/* Nhãn các ô nhập liệu - Trắng font dày */
+.login-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+/* Ô TextField & PasswordField: Làm sáng chữ gợi ý (0.4 -> 0.5) và tăng nhẹ nền tối */
+.login-input {
+    -fx-background-color: rgba(15, 23, 42, 0.35); /* Tăng độ đậm nền để chữ trắng nổi lên */
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12 14;
+    -fx-font-size: 14px;
+    -fx-text-fill: #ffffff; /* Chữ gõ vào màu trắng tinh rõ nét */
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.5); /* Chữ gợi ý sáng hơn, dễ nhìn */
+}
+
+/* Khi người dùng click chọn ô nhập liệu */
+.login-input:focused {
+    -fx-background-color: rgba(15, 23, 42, 0.45);
+    -fx-border-color: #34d399; /* Viền sáng lên màu xanh lá nhạt */
+}
+
+/* Tùy biến ô ComboBox cho đồng bộ hoàn toàn với TextField */
+.login-input-combo {
+    -fx-background-color: rgba(15, 23, 42, 0.35);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 6 10;
+    -fx-font-size: 14px;
+}
+.login-input-combo .label {
+    -fx-text-fill: #ffffff; /* Đảm bảo chữ được chọn trong combo luôn màu trắng */
+}
+.login-input-combo:focused {
+    -fx-background-color: rgba(15, 23, 42, 0.45);
+    -fx-border-color: #34d399;
+}
+/* Mũi tên của combobox đổ sang màu trắng */
+.login-input-combo .arrow-button .arrow {
+    -fx-background-color: #ffffff;
+}
+
+/* Checkbox chỉnh chữ sang màu trắng */
+/* ==========================================================================
+   TÙY BIẾN CHECKBOX (GHI NHỚ ĐĂNG NHẬP) - TRỐNG KHI CHƯA TICK
+   ========================================================================== */
+
+/* Chữ nhãn bên cạnh CheckBox - Màu trắng mờ tinh tế */
+/* ==========================================================================
+   TÙY BIẾN CHECKBOX (GHI NHỚ ĐĂNG NHẬP) - ẨN HOÀN TOÀN DẤU V KHI CHƯA TICK
+   ========================================================================== */
+
+/* Chữ nhãn bên cạnh CheckBox - Màu trắng mờ */
+.login-checkbox {
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+/* 1. ĐỊNH HÌNH Ô VUÔNG LÚC CHƯA TICK: Nền trong suốt, viền trắng mờ */
+.login-checkbox .box {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.4);
+    -fx-border-width: 1.5;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+}
+
+/* 2. ĐÚNG CHỖ NÀY: Mặc định ẩn hoàn toàn dấu tích v đi khi chưa được chọn */
+.login-checkbox .box .mark {
+    -fx-background-color: transparent; /* Biến dấu v thành vô hình */
+    -fx-shape: null; /* Xóa hình dáng dấu v mặc định */
+}
+
+/* Hiệu ứng viền sáng nhẹ khi người dùng hover qua */
+.login-checkbox:hover .box {
+    -fx-border-color: #34d399;
+}
+
+/* 3. KHI ĐÃ ĐƯỢC TÍCH (SELECTED): Hiện nền xanh và gọi lại dấu tích v màu trắng */
+.login-checkbox:selected .box {
+    -fx-background-color: #10b981; /* Nền xanh lá tươi */
+    -fx-border-color: #10b981;
+}
+
+/* Vẽ lại dấu tích v sắc nét bằng mã SVG chuẩn khi ô được chọn */
+.login-checkbox:selected .box .mark {
+    -fx-background-color: #ffffff; /* Dấu v màu trắng tinh */
+    /* Đoạn mã SVG dưới đây vẽ ra dấu tích v mảnh, vuông vắn cực đẹp */
+    -fx-shape: "M1.5,4.5 L4,7 L8.5,2 L9.5,3 L4,8.5 L0.5,5.5 Z";
+}
+
+/* NÚT ĐĂNG NHẬP: Đã làm sáng rực rỡ, chữ tối để tương phản mạnh mẽ với nền nút */
+.login-btn {
+    -fx-background-color: linear-gradient(to right, #38bdf8, #34d399); /* Mã màu tươi, sáng bừng */
+    -fx-text-fill: #0f172a; /* Chữ màu tối sâu giúp nổi bật trên nền nút sáng */
+    -fx-font-weight: 800;
+    -fx-font-size: 15px;
+    -fx-padding: 12 16;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 211, 153, 0.3), 12, 0, 0, 4);
+}
+
+/* Khi di chuột vào nút: Đảo ngược tone màu mượt mà */
+.login-btn:hover {
+    -fx-background-color: linear-gradient(to right, #0ea5e9, #10b981);
+    -fx-text-fill: #ffffff; /* Chữ chuyển về trắng */
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.4), 15, 0, 0, 4);
+}
+
+/* Phần chân trang (Footer links) - Đẩy sáng chữ để nhìn rõ hẳn */
+.login-muted {
+    -fx-text-fill: rgba(255, 255, 255, 0.75); /* Đã sửa: dễ nhìn hơn */
+    -fx-font-size: 13px;
+}
+
+.login-link {
+    -fx-text-fill: #ffffff; /* Đã sửa: trắng nổi bật */
+    -fx-font-weight: bold;
+    -fx-underline: true;
+    -fx-font-size: 13px;
+    -fx-padding: 0;
+}
+.login-link:hover {
+    -fx-text-fill: #34d399; /* Di chuột đổi sang xanh lá tươi */
+}
+
+/* Thông báo lỗi */
+.login-error {
+    -fx-text-fill: #f87171; /* Màu đỏ pastel nhẹ nhàng hợp nền tối */
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER;
+}
+/* ==========================================================================
+   TÙY BIẾN DANH SÁCH XỔ XUỐNG (COMBOBOX POPUP) ĐỒNG BỘ KÍNH MỜ
+   ========================================================================== */
+
+/* 1. Định hình khung bao ngoài của danh sách xổ xuống */
+/* ==========================================================================
+   TÙY BIẾN Ô COMBOBOX (VAI TRÒ) SÁNG ĐỒNG BỘ VỚI CÁC Ô NHẬP LIỆU
+   ========================================================================== */
+
+/* 1. Định hình lớp vỏ ngoài của ComboBox giống hệt .login-input */
+.login-input-combo {
+    -fx-background-color: rgba(15, 23, 42, 0.35);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 6 10;
+    -fx-font-size: 14px;
+}
+
+/* 2. ĐÚNG CHỖ NÀY: Ép màu chữ hiển thị bên trong ô ComboBox thành màu trắng tinh */
+.login-input-combo .label,
+.login-input-combo:text-input {
+    -fx-text-fill: #ffffff !important;
+}
+
+/* 3. Đảm bảo khi ComboBox được chọn (focused), chữ vẫn giữ màu trắng */
+.login-input-combo:focused .label {
+    -fx-text-fill: #ffffff !important;
+}
+
+/* Khi click chọn vào ô ComboBox */
+.login-input-combo:focused {
+    -fx-background-color: rgba(15, 23, 42, 0.45);
+    -fx-border-color: #34d399; /* Viền xanh lá nhạt */
+}
+
+/* Mũi tên của combobox đổi sang màu trắng sáng */
+.login-input-combo .arrow-button .arrow {
+    -fx-background-color: #ffffff;
+}
+
+/* ==========================================================================
+   DANH SÁCH XỔ XUỐNG (POPUP) CỦA COMBOBOX
+   ========================================================================== */
+
+/* Khung bảng xổ xuống */
+.login-input-combo .combo-box-popup .list-view {
+    -fx-background-color: rgba(30, 41, 59, 0.95); /* Tối đậm hơn một chút để nổi bật chữ */
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.15);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 15, 0, 0, 5);
+    -fx-padding: 4 0;
+}
+
+/* Các dòng chữ item bên trong bảng xổ (Tester, Admin) - Cho sáng trắng hẳn lên */
+.login-input-combo .combo-box-popup .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff; /* Sửa thành màu trắng tinh thay vì trắng mờ */
+    -fx-padding: 10 14;
+    -fx-font-size: 14px;
+}
+
+/* Khi di chuột qua dòng item */
+.login-input-combo .combo-box-popup .list-cell:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-text-fill: #ffffff;
+}
+
+/* Khi dòng item được chọn */
+.login-input-combo .combo-box-popup .list-cell:focused,
+.login-input-combo .combo-box-popup .list-cell:selected {
+    -fx-background-color: linear-gradient(to right, rgba(14, 165, 233, 0.5), rgba(16, 185, 129, 0.5));
+    -fx-text-fill: #34d399; /* Chữ chuyển xanh lá sáng để đánh dấu dòng đang chọn */
+    -fx-font-weight: bold;
+}

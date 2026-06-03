@@ -17,9 +17,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -27,6 +32,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -58,6 +64,86 @@ public class MainController implements Initializable {
         if (userMenuButton != null) {
             userMenuButton.textProperty().bind(Bindings.concat("👤 User: ", AppSession.usernameProperty()));
         }
+
+        // Kích hoạt phím tắt và sự kiện chặn nút X tắt ứng dụng
+        Platform.runLater(() -> {
+            setupShortcuts();
+            setupCloseRequest();
+        });
+    }
+
+    /**
+     * Chặn sự kiện bấm nút X để hiển thị Dialog xác nhận thoát
+     */
+    private void setupCloseRequest() {
+        if (btnDashboard.getScene() == null) return;
+
+        // Lấy ra Stage (Cửa sổ chính) từ Scene hiện tại
+        Stage stage = (Stage) btnDashboard.getScene().getWindow();
+
+        stage.setOnCloseRequest(event -> {
+            // Tạo một Alert Confirmation đẹp mắt theo chuẩn JavaFX
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Xác nhận thoát");
+            alert.setHeaderText("Bạn có chắc chắn muốn thoát ứng dụng?");
+
+
+            // Tùy chỉnh text cho 2 nút bấm hiển thị bằng Tiếng Việt
+            ButtonType btnYes = new ButtonType("Có", ButtonBar.ButtonData.YES);
+            ButtonType btnNo = new ButtonType("Không", ButtonBar.ButtonData.NO);
+            alert.getButtonTypes().setAll(btnYes, btnNo);
+
+            // Hiển thị dialog và đợi người dùng chọn
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.isPresent() && result.get() == btnYes) {
+                // Người dùng chọn Có -> Cho phép đóng ứng dụng bình thường
+                Platform.exit();
+                System.exit(0);
+            } else {
+                // Người dùng chọn Không (hoặc bấm X ẩn dialog) -> Tiêu hủy sự kiện đóng, giữ ứng dụng lại
+                event.consume();
+            }
+        });
+    }
+
+    /**
+     * Cài đặt bộ lắng nghe phím tắt trên toàn bộ ứng dụng
+     */
+    private void setupShortcuts() {
+        if (btnDashboard.getScene() == null) return;
+
+        Scene scene = btnDashboard.getScene();
+
+        // Ctrl + D -> Chuyển sang Dashboard
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN),
+                this::navigateDashboard
+        );
+
+        // Ctrl + T -> Chuyển sang Testcase
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN),
+                this::navigateTestcases
+        );
+
+        // Ctrl + R -> Chuyển sang Request
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN),
+                this::navigateRequests
+        );
+
+        // Ctrl + E -> Chuyển sang Report
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN),
+                this::navigateReports
+        );
+
+        // Ctrl + H -> Chuyển sang History
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN),
+                this::navigateHistory
+        );
     }
 
     @FXML
@@ -175,8 +261,6 @@ public class MainController implements Initializable {
         TextField baseUrlField = new TextField(AppRunConfig.getBaseUrl().isEmpty() ? AppRunConfig.DEFAULT_BASE_URL : AppRunConfig.getBaseUrl());
         baseUrlField.setPromptText("http://localhost:8080");
 
-        // ĐÃ XÓA TOÀN BỘ ĐOẠN KHỞI TẠO runModeBox TẠI ĐÂY
-
         ComboBox<String> alertModeBox = new ComboBox<>();
         alertModeBox.getItems().addAll("Stop on fail", "Continue");
         alertModeBox.setValue(AppRunConfig.getAlertMode());
@@ -189,13 +273,9 @@ public class MainController implements Initializable {
         grid.setVgap(10);
         grid.setPadding(new Insets(10, 10, 0, 10));
 
-        // Hàng 0: Base URL
         grid.add(new Label("Base URL"), 0, 0);
         grid.add(baseUrlField, 1, 0);
 
-        // ĐÃ XÓA: Dòng add Run mode ở hàng 1 cũ.
-
-        // Cập nhật lại số hàng (Row Index) dịch lên trên 1 dòng để tránh trống khoảng cách
         grid.add(new Label("Alert mode"), 0, 1);
         grid.add(alertModeBox, 1, 1);
 
@@ -212,7 +292,6 @@ public class MainController implements Initializable {
 
         dialog.showAndWait().ifPresent(button -> {
             if (button == okButtonType) {
-                // Gọi hàm configure mới đã bỏ đi đối số runModeBox.getValue()
                 AppRunConfig.configure(
                         baseUrlField.getText(),
                         alertModeBox.getValue(),
