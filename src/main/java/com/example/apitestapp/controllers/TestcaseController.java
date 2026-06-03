@@ -18,7 +18,10 @@ import javafx.css.PseudoClass;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.GaussianBlur;
+import javafx.geometry.Insets;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.net.URI;
 import java.net.URL;
@@ -492,14 +495,21 @@ public class TestcaseController implements Initializable {
     @FXML
     private void handleAddTestSuite() {
         try {
-            Optional<String> name = promptText("Thêm testsuit", "Tên testsuit", "Nhập tên testsuit:");
-            if (name.isEmpty()) return;
-            Optional<String> method = promptText("Thêm testsuit", "Method", "Nhập method:", "POST");
-            if (method.isEmpty()) return;
-            Optional<String> endpoint = promptText("Thêm testsuit", "Endpoint hoặc URL", "Nhập endpoint hoặc URL:", baseUrl);
-            if (endpoint.isEmpty()) return;
+            Optional<TestSuiteDialogData> data = showTestSuiteDialog(
+                    "Thêm testsuit",
+                    "Nhập thông tin testsuit",
+                    "",
+                    "POST",
+                    baseUrl,
+                    sampleCleanupRequestsJson()
+            );
+            if (data.isEmpty()) return;
 
-            UserTestSuite suite = userTestSuiteService.create(name.get(), method.get(), endpoint.get(), "");
+            List<ApiCleanupRequest> cleanupRequests = userTestCaseService.parseCleanupRequests(data.get().cleanupRequestsJson());
+            UserTestSuite suite = userTestSuiteService.create(data.get().name(), data.get().method(), data.get().endpoint(), "");
+            if (!cleanupRequests.isEmpty()) {
+                suite = userTestSuiteService.updateCleanupRequests(suite.getId(), cleanupRequests);
+            }
             initTreeView();
             selectUserSuite(suite.getId());
             showInfo("Đã thêm testsuit", "Testsuit đã được lưu vào database.");
@@ -516,14 +526,27 @@ public class TestcaseController implements Initializable {
         }
 
         try {
-            Optional<String> name = promptText("Sửa testsuit", "Tên testsuit", "Nhập tên testsuit:", currentUserSuite.getName());
-            if (name.isEmpty()) return;
-            Optional<String> method = promptText("Sửa testsuit", "Method", "Nhập method:", currentUserSuite.getMethod());
-            if (method.isEmpty()) return;
-            Optional<String> endpoint = promptText("Sửa testsuit", "Endpoint hoặc URL", "Nhập endpoint hoặc URL:", currentUserSuite.getEndpoint());
-            if (endpoint.isEmpty()) return;
+            Optional<TestSuiteDialogData> data = showTestSuiteDialog(
+                    "Sửa testsuit",
+                    "Cập nhật thông tin testsuit",
+                    currentUserSuite.getName(),
+                    currentUserSuite.getMethod(),
+                    currentUserSuite.getEndpoint(),
+                    currentUserSuite.getCleanupRequests().isEmpty()
+                            ? sampleCleanupRequestsJson()
+                            : userTestCaseService.toJson(currentUserSuite.getCleanupRequests())
+            );
+            if (data.isEmpty()) return;
 
-            UserTestSuite updated = userTestSuiteService.update(currentUserSuite.getId(), name.get(), method.get(), endpoint.get(), currentUserSuite.getDescription());
+            List<ApiCleanupRequest> cleanupRequests = userTestCaseService.parseCleanupRequests(data.get().cleanupRequestsJson());
+            UserTestSuite updated = userTestSuiteService.update(
+                    currentUserSuite.getId(),
+                    data.get().name(),
+                    data.get().method(),
+                    data.get().endpoint(),
+                    currentUserSuite.getDescription()
+            );
+            updated = userTestSuiteService.updateCleanupRequests(updated.getId(), cleanupRequests);
             initTreeView();
             selectUserSuite(updated.getId());
             showInfo("Đã sửa testsuit", "Testsuit đã được cập nhật.");
@@ -588,64 +611,40 @@ public class TestcaseController implements Initializable {
         }
 
         try {
-            Optional<String> name = promptText("Thêm testcase", "Tên testcase", "Nhập tên testcase:");
-            if (name.isEmpty()) {
-                return;
-            }
-
-            Optional<String> expectedStatus = promptText(
+            Optional<TestCaseDialogData> data = showTestCaseDialog(
                     "Thêm testcase",
-                    "Expected status code",
-                    "Nhập HTTP status mong đợi:",
-                    defaultExpectedStatus()
+                    "Nhập thông tin testcase",
+                    "",
+                    defaultExpectedStatus(),
+                    sampleSetupRequestsJson(),
+                    sampleRequestParamsJson(),
+                    samplePayloadAssertionsJson(),
+                    ""
             );
-            if (expectedStatus.isEmpty()) {
+            if (data.isEmpty()) {
                 return;
             }
 
-            int statusCode = Integer.parseInt(expectedStatus.get().trim());
-            List<ApiSetupRequest> setupRequests = userTestCaseService.parseSetupRequests(promptHookJson(
-                    "Dữ liệu mồi",
-                    "Setup requests JSON array",
-                    sampleSetupRequestsJson()
-            ));
-            Optional<UserTestCaseService.RequestParams> requestParams = promptRequestParams(
-                    "Params",
-                    "Query params và path params JSON object",
-                    sampleRequestParamsJson()
-            );
-            if (requestParams.isEmpty()) return;
-            Optional<String> payloadAssertionsJson = promptOptionalJson(
-                    "Response assertions",
-                    "JSON path assertions array. Có thể để [] nếu không cần.",
-                    samplePayloadAssertionsJson(),
-                    320
-            );
-            if (payloadAssertionsJson.isEmpty()) return;
-            List<ApiPayloadAssertion> payloadAssertions = userTestCaseService.parsePayloadAssertions(payloadAssertionsJson.get());
-            Optional<String> expectedResponseBody = promptOptionalJson(
-                    "Expected full response",
-                    "JSON response mong đợi. Để trống nếu không cần so sánh toàn bộ response.",
-                    "",
-                    320
-            );
-            if (expectedResponseBody.isEmpty()) return;
+            int statusCode = Integer.parseInt(data.get().expectedStatusCode().trim());
+            List<ApiSetupRequest> setupRequests = userTestCaseService.parseSetupRequests(data.get().setupRequestsJson());
+            UserTestCaseService.RequestParams requestParams = userTestCaseService.parseRequestParams(data.get().requestParamsJson());
+            List<ApiPayloadAssertion> payloadAssertions = userTestCaseService.parsePayloadAssertions(data.get().payloadAssertionsJson());
 
             UserTestCase saved = userTestCaseService.create(
                     currentDefinition.getApiLabel(),
                     currentUserSuite == null ? null : currentUserSuite.getId(),
-                    name.get(),
+                    data.get().name(),
                     "",
                     resolveApiMethod(currentDefinition),
                     resolveEndpointFromUrl(),
                     parseHeaders(headerTextArea.getText()),
-                    requestParams.get().queryParams(),
-                    requestParams.get().pathParams(),
+                    requestParams.queryParams(),
+                    requestParams.pathParams(),
                     bodyTextArea.getText(),
                     setupRequests,
                     List.of(),
                     payloadAssertions,
-                    expectedResponseBody.get(),
+                    data.get().expectedResponseBody(),
                     statusCode
             );
 
@@ -670,60 +669,39 @@ public class TestcaseController implements Initializable {
         }
 
         try {
-            Optional<String> name = promptText("Sửa testcase", "Tên testcase", "Nhập tên testcase:", stripUserPrefix(selected.getName()));
-            if (name.isEmpty()) return;
-            Optional<String> expectedStatus = promptText(
+            Optional<TestCaseDialogData> data = showTestCaseDialog(
                     "Sửa testcase",
-                    "Expected status code",
-                    "Nhập HTTP status mong đợi:",
-                    selected.getExpected()
-            );
-            if (expectedStatus.isEmpty()) return;
-
-            int statusCode = Integer.parseInt(expectedStatus.get().trim());
-            List<ApiSetupRequest> setupRequests = userTestCaseService.parseSetupRequests(promptHookJson(
-                    "Dữ liệu mồi",
-                    "Setup requests JSON array",
-                    userTestCaseService.toJson(selected.getScenario() == null ? List.of() : selected.getScenario().getSetupRequests())
-            ));
-            Optional<UserTestCaseService.RequestParams> requestParams = promptRequestParams(
-                    "Params",
-                    "Query params và path params JSON object",
-                    userTestCaseService.requestParamsToJson(selected.getQueryParams(), selected.getPathParams())
-            );
-            if (requestParams.isEmpty()) return;
-            Optional<String> payloadAssertionsJson = promptOptionalJson(
-                    "Response assertions",
-                    "JSON path assertions array. Có thể để [] nếu không cần.",
+                    "Cập nhật thông tin testcase",
+                    stripUserPrefix(selected.getName()),
+                    selected.getExpected(),
+                    userTestCaseService.toJson(selected.getScenario() == null ? List.of() : selected.getScenario().getSetupRequests()),
+                    userTestCaseService.requestParamsToJson(selected.getQueryParams(), selected.getPathParams()),
                     userTestCaseService.payloadAssertionsToJson(selected.getScenario() == null
                             ? List.of()
                             : selected.getScenario().getPayloadAssertions()),
-                    320
+                    selected.getScenario() == null ? "" : selected.getScenario().getExpectedResponseBody()
             );
-            if (payloadAssertionsJson.isEmpty()) return;
-            List<ApiPayloadAssertion> payloadAssertions = userTestCaseService.parsePayloadAssertions(payloadAssertionsJson.get());
-            Optional<String> expectedResponseBody = promptOptionalJson(
-                    "Expected full response",
-                    "JSON response mong đợi. Để trống nếu không cần so sánh toàn bộ response.",
-                    selected.getScenario() == null ? "" : selected.getScenario().getExpectedResponseBody(),
-                    320
-            );
-            if (expectedResponseBody.isEmpty()) return;
+            if (data.isEmpty()) return;
+
+            int statusCode = Integer.parseInt(data.get().expectedStatusCode().trim());
+            List<ApiSetupRequest> setupRequests = userTestCaseService.parseSetupRequests(data.get().setupRequestsJson());
+            UserTestCaseService.RequestParams requestParams = userTestCaseService.parseRequestParams(data.get().requestParamsJson());
+            List<ApiPayloadAssertion> payloadAssertions = userTestCaseService.parsePayloadAssertions(data.get().payloadAssertionsJson());
 
             userTestCaseService.update(
                     selected.getUserTestCaseId(),
-                    name.get(),
+                    data.get().name(),
                     "",
                     selected.getMethod(),
                     resolveEndpointFromUrl(),
                     parseHeaders(headerTextArea.getText()),
-                    requestParams.get().queryParams(),
-                    requestParams.get().pathParams(),
+                    requestParams.queryParams(),
+                    requestParams.pathParams(),
                     bodyTextArea.getText(),
                     setupRequests,
                     List.of(),
                     payloadAssertions,
-                    expectedResponseBody.get(),
+                    data.get().expectedResponseBody(),
                     statusCode
             );
             reloadCurrentSelection();
@@ -1030,6 +1008,136 @@ public class TestcaseController implements Initializable {
         alert.showAndWait();
     }
 
+    private Optional<TestSuiteDialogData> showTestSuiteDialog(String title,
+                                                              String header,
+                                                              String defaultName,
+                                                              String defaultMethod,
+                                                              String defaultEndpoint,
+                                                              String defaultCleanupRequests) {
+        Dialog<TestSuiteDialogData> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        TextField nameField = new TextField(defaultName == null ? "" : defaultName);
+        nameField.setPromptText("Tên testsuit");
+        ComboBox<String> methodCombo = new ComboBox<>();
+        methodCombo.getItems().addAll("GET", "POST", "PUT", "PATCH", "DELETE");
+        methodCombo.setEditable(true);
+        methodCombo.setValue(defaultMethod == null || defaultMethod.isBlank() ? "POST" : defaultMethod.trim().toUpperCase());
+        TextField endpointField = new TextField(defaultEndpoint == null ? "" : defaultEndpoint);
+        endpointField.setPromptText("/api/v1/resource hoặc https://...");
+        TextArea cleanupRequestsArea = jsonTextArea(defaultCleanupRequests, 260);
+
+        GridPane form = new GridPane();
+        form.setHgap(12);
+        form.setVgap(10);
+        form.add(new Label("Tên suit"), 0, 0);
+        form.add(nameField, 1, 0);
+        form.add(new Label("Method"), 0, 1);
+        form.add(methodCombo, 1, 1);
+        form.add(new Label("Endpoint/URL"), 0, 2);
+        form.add(endpointField, 1, 2);
+
+        VBox content = new VBox(10, form, new Label("Cleanup request JSON array"), cleanupRequestsArea);
+        content.setPadding(new Insets(8));
+        dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().setPrefWidth(780);
+
+        dialog.setResultConverter(button -> {
+            if (button != ButtonType.OK) {
+                return null;
+            }
+            return new TestSuiteDialogData(
+                    nameField.getText() == null ? "" : nameField.getText().trim(),
+                    methodCombo.getValue() == null ? "" : methodCombo.getValue().trim(),
+                    endpointField.getText() == null ? "" : endpointField.getText().trim(),
+                    cleanupRequestsArea.getText() == null ? "" : cleanupRequestsArea.getText()
+            );
+        });
+        return dialog.showAndWait().filter(data ->
+                !data.name().isBlank() && !data.method().isBlank() && !data.endpoint().isBlank());
+    }
+
+    private Optional<TestCaseDialogData> showTestCaseDialog(String title,
+                                                            String header,
+                                                            String defaultName,
+                                                            String defaultExpectedStatus,
+                                                            String defaultSetupRequests,
+                                                            String defaultRequestParams,
+                                                            String defaultPayloadAssertions,
+                                                            String defaultExpectedResponseBody) {
+        Dialog<TestCaseDialogData> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        TextField nameField = new TextField(defaultName == null ? "" : defaultName);
+        nameField.setPromptText("Tên testcase");
+        TextField expectedStatusField = new TextField(defaultExpectedStatus == null || defaultExpectedStatus.isBlank()
+                ? "200"
+                : defaultExpectedStatus);
+        expectedStatusField.setPromptText("200");
+
+        TextArea setupRequestsArea = jsonTextArea(defaultSetupRequests, 220);
+        TextArea requestParamsArea = jsonTextArea(defaultRequestParams, 150);
+        TextArea payloadAssertionsArea = jsonTextArea(defaultPayloadAssertions, 180);
+        TextArea expectedResponseBodyArea = jsonTextArea(defaultExpectedResponseBody, 140);
+        expectedResponseBodyArea.setPromptText("Để trống nếu không cần so sánh toàn bộ response");
+
+        GridPane form = new GridPane();
+        form.setHgap(12);
+        form.setVgap(10);
+        form.add(new Label("Tên testcase"), 0, 0);
+        form.add(nameField, 1, 0);
+        form.add(new Label("Status code mong đợi"), 0, 1);
+        form.add(expectedStatusField, 1, 1);
+
+        VBox content = new VBox(
+                10,
+                form,
+                new Label("Setup request JSON array"),
+                setupRequestsArea,
+                new Label("Params JSON object"),
+                requestParamsArea,
+                new Label("Path assertion JSON array"),
+                payloadAssertionsArea,
+                new Label("Expected full response JSON"),
+                expectedResponseBodyArea
+        );
+        content.setPadding(new Insets(8));
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(760);
+        dialog.getDialogPane().setContent(scrollPane);
+        dialog.getDialogPane().setPrefWidth(820);
+
+        dialog.setResultConverter(button -> {
+            if (button != ButtonType.OK) {
+                return null;
+            }
+            return new TestCaseDialogData(
+                    nameField.getText() == null ? "" : nameField.getText().trim(),
+                    expectedStatusField.getText() == null ? "" : expectedStatusField.getText().trim(),
+                    setupRequestsArea.getText() == null ? "" : setupRequestsArea.getText(),
+                    requestParamsArea.getText() == null ? "" : requestParamsArea.getText(),
+                    payloadAssertionsArea.getText() == null ? "" : payloadAssertionsArea.getText(),
+                    expectedResponseBodyArea.getText() == null ? "" : expectedResponseBodyArea.getText()
+            );
+        });
+        return dialog.showAndWait().filter(data ->
+                !data.name().isBlank() && !data.expectedStatusCode().isBlank());
+    }
+
+    private TextArea jsonTextArea(String defaultValue, double height) {
+        TextArea textArea = new TextArea(defaultValue == null ? "" : defaultValue);
+        textArea.setPrefWidth(720);
+        textArea.setPrefHeight(height);
+        textArea.setWrapText(false);
+        textArea.setStyle("-fx-font-family: 'Courier New';");
+        return textArea;
+    }
+
     private Optional<String> promptText(String title, String header, String content) {
         return promptText(title, header, content, "");
     }
@@ -1188,6 +1296,20 @@ public class TestcaseController implements Initializable {
             return "";
         }
         return name.startsWith("[User] ") ? name.substring("[User] ".length()) : name;
+    }
+
+    private record TestSuiteDialogData(String name,
+                                       String method,
+                                       String endpoint,
+                                       String cleanupRequestsJson) {
+    }
+
+    private record TestCaseDialogData(String name,
+                                      String expectedStatusCode,
+                                      String setupRequestsJson,
+                                      String requestParamsJson,
+                                      String payloadAssertionsJson,
+                                      String expectedResponseBody) {
     }
 
     private static final class CaseOutcome {
