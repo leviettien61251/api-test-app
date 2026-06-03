@@ -259,8 +259,8 @@
 }
 
 .execution-log-list .list-cell:log-error {
-    -fx-background-color: #fee2e2;
-    -fx-border-color: #fca5a5;
+    -fx-background-color: #d8202a;
+    -fx-border-color: #d8202a;
 }
 
 
