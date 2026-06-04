@@ -6,6 +6,7 @@ module com.example.apitestapp {
     requires okhttp3;
     requires static lombok;
     requires com.google.gson;
+    requires java.compiler;
 
     opens com.example.apitestapp to javafx.fxml;
     opens com.example.apitestapp.controllers to javafx.fxml, javafx.base;

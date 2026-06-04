@@ -2,99 +2,135 @@
 
 ## 1. Dang nhap
 
-Khi mo app, nguoi dung vao man hinh login:
+Khi mo app:
 
-- nhap username/email
-- nhap password
-- chon role tren combobox
+1. nhap username/email
+2. nhap password
+3. chon role tren combobox
+4. login de vao main shell
 
-Sau khi login thanh cong, app mo main view va hien dialog cau hinh run.
+Sau khi login thanh cong, app hien dialog `Default run config`.
 
 ## 2. Cau hinh run mac dinh
 
-Dialog `Default run config` gom:
+Dialog gom:
 
-- `Base URL`: dia chi backend de thuc thi testcase
-- `Alert mode`:
-  - `Stop on fail`: dung khi gap testcase fail
-  - `Continue`: chay tiep den het
-- `Runner`: ten nguoi chay
+- `Base URL`
+- `Alert mode`
+  - `Stop on fail`
+  - `Continue`
+- `Runner`
 
-## 3. Man hinh Testcase
+Gia tri nay duoc luu vao `AppRunConfig` va anh huong truc tiep den `Testcase` va `Request`.
 
-Day la man hinh quan trong nhat.
+## 3. Dieu huong nhanh
 
-### 3.1 Chon scenario co san
+Phim tat hien co:
 
-Tree ben trai duoc tao tu `ApiScenarioRegistry`. Khi chon mot API:
+- `Ctrl + D`: Dashboard
+- `Ctrl + T`: Testcase
+- `Ctrl + R`: Request
+- `Ctrl + E`: Report
+- `Ctrl + H`: History
 
-- bang testcase se nap scenario co san
-- request method, URL, headers, body mau se hien ben phai
+## 4. Man hinh Testcase
 
-### 3.2 Chon user test suite
+Day la man hinh nghiep vu chinh.
 
-Neu trong database co `user_test_suites`, app them node `User Test Suites`.
+### 4.1 Nap testcase
 
-Khi chon node nay:
+Nguoi dung co the nap testcase tu:
 
-- app nap danh sach testcase user tu PostgreSQL
-- testcase hien prefix `[User]`
+- scenario co san trong `ApiScenarioRegistry`
+- `User Test Suites` trong database
 
-### 3.3 Chay test
+Khi chon mot API/scenario, app hien:
 
-- `Run All`: chay toan bo testcase dang nap
-- `Run Selected`: chi chay testcase duoc tick
-- `Stop`: dung qua trinh chay
+- method
+- URL dich
+- headers
+- body
+- bang testcase
 
-Trong qua trinh chay, app:
+### 4.2 Chay test
 
-1. resolve URL tu `Base URL` va endpoint
-2. thuc thi setup request neu co
-3. tu dong tao auth signup/login mac dinh neu request can `${token}` hoac `${authorizationHeader}`
-4. goi API chinh
-5. doi chieu response code/payload
-6. chay cleanup request neu co
-7. luu tong hop vao `RunStorage`
+Nut chinh:
 
-### 3.4 Log va ket qua
+- `Run All`
+- `Run Selected`
+- `Stop`
 
-- bang testcase hien `PASS`, `FAIL`, `Dang test`
-- list log hien log setup, cleanup, auth setup va loi runtime
+Trong qua trinh chay, app co the:
+
+1. resolve URL tu `Base URL` + endpoint
+2. thay `path params` vao URL
+3. ap `query params`
+4. chay `setup requests`
+5. capture runtime variables tu response setup
+6. tu dong auth setup neu request can `${token}` hoac `${authorizationHeader}`
+7. goi request chinh
+8. so sanh `expected status code`
+9. so sanh `payload assertions`
+10. so sanh `expected response body` neu co
+11. chay `cleanup requests`
+12. luu ket qua vao `RunStorage`
+
+### 4.3 Y nghia du lieu user testcase
+
+User testcase hien tai co the chua:
+
+- `headers`
+- `query params`
+- `path params`
+- `request body`
+- `setup requests`
+- `cleanup requests`
+- `payload assertions`
+- `expected response body`
+- `expected status code`
+
+### 4.4 Ket qua va log
+
+- bang testcase hien `PASS`, `FAIL`, `Dang test`, `Cho`
+- list log hien setup, cleanup, auth setup, loi runtime
 - summary hien tong pass/fail
 
-## 4. Tao user test suite va user test case
+## 5. Quan ly user test suite va user test case
 
-Code hien tai da co service va persistence cho:
+Code hien co CRUD cho:
 
 - `UserTestSuiteService`
 - `UserTestCaseService`
 
-Nguoi dung co the:
+Workflow tong quat:
 
-- tao test suite rieng
-- gan testcase vao suite
-- khai bao headers, query params, request body
-- khai bao `setupRequests`, `cleanupRequests`
-- dinh nghia `expectedStatusCode`
+1. tao suite
+2. tao testcase thuoc suite hoac thuoc API label hien tai
+3. nhap params/body/assertions
+4. save vao PostgreSQL
+5. nap lai trong tree `User Test Suites`
 
-Luu y: chi tiet UI tao/sua duoc goi tu `TestcaseController`; workflow nay dang phu thuoc vao database.
+## 6. Man hinh Request
 
-## 5. Request builder
+Dung de debug nhanh endpoint.
 
-Man hinh `Request` dung cho viec goi API thu cong:
+### Ho tro hien tai
 
 - chon HTTP method
 - nhap endpoint tuong doi hoac URL tuyet doi
-- chon dinh dang body
-- xem status, time, body, headers
+- chon body `JSON`, `Text`, `XML`
+- xem status, response time, response body, response headers
 
-Neu URL nhap dang `/api/...`, app se noi voi `Base URL` hien tai trong `AppRunConfig`.
+### Gioi han hien tai
 
-## 6. Dashboard, Report, History
+- UI auth co `No Auth`, `Basic Auth`, `Bearer Token`
+- nhung thong tin auth nay chua duoc ap vao request khi gui
+
+## 7. Dashboard, Report, History
 
 ### Dashboard
 
-- tong so testcase da chay
+- tong testcase da chay
 - tong so run
 - tong pass/fail
 - danh sach run gan day
@@ -103,8 +139,8 @@ Double-click mot dong de mo report.
 
 ### Report
 
-- thong tin run: runner, machine, os, thoi gian
-- tong so testcase, pass, fail
+- thong tin run: runner, machine, os, started time
+- tong testcase, pass, fail
 - pie chart pass/fail
 - bar chart response time
 - bang chi tiet tung testcase
@@ -112,14 +148,19 @@ Double-click mot dong de mo report.
 ### History
 
 - loc theo ngay
-- loc theo status `Pass/Fail/Tat ca`
+- loc theo status
 - tim theo keyword
 - mo report
-- xoa mot run da luu
+- xoa run
 
-## 7. Meo su dung
+## 8. Profile
+
+Man hinh `Profile` hien tai chu yeu de xem thong tin user hien tai. Khong nen xem day la module chinh sua profile day du.
+
+## 9. Meo su dung
 
 - doi `Base URL` truoc khi test backend khac moi truong
-- su dung user testcase khi can thu nghiem case dac thu ma khong muon hardcode vao repo
-- xem `History` sau khi run de doi chieu ket qua nhieu lan
-- dung `Request` de debug nhanh truoc khi chuyen thanh testcase chinh thuc
+- dung `Request` de debug endpoint truoc khi viet testcase
+- dung `payload assertions` khi khong can so sanh full response JSON
+- dung `expected response body` khi can so sanh toan bo response
+- mo `History` sau nhieu lan run de doi chieu ket qua hoi quy

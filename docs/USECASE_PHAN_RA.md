@@ -46,38 +46,40 @@ flowchart TB
         uc20["Thuc thi setup request"]
         uc21["Capture response variable"]
         uc22["Thuc thi request chinh"]
-        uc23["Thuc thi cleanup request"]
-        uc24["Luu ket qua run"]
+        uc23["Danh gia payload / expected response"]
+        uc24["Thuc thi cleanup request"]
+        uc25["Luu ket qua run"]
     end
 
     subgraph request["Module Request"]
-        uc25["Nhap method va URL"]
-        uc26["Nhap raw body"]
-        uc27["Gui request thu cong"]
-        uc28["Xem response body / headers / time"]
+        uc26["Nhap method va URL"]
+        uc27["Nhap raw body"]
+        uc28["Chon auth UI"]
+        uc29["Gui request thu cong"]
+        uc30["Xem response body / headers / time"]
     end
 
     subgraph dashboard["Module Dashboard"]
-        uc29["Xem thong ke tong quan"]
-        uc30["Xem run gan day"]
-        uc31["Mo report tu dashboard"]
+        uc31["Xem thong ke tong quan"]
+        uc32["Xem run gan day"]
+        uc33["Mo report tu dashboard"]
     end
 
     subgraph report["Module Report"]
-        uc32["Xem tong hop ket qua run"]
-        uc33["Xem chi tiet tung testcase"]
-        uc34["Xem bieu do pass/fail va response time"]
+        uc34["Xem tong hop ket qua run"]
+        uc35["Xem chi tiet tung testcase"]
+        uc36["Xem bieu do pass/fail va response time"]
     end
 
     subgraph history["Module History"]
-        uc35["Loc lich su run"]
-        uc36["Tim kiem lich su"]
-        uc37["Mo report tu history"]
-        uc38["Xoa run da luu"]
+        uc37["Loc lich su run"]
+        uc38["Tim kiem lich su"]
+        uc39["Mo report tu history"]
+        uc40["Xoa run da luu"]
     end
 
     subgraph profile["Module Profile"]
-        uc39["Xem thong tin profile"]
+        uc41["Xem thong tin profile"]
     end
 
     tester --> uc1
@@ -94,17 +96,18 @@ flowchart TB
     tester --> uc17
     tester --> uc18
     tester --> uc19
-    tester --> uc25
     tester --> uc26
     tester --> uc27
+    tester --> uc28
     tester --> uc29
     tester --> uc31
-    tester --> uc32
-    tester --> uc35
-    tester --> uc36
+    tester --> uc33
+    tester --> uc34
     tester --> uc37
     tester --> uc38
     tester --> uc39
+    tester --> uc40
+    tester --> uc41
 
     uc1 --> uc2
     uc1 --> db
@@ -124,21 +127,24 @@ flowchart TB
     uc17 --> uc22
     uc17 --> uc23
     uc17 --> uc24
+    uc17 --> uc25
     uc18 --> uc20
     uc18 --> uc21
     uc18 --> uc22
     uc18 --> uc23
     uc18 --> uc24
+    uc18 --> uc25
     uc20 --> backend
     uc22 --> backend
     uc23 --> backend
-    uc24 --> storage
-    uc27 --> backend
-    uc31 --> storage
-    uc32 --> storage
-    uc35 --> storage
+    uc24 --> backend
+    uc25 --> storage
+    uc29 --> backend
+    uc33 --> storage
+    uc34 --> storage
     uc37 --> storage
-    uc38 --> storage
+    uc39 --> storage
+    uc40 --> storage
 ```
 
 ## 3. Cay phan ra use case
@@ -174,12 +180,17 @@ flowchart TB
   - tao
   - sua
   - xoa
+  - khai bao `query params`
+  - khai bao `path params`
+  - khai bao `payload assertions`
+  - khai bao `expected response body`
 
 - `Chay testcase`
   - chon `Run All` hoac `Run Selected`
   - setup du lieu
   - capture bien runtime
   - goi request chinh
+  - danh gia payload / full response
   - cleanup
   - luu ket qua run
 
@@ -189,6 +200,7 @@ flowchart TB
   - nhap method
   - nhap URL
   - nhap body
+  - chon auth UI
   - xem response
 
 ### 3.5 Dashboard
@@ -233,3 +245,4 @@ flowchart TB
 - So do nay la phan ra nghiep vu, khong phai sequence diagram.
 - `Admin` chua duoc tach actor rieng vi repo chua the hien ro use case quan tri doc lap.
 - `Environments` va `Collections` chua duoc dua thanh module use case rieng vi code hien tai chua co hanh vi nghiep vu day du.
+- `Chon auth UI` da duoc liet ke vi no co tren giao dien, nhung backend call hien tai chua su dung du lieu auth nay.
