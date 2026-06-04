@@ -3,21 +3,26 @@
 ## 1. Yeu cau
 
 - JDK 21
-- Maven 3.9+ hoac dung wrapper `mvnw.cmd`
+- Maven 3.9+ hoac dung `mvnw.cmd`
 - PostgreSQL
 - Windows la moi truong duoc code nham toi ro nhat
 
-## 2. Build
+## 2. Build va test
 
 ```powershell
 .\mvnw.cmd clean test
 ```
 
-Neu muon bo qua test:
+Neu can package ma bo qua test:
 
 ```powershell
 .\mvnw.cmd clean package -DskipTests
 ```
+
+Luu y:
+
+- lan dau dung `mvnw.cmd` co the can tai Maven wrapper distribution
+- neu may bi chan network/no sandbox network, wrapper co the fail truoc khi vao den compile
 
 ## 3. Chay ung dung
 
@@ -27,7 +32,7 @@ Neu muon bo qua test:
 
 ## 4. Cau hinh database
 
-App doc config database tu `ConnectionManager`:
+App doc config DB tu `ConnectionManager`:
 
 - `-Dapp.db.url=...`
 - `-Dapp.db.user=...`
@@ -47,71 +52,96 @@ Vi du:
 
 ## 5. Khoi tao schema
 
-File schema hien nam o:
+File schema tham khao:
 
 - [database.sql](/D:/code/api-test-app/src/main/resources/db/database.sql)
 
 Canh bao:
 
-- file nay dang gom ca `insert`, `select`, `drop`, `create`
+- file nay dang tron `insert`, `select`, `drop`, `create`, `index`
 - khong nen copy-chay nguyen file ma khong kiem tra thu tu
 
-Khuyen nghi setup:
+Thu tu khuyen nghi khi setup moi:
 
-1. Tao database `api_test_app`.
+1. Tao database `api_test_app`
 2. Chay `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`
-3. Chay khoi `DROP TABLE` va `CREATE TABLE`.
-4. Chay cac `CREATE INDEX`.
-5. Neu can account mau, moi chay phan `INSERT` sau khi bang da ton tai.
+3. Chay khoi `DROP TABLE`
+4. Chay khoi `CREATE TABLE`
+5. Chay khoi `CREATE INDEX`
+6. Sau do moi xem xet phan `INSERT`
 
-## 6. Tai khoan mau
+## 6. Du lieu mau va rui ro
 
-Trong `database.sql` dang co du lieu mau cho:
+Trong `database.sql` dang co:
 
-- admin
-- tester
+- seed role `admin`, `tester`
+- seed user mau
+- mot so cau `SELECT` tham khao
+- mot cau `insert into client_machines ... values (?, ?, ...)` khong phai SQL script seed hop le de chay truc tiep
 
-Nhung du lieu insert dau file hien bi lap va chua duoc don lai. Hay xem lai truoc khi dung o moi truong chia se.
+Tai lieu van hanh phai xem day la script tham khao pha tron, khong phai script deployment chuan.
 
-## 7. Storage cua ket qua test
+## 7. Sau khi mo app
 
-Ket qua run duoc luu tai:
+Ngay sau login thanh cong, app se mo dialog `Default run config` de nhap:
+
+- `Base URL`
+- `Alert mode`
+- `Runner`
+- machine name va OS se hien thi de tham khao
+
+Mac dinh quan trong:
+
+- `Base URL`: `http://group3.it4788.sukkaito.id.vn/api`
+- `Alert mode`: `Stop on fail`
+
+## 8. Storage cua ket qua test
+
+Ket qua run luu local tai:
 
 ```text
 %LOCALAPPDATA%\api-test-app\runs.json
 ```
 
-Muoi test run cu van hien tren `Dashboard`, `Report`, `History` neu file nay con ton tai.
+Neu file nay con ton tai, run cu se hien lai trong:
 
-## 8. Van hanh hang ngay
+- `Dashboard`
+- `Report`
+- `History`
 
-1. Dang nhap vao app.
-2. Nhap `Base URL`, `Alert mode`, `Runner` trong dialog cau hinh.
-3. Chon scenario trong `Testcase`.
-4. Chay test va xem ket qua.
-5. Dung `History`/`Report` de xem lai cac run da luu.
+## 9. Van hanh hang ngay
 
-## 9. Su co thuong gap
+1. Dang nhap
+2. Kiem tra `Base URL`
+3. Chon scenario hoac user test suite
+4. Chay `Run All` hoac `Run Selected`
+5. Xem report / history
+
+## 10. Su co thuong gap
 
 ### Khong ket noi duoc database
 
 - kiem tra PostgreSQL dang chay
-- kiem tra `app.db.*` hoac `APP_DB_*`
-- kiem tra schema da tao du bang `users`, `roles`, `user_test_suites`, `user_test_cases`
+- kiem tra bien `app.db.*` hoac `APP_DB_*`
+- kiem tra bang `users`, `roles`, `user_test_suites`, `user_test_cases`
 
-### Login khong thanh cong
+### Login that bai
 
-- kiem tra bang `users`
-- kiem tra email/password seed
-- luu y `LoginController` dang tim user theo email va password
+- `LoginController` dang tim user theo `email` va `password`
+- kiem tra du lieu seed trong bang `users`
 
-### Request test tra ve loi ket noi
+### Request/testcase loi ket noi backend
 
 - kiem tra `Base URL`
 - kiem tra backend dang chay
 - kiem tra endpoint trong scenario hoac user testcase
 
+### Request auth khong dung nhu mong doi
+
+- UI auth o man hinh `Request` hien chua tham gia vao request headers thuc te
+- neu can auth khi debug, phai sua code hoac dung endpoint/public case phu hop
+
 ### Khong thay lich su cu
 
 - kiem tra file `%LOCALAPPDATA%\api-test-app\runs.json`
-- kiem tra quyen ghi file tren may
+- kiem tra quyen ghi file

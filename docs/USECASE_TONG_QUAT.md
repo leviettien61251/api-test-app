@@ -34,6 +34,7 @@ flowchart LR
         uc6["Quan ly user test case"]
         uc7["Chay testcase da chon"]
         uc8["Thuc thi setup/cleanup"]
+        uc8b["Danh gia payload response"]
         uc9["Goi request thu cong"]
         uc10["Xem report"]
         uc11["Xem lich su"]
@@ -58,8 +59,10 @@ flowchart LR
     uc5 --> db
     uc6 --> db
     uc7 --> uc8
+    uc7 --> uc8b
     uc7 --> backend
     uc8 --> backend
+    uc8b --> backend
     uc7 --> storage
     uc9 --> backend
     uc10 --> storage
@@ -105,7 +108,7 @@ flowchart LR
 - Actor: `Tester`
 - Muc tieu: tao, sua, xoa testcase tu dinh nghia boi nguoi dung.
 - He thong lien quan: `PostgreSQL`
-- Du lieu chinh: method, endpoint, headers, query params, request body, expected status, setup, cleanup.
+- Du lieu chinh: method, endpoint, headers, query params, path params, request body, expected status, setup, cleanup, payload assertions, expected response body.
 
 ### UC-07: Chay testcase da chon
 
@@ -117,6 +120,12 @@ flowchart LR
 
 - Actor: `Tester` (kich hoat gian tiep khi run test)
 - Muc tieu: tao du lieu phu tro truoc test, capture bien runtime, cleanup sau test.
+- He thong lien quan: `Backend API`
+
+### UC-08B: Danh gia payload response
+
+- Actor: `Tester` (kich hoat gian tiep khi run test)
+- Muc tieu: so sanh payload theo `jsonPath` hoac so sanh toan bo response JSON.
 - He thong lien quan: `Backend API`
 
 ### UC-09: Goi request thu cong
@@ -152,4 +161,5 @@ flowchart LR
 
 - Use case tong quat hien tai duoc xay quanh actor `Tester`, vi code chua the hien ro luong nghiep vu rieng cho `Admin`.
 - `Environments` va `Collections` co mat trong UI/controller nhung chua thay ro workflow nghiep vu hoan chinh, nen chua tach thanh use case rieng.
+- UI auth trong man hinh `Request` da co, nhung hien chua duoc dua vao request thuc te; use case `Goi request thu cong` vi vay moi chi duoc xem la gui request co ban.
 - Neu sau nay co phan quyen thuc te, nen tach so do thanh hai actor `Tester` va `Admin`.

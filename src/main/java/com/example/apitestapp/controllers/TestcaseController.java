@@ -9,16 +9,16 @@ import com.example.apitestapp.services.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.beans.value.ChangeListener;
-import javafx.css.PseudoClass;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.GaussianBlur;
-import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -59,7 +59,7 @@ public class TestcaseController implements Initializable {
     @FXML
     private Label summaryText, requestMethodLabel;
     @FXML
-    private Button runAllBtn, stopBtn, saveReportBtn, addTestCaseBtn, editTestCaseBtn, deleteTestCaseBtn;
+    private Button runAllBtn, runSelectedBtn, stopBtn, saveReportBtn, addTestCaseBtn, editTestCaseBtn, deleteTestCaseBtn;
     @FXML
     private Button addTestSuiteBtn, editTestSuiteBtn, deleteTestSuiteBtn, editCleanupDataBtn;
     @FXML
@@ -91,7 +91,6 @@ public class TestcaseController implements Initializable {
     private boolean lastRunWasAll;
 
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTable();
@@ -109,7 +108,22 @@ public class TestcaseController implements Initializable {
         initTreeView();
         setRunningUiState(false);
 
+//        tooltip
         testCaseTable.setItems(testData);
+        testCaseTable.setTooltip(new Tooltip("Danh sách các Testcase"));
+        headerTextArea.setTooltip(new Tooltip("Header"));
+        bodyTextArea.setTooltip(new Tooltip("Body"));
+        runAllBtn.setTooltip(new Tooltip("Khi nhấn sẽ chạy toán bộ các Testcase trong Testsuit hiện tại"));
+        runSelectedBtn.setTooltip(new Tooltip("Khi nhấn sẽ chạy các Testcase được chọn trong Testsuit hiện tại"));
+        stopBtn.setTooltip(new Tooltip("Khi nhấn sẽ dừng chạy test nhưng vẫn sẽ chạy cleanup request"));
+        saveReportBtn.setTooltip(new Tooltip(""));
+        addTestCaseBtn.setTooltip(new Tooltip("Thêm Testcase"));
+        editTestCaseBtn.setTooltip(new Tooltip("Sửa Testcase"));
+        deleteTestCaseBtn.setTooltip(new Tooltip("Xóa Testcase"));
+        addTestSuiteBtn.setTooltip(new Tooltip("Thêm Testsuit"));
+        editTestSuiteBtn.setTooltip(new Tooltip("Sửa Testsuit"));
+        deleteTestSuiteBtn.setTooltip(new Tooltip("Xóa Testsuit"));
+
     }
 
     private void setupTable() {
@@ -443,6 +457,7 @@ public class TestcaseController implements Initializable {
     @FXML
     private void handleSaveRun() {
         try {
+            mainBaseUrlField.setTooltip(new Tooltip("Thay đổi base_url tại đây"));
             String newBaseUrl = AppRunConfig.normalizeBaseUrl(mainBaseUrlField == null ? baseUrl : mainBaseUrlField.getText());
             baseUrl = newBaseUrl;
 
@@ -1029,6 +1044,12 @@ public class TestcaseController implements Initializable {
         endpointField.setPromptText("/api/v1/resource hoặc https://...");
         TextArea cleanupRequestsArea = jsonTextArea(defaultCleanupRequests, 260);
 
+//      tooltip
+        nameField.setTooltip(new Tooltip("Điền tên Testsuit vào đây"));
+        methodCombo.setTooltip(new Tooltip("Chọn method cho Testsuit"));
+        endpointField.setTooltip(new Tooltip("Điền endpoint cho Testsuit"));
+        cleanupRequestsArea.setTooltip(new Tooltip("Điền mẫu cleanup request vào đây"));
+
         GridPane form = new GridPane();
         form.setHgap(12);
         form.setVgap(10);
@@ -1084,6 +1105,13 @@ public class TestcaseController implements Initializable {
         TextArea payloadAssertionsArea = jsonTextArea(defaultPayloadAssertions, 180);
         TextArea expectedResponseBodyArea = jsonTextArea(defaultExpectedResponseBody, 140);
         expectedResponseBodyArea.setPromptText("Để trống nếu không cần so sánh toàn bộ response");
+//        tooltip
+        nameField.setTooltip(new Tooltip("Nhập tên testcase vào đây"));
+        expectedStatusField.setTooltip(new Tooltip("Nhập status mong đợi vào đây"));
+        setupRequestsArea.setTooltip(new Tooltip("Nhập setup request vào đây"));
+        requestParamsArea.setTooltip(new Tooltip("Nhập setup param vào đây"));
+        payloadAssertionsArea.setTooltip(new Tooltip("Nhập so sánh payload vào đây"));
+        expectedResponseBodyArea.setTooltip(new Tooltip("Nhập tên testcase vào đây"));
 
         GridPane form = new GridPane();
         form.setHgap(12);
@@ -1108,7 +1136,7 @@ public class TestcaseController implements Initializable {
         content.setPadding(new Insets(8));
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);
-        scrollPane.setPrefViewportHeight(760);
+        scrollPane.setPrefViewportHeight(720);
         dialog.getDialogPane().setContent(scrollPane);
         dialog.getDialogPane().setPrefWidth(820);
 
@@ -1787,7 +1815,7 @@ public class TestcaseController implements Initializable {
     }
 
     private Map<String, List<String>> replaceQueryVariables(Map<String, List<String>> values,
-                                                             Map<String, String> runtimeVariables) {
+                                                            Map<String, String> runtimeVariables) {
         if (values == null || values.isEmpty()) {
             return Map.of();
         }
@@ -1796,8 +1824,8 @@ public class TestcaseController implements Initializable {
         values.forEach((key, items) -> resolvedValues.put(
                 key,
                 items == null ? List.of() : items.stream()
-                        .map(value -> replaceVariables(value, runtimeVariables))
-                        .toList()
+                                            .map(value -> replaceVariables(value, runtimeVariables))
+                                            .toList()
         ));
         return resolvedValues;
     }
