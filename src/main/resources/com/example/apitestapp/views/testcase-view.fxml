@@ -104,7 +104,7 @@
                                 </HBox>
 
                                 <!-- Table -->
-                                <TableView fx:id="testCaseTable" maxHeight="900.0" prefHeight="350.0" styleClass="premium-table">
+                                <TableView fx:id="testCaseTable" maxHeight="900.0" prefHeight="540.0" styleClass="premium-table">
                                     <columns>
                                         <TableColumn fx:id="colCheck" prefWidth="45.0" resizable="true" styleClass="table-check-column" text="X" />
                                         <TableColumn fx:id="colName" prefWidth="200.0" resizable="true" text="Testcase" />
