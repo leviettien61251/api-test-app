@@ -15,8 +15,7 @@
                 <HBox spacing="10.0" styleClass="card">
                     <children>
                         <ComboBox fx:id="methodComboBox" styleClass="method-combobox" prefWidth="100.0" promptText="GET"/>
-                        <TextField fx:id="urlField" HBox.hgrow="ALWAYS" promptText="Enter request URL"
-                                   styleClass="input-field"/>
+                        <TextField fx:id="urlField" HBox.hgrow="ALWAYS" promptText="Enter request URL" styleClass="input-field"/>
                         <Button fx:id="sendButton" styleClass="btn-send" text="Send"/>
                     </children>
                     <padding>
@@ -30,41 +29,19 @@
                             <content>
                                 <VBox spacing="10.0" style="-fx-padding: 10 0 0 0;">
                                     <children>
-                                        <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 0 5 0 5;">
+                                        <TableView fx:id="paramsTableView" editable="true" prefHeight="250.0" VBox.vgrow="ALWAYS">
+                                            <columns>
+                                                <TableColumn fx:id="paramKeyCol" prefWidth="200.0" text="Key" />
+                                                <TableColumn fx:id="paramValueCol" prefWidth="300.0" text="Value" />
+                                                <TableColumn fx:id="paramDescCol" prefWidth="350.0" text="Description" />
+                                            </columns>
+                                        </TableView>
+                                        <HBox spacing="10.0">
                                             <children>
-                                                <Label prefWidth="150.0"
-                                                       style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Key"/>
-                                                <Label prefWidth="150.0"
-                                                       style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Value"/>
-                                                <Label HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308"
-                                                       style="-fx-font-weight: bold; -fx-text-fill: #555;"
-                                                       text="Description"/>
-                                                <Button styleClass="btn-link" text="Bulk Edit"/>
+                                                <Button fx:id="addParamBtn" styleClass="btn-link" text="+ Add Param"/>
+                                                <Button fx:id="deleteParamBtn" style="-fx-text-fill: #e74c3c;" styleClass="btn-link" text="- Delete Selected"/>
                                             </children>
                                         </HBox>
-                                        <VBox spacing="5.0">
-                                            <children>
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                    <children>
-                                                        <TextField prefWidth="150.0" text="from"/>
-                                                        <TextField prefWidth="150.0" text="gateA"/>
-                                                        <TextField HBox.hgrow="ALWAYS" promptText="Description"/>
-                                                        <Button style="-fx-background-color: transparent; -fx-cursor: hand;"
-                                                                text="Delete" textFill="#e74c3c"/>
-                                                    </children>
-                                                </HBox>
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                    <children>
-                                                        <TextField prefWidth="150.0" text="to"/>
-                                                        <TextField prefWidth="150.0" text="cardiology"/>
-                                                        <TextField HBox.hgrow="ALWAYS" promptText="Description"/>
-                                                        <Button style="-fx-background-color: transparent; -fx-cursor: hand;"
-                                                                text="Delete" textFill="#e74c3c"/>
-                                                    </children>
-                                                </HBox>
-                                            </children>
-                                        </VBox>
-                                        <Button styleClass="btn-link" text="+ Add Param"/>
                                     </children>
                                 </VBox>
                             </content>
@@ -87,26 +64,19 @@
                             <content>
                                 <VBox spacing="10.0" style="-fx-padding: 10 0 0 0;">
                                     <children>
-                                        <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 0 5 0 5;">
+                                        <TableView fx:id="requestHeadersTableView" editable="true" prefHeight="250.0" VBox.vgrow="ALWAYS">
+                                            <columns>
+                                                <TableColumn fx:id="reqHeaderKeyCol" prefWidth="200.0" text="Key" />
+                                                <TableColumn fx:id="reqHeaderValueCol" prefWidth="300.0" text="Value" />
+                                                <TableColumn fx:id="reqHeaderDescCol" prefWidth="350.0" text="Description" />
+                                            </columns>
+                                        </TableView>
+                                        <HBox spacing="10.0">
                                             <children>
-                                                <Label prefWidth="150.0" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Key"/>
-                                                <Label prefWidth="150.0" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Value"/>
-                                                <Label HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Description"/>
-                                                <Button styleClass="btn-link" text="Bulk Edit"/>
+                                                <Button fx:id="addHeaderBtn" styleClass="btn-link" text="+ Add Header"/>
+                                                <Button fx:id="deleteHeaderBtn" style="-fx-text-fill: #e74c3c;" styleClass="btn-link" text="- Delete Selected"/>
                                             </children>
                                         </HBox>
-                                        <VBox spacing="5.0">
-                                            <children>
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 0 5 0 5;"> <children>
-                                                    <TextField prefWidth="150.0" text="Authorization"/>
-                                                    <TextField prefWidth="150.0" text="Bearer ..."/>
-                                                    <TextField HBox.hgrow="ALWAYS" promptText="Description"/>
-                                                    <Button style="-fx-background-color: transparent; -fx-cursor: hand;" text="Delete" textFill="#e74c3c"/>
-                                                </children>
-                                                </HBox>
-                                            </children>
-                                        </VBox>
-                                        <Button styleClass="btn-link" text="+ Add Header"/>
                                     </children>
                                 </VBox>
                             </content>
@@ -118,20 +88,34 @@
                                     <children>
                                         <HBox alignment="CENTER_LEFT" spacing="8.0" style="-fx-padding: 0 10 0 10;">
                                             <children>
-                                                <ToggleButton fx:id="rawBtn" selected="true" styleClass="body-mode-btn"
-                                                              text="Raw"/>
-                                                <ToggleButton fx:id="formDataBtn" styleClass="body-mode-btn"
-                                                              text="Form-Data"/>
+                                                <ToggleButton fx:id="rawBtn" selected="true" styleClass="body-mode-btn" text="Raw"/>
+                                                <ToggleButton fx:id="formDataBtn" styleClass="body-mode-btn" text="Form-Data"/>
                                                 <Region prefWidth="20.0"/>
                                                 <ComboBox fx:id="rawTypeComboBox" prefWidth="120.0" visible="true"/>
                                             </children>
                                         </HBox>
-                                        <VBox fx:id="bodyContentContainer" VBox.vgrow="ALWAYS">
+
+                                        <VBox fx:id="bodyContentContainer" spacing="10.0" VBox.vgrow="ALWAYS">
                                             <children>
-                                                <TextArea fx:id="bodyTextArea" prefHeight="200.0"
-                                                          styleClass="text-area-mono"
-                                                          text="{&#10;  &quot;field&quot;: &quot;value&quot;&#10;}"
-                                                          VBox.vgrow="ALWAYS"/>
+                                                <TextArea fx:id="bodyTextArea" prefHeight="200.0" styleClass="text-area-mono" text="{&#10;  &quot;field&quot;: &quot;value&quot;&#10;}" VBox.vgrow="ALWAYS"/>
+
+                                                <VBox fx:id="formDataContainer" spacing="10.0" visible="false" managed="false" VBox.vgrow="ALWAYS">
+                                                    <children>
+                                                        <TableView fx:id="formDataTableView" editable="true" prefHeight="200.0" VBox.vgrow="ALWAYS">
+                                                            <columns>
+                                                                <TableColumn fx:id="formKeyCol" prefWidth="200.0" text="Key" />
+                                                                <TableColumn fx:id="formValueCol" prefWidth="300.0" text="Value" />
+                                                                <TableColumn fx:id="formDescCol" prefWidth="350.0" text="Description" />
+                                                            </columns>
+                                                        </TableView>
+                                                        <HBox spacing="10.0">
+                                                            <children>
+                                                                <Button fx:id="addFormRowBtn" styleClass="btn-link" text="+ Add Form Data"/>
+                                                                <Button fx:id="deleteFormRowBtn" style="-fx-text-fill: #e74c3c;" styleClass="btn-link" text="- Delete Selected"/>
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
                                             </children>
                                         </VBox>
                                     </children>
@@ -145,18 +129,14 @@
                                     <children>
                                         <VBox spacing="5.0">
                                             <children>
-                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #555;"
-                                                       text="Pre-request Script:"/>
-                                                <TextArea prefHeight="100.0" styleClass="text-area-mono"
-                                                          text="// Pre-request script"/>
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Pre-request Script:"/>
+                                                <TextArea fx:id="preRequestScriptTextArea" prefHeight="100.0" styleClass="text-area-mono" text="// Pre-request script"/>
                                             </children>
                                         </VBox>
                                         <VBox spacing="5.0">
                                             <children>
-                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #555;"
-                                                       text="Test Script:"/>
-                                                <TextArea prefHeight="100.0" styleClass="text-area-mono"
-                                                          text="// Test script"/>
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Test Script:"/>
+                                                <TextArea fx:id="testScriptTextArea" prefHeight="100.0" styleClass="text-area-mono" text="// Viết các hàm kiểm thử tại đây"/>
                                             </children>
                                         </VBox>
                                     </children>
@@ -166,26 +146,11 @@
 
                         <Tab text="Tests">
                             <content>
-                                <VBox spacing="8.0" style="-fx-padding: 10 0 0 0;">
-                                    <children>
-                                        <HBox alignment="CENTER_LEFT" prefHeight="35.0"
-                                              style="-fx-background-color: #f3faf5; -fx-background-radius: 5; -fx-padding: 0 10 0 10; -fx-border-color: #e6f4ea; -fx-border-radius: 5;">
-                                            <children>
-                                                <Label style="-fx-text-fill: #1e8e3e; -fx-font-weight: bold;"
-                                                       text="[PASS] "/>
-                                                <Label style="-fx-text-fill: #1e8e3e;" text="Status code is 200"/>
-                                            </children>
-                                        </HBox>
-                                        <HBox alignment="CENTER_LEFT" prefHeight="35.0"
-                                              style="-fx-background-color: #fce8e6; -fx-background-radius: 5; -fx-padding: 0 10 0 10; -fx-border-color: #fad2cf; -fx-border-radius: 5;">
-                                            <children>
-                                                <Label style="-fx-text-fill: #d93025; -fx-font-weight: bold;"
-                                                       text="[FAIL] "/>
-                                                <Label style="-fx-text-fill: #d93025;" text="Response time &lt; 500ms"/>
-                                            </children>
-                                        </HBox>
-                                    </children>
-                                </VBox>
+                                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                                    <content>
+                                        <VBox fx:id="testsResultContainer" spacing="8.0" style="-fx-padding: 10;" />
+                                    </content>
+                                </ScrollPane>
                             </content>
                         </Tab>
                     </tabs>
@@ -199,8 +164,7 @@
                                 <HBox alignment="CENTER_LEFT" spacing="5.0">
                                     <children>
                                         <Label text="Status:"/>
-                                        <Label fx:id="statusLabel"
-                                               style="-fx-text-fill: #16a34a; -fx-font-weight: bold;" text=""/>
+                                        <Label fx:id="statusLabel" style="-fx-text-fill: #16a34a; -fx-font-weight: bold;" text=""/>
                                     </children>
                                 </HBox>
                                 <Label fx:id="timeLabel" text="Time: 0ms"/>
@@ -210,30 +174,15 @@
                             <tabs>
                                 <Tab text="Body">
                                     <content>
-                                        <TextArea fx:id="responseBodyTextArea" editable="false" prefHeight="200.0"
-                                                  styleClass="response-body" text=""/>
+                                        <TextArea fx:id="responseBodyTextArea" editable="false" prefHeight="200.0" styleClass="response-body" text=""/>
                                     </content>
                                 </Tab>
-
                                 <Tab text="Headers">
                                     <content>
                                         <TableView fx:id="headersTableView" prefHeight="200.0">
                                             <columns>
                                                 <TableColumn fx:id="headerKeyCol" prefWidth="200.0" text="Key"/>
                                                 <TableColumn fx:id="headerValueCol" prefWidth="400.0" text="Value"/>
-                                            </columns>
-                                        </TableView>
-                                    </content>
-                                </Tab>
-
-                                <Tab text="Cookies">
-                                    <content>
-                                        <TableView fx:id="cookiesTableView" prefHeight="200.0">
-                                            <columns>
-                                                <TableColumn fx:id="cookieNameCol" prefWidth="150.0" text="Name"/>
-                                                <TableColumn fx:id="cookieValueCol" prefWidth="250.0" text="Value"/>
-                                                <TableColumn fx:id="cookieDomainCol" prefWidth="150.0" text="Domain"/>
-                                                <TableColumn fx:id="cookiePathCol" prefWidth="100.0" text="Path"/>
                                             </columns>
                                         </TableView>
                                     </content>
