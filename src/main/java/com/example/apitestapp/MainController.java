@@ -252,7 +252,7 @@ public class MainController implements Initializable {
     private void showDefaultRunConfigDialog() {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Default run config");
-        dialog.setHeaderText("Nhap cau hinh mac dinh truoc khi chay testcase");
+        dialog.setHeaderText("Hãy nhập cấu hình mặc định trước khi chạy testcase");
 
         ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
