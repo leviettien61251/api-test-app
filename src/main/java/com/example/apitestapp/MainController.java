@@ -35,6 +35,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javafx.scene.control.ListCell;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.geometry.Insets;
+
 public class MainController implements Initializable {
     private final Map<String, Node> viewCache = new HashMap<>();
 
@@ -65,81 +70,62 @@ public class MainController implements Initializable {
             userMenuButton.textProperty().bind(Bindings.concat("👤 User: ", AppSession.usernameProperty()));
         }
 
-        // Kích hoạt phím tắt và sự kiện chặn nút X tắt ứng dụng
         Platform.runLater(() -> {
             setupShortcuts();
             setupCloseRequest();
         });
     }
 
-    /**
-     * Chặn sự kiện bấm nút X để hiển thị Dialog xác nhận thoát
-     */
     private void setupCloseRequest() {
         if (btnDashboard.getScene() == null) return;
 
-        // Lấy ra Stage (Cửa sổ chính) từ Scene hiện tại
         Stage stage = (Stage) btnDashboard.getScene().getWindow();
 
         stage.setOnCloseRequest(event -> {
-            // Tạo một Alert Confirmation đẹp mắt theo chuẩn JavaFX
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Xác nhận thoát");
             alert.setHeaderText("Bạn có chắc chắn muốn thoát ứng dụng?");
 
-
-            // Tùy chỉnh text cho 2 nút bấm hiển thị bằng Tiếng Việt
             ButtonType btnYes = new ButtonType("Có", ButtonBar.ButtonData.YES);
             ButtonType btnNo = new ButtonType("Không", ButtonBar.ButtonData.NO);
             alert.getButtonTypes().setAll(btnYes, btnNo);
 
-            // Hiển thị dialog và đợi người dùng chọn
             Optional<ButtonType> result = alert.showAndWait();
 
             if (result.isPresent() && result.get() == btnYes) {
-                // Người dùng chọn Có -> Cho phép đóng ứng dụng bình thường
                 Platform.exit();
                 System.exit(0);
             } else {
-                // Người dùng chọn Không (hoặc bấm X ẩn dialog) -> Tiêu hủy sự kiện đóng, giữ ứng dụng lại
                 event.consume();
             }
         });
     }
 
-    /**
-     * Cài đặt bộ lắng nghe phím tắt trên toàn bộ ứng dụng
-     */
     private void setupShortcuts() {
         if (btnDashboard.getScene() == null) return;
 
         Scene scene = btnDashboard.getScene();
 
-        // Ctrl + D -> Chuyển sang Dashboard
         scene.getAccelerators().put(
                 new KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN),
                 this::navigateDashboard
         );
 
-        // Ctrl + T -> Chuyển sang Testcase
         scene.getAccelerators().put(
                 new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN),
                 this::navigateTestcases
         );
 
-        // Ctrl + R -> Chuyển sang Request
         scene.getAccelerators().put(
                 new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN),
                 this::navigateRequests
         );
 
-        // Ctrl + E -> Chuyển sang Report
         scene.getAccelerators().put(
                 new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN),
                 this::navigateReports
         );
 
-        // Ctrl + H -> Chuyển sang History
         scene.getAccelerators().put(
                 new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN),
                 this::navigateHistory
@@ -207,9 +193,7 @@ public class MainController implements Initializable {
             contentArea.getChildren().setAll(view);
             fade.play();
 
-            if (button != null) {
-                setActiveButton(button);
-            }
+            setActiveButton(button);
 
         } catch (IOException e) {
             System.err.println("Không tìm thấy file FXML: " + fxmlPath);
@@ -239,7 +223,10 @@ public class MainController implements Initializable {
         btnRequest.setSelected(false);
         btnReport.setSelected(false);
         btnHistory.setSelected(false);
-        button.setSelected(true);
+
+        if (button != null) {
+            button.setSelected(true);
+        }
     }
 
     private void setTestNavigationEnabled(boolean enabled) {
@@ -258,44 +245,226 @@ public class MainController implements Initializable {
         ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(okButtonType, cancelButtonType);
 
+        // Background giống trong ảnh - xanh dương đậm
+        dialog.getDialogPane().setStyle(
+                "-fx-background-color: #1e3a5f;" +
+                        "-fx-background-radius: 0;"
+        );
+
         TextField baseUrlField = new TextField(AppRunConfig.getBaseUrl().isEmpty() ? AppRunConfig.DEFAULT_BASE_URL : AppRunConfig.getBaseUrl());
         baseUrlField.setPromptText("http://localhost:8080");
+        baseUrlField.setStyle(
+                "-fx-background-color: #ffffff;" +
+                        "-fx-border-color: #cccccc;" +
+                        "-fx-border-radius: 3;" +
+                        "-fx-background-radius: 3;" +
+                        "-fx-text-fill: #333333;" +
+                        "-fx-prompt-text-fill: #999999;" +
+                        "-fx-padding: 6 10;" +
+                        "-fx-font-size: 13px;"
+        );
+
+        // Focus effect
+        baseUrlField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                baseUrlField.setStyle(
+                        "-fx-background-color: #ffffff;" +
+                                "-fx-border-color: #4a9eff;" +
+                                "-fx-border-width: 1.5;" +
+                                "-fx-border-radius: 3;" +
+                                "-fx-background-radius: 3;" +
+                                "-fx-text-fill: #333333;" +
+                                "-fx-prompt-text-fill: #999999;" +
+                                "-fx-padding: 6 10;" +
+                                "-fx-font-size: 13px;"
+                );
+            } else {
+                baseUrlField.setStyle(
+                        "-fx-background-color: #ffffff;" +
+                                "-fx-border-color: #cccccc;" +
+                                "-fx-border-radius: 3;" +
+                                "-fx-background-radius: 3;" +
+                                "-fx-text-fill: #333333;" +
+                                "-fx-prompt-text-fill: #999999;" +
+                                "-fx-padding: 6 10;" +
+                                "-fx-font-size: 13px;"
+                );
+            }
+        });
 
         ComboBox<String> alertModeBox = new ComboBox<>();
         alertModeBox.getItems().addAll("Stop on fail", "Continue");
         alertModeBox.setValue(AppRunConfig.getAlertMode());
         alertModeBox.setMaxWidth(Double.MAX_VALUE);
+        alertModeBox.setStyle(
+                "-fx-background-color: #ffffff;" +
+                        "-fx-border-color: #cccccc;" +
+                        "-fx-border-radius: 3;" +
+                        "-fx-background-radius: 3;" +
+                        "-fx-font-size: 13px;" +
+                        "-fx-text-fill: #333333;"
+        );
 
-        TextField runnerField = new TextField(AppRunConfig.getRunner());
+        // Style cho dropdown
+        alertModeBox.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle(null);
+                } else {
+                    setText(item);
+                    setStyle(
+                            "-fx-background-color: #ffffff;" +
+                                    "-fx-text-fill: #333333;" +
+                                    "-fx-padding: 6 10;"
+                    );
+                    setOnMouseEntered(e -> setStyle(
+                            "-fx-background-color: #e6f0ff;" +
+                                    "-fx-text-fill: #333333;" +
+                                    "-fx-padding: 6 10;"
+                    ));
+                    setOnMouseExited(e -> setStyle(
+                            "-fx-background-color: #ffffff;" +
+                                    "-fx-text-fill: #333333;" +
+                                    "-fx-padding: 6 10;"
+                    ));
+                }
+            }
+        });
 
         GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(10, 10, 0, 10));
+        grid.setHgap(15);
+        grid.setVgap(12);
+        grid.setPadding(new Insets(20, 20, 15, 20));
+        grid.setStyle("-fx-background-color: transparent;");
 
-        grid.add(new Label("Base URL"), 0, 0);
+        // Style cho label - màu trắng nhạt
+        Label baseUrlLabel = new Label("Base URL");
+        baseUrlLabel.setStyle("-fx-text-fill: #e8eef4; -fx-font-size: 13px;");
+
+        Label alertLabel = new Label("Alert mode");
+        alertLabel.setStyle("-fx-text-fill: #e8eef4; -fx-font-size: 13px;");
+
+        Label machineLabel = new Label("Machine");
+        machineLabel.setStyle("-fx-text-fill: #e8eef4; -fx-font-size: 13px;");
+
+        Label osLabel = new Label("OS");
+        osLabel.setStyle("-fx-text-fill: #e8eef4; -fx-font-size: 13px;");
+
+        // Style cho info values - màu trắng
+        Label machineValue = new Label(AppRunConfig.getMachineName());
+        machineValue.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 13px;");
+
+        Label osValue = new Label(AppRunConfig.getOs());
+        osValue.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 13px;");
+
+        grid.add(baseUrlLabel, 0, 0);
         grid.add(baseUrlField, 1, 0);
 
-        grid.add(new Label("Alert mode"), 0, 1);
+        grid.add(alertLabel, 0, 1);
         grid.add(alertModeBox, 1, 1);
 
-        grid.add(new Label("Runner"), 0, 2);
-        grid.add(runnerField, 1, 2);
+        grid.add(machineLabel, 0, 2);
+        grid.add(machineValue, 1, 2);
 
-        grid.add(new Label("Machine"), 0, 3);
-        grid.add(new Label(AppRunConfig.getMachineName()), 1, 3);
-
-        grid.add(new Label("OS"), 0, 4);
-        grid.add(new Label(AppRunConfig.getOs()), 1, 4);
+        grid.add(osLabel, 0, 3);
+        grid.add(osValue, 1, 3);
 
         dialog.getDialogPane().setContent(grid);
+
+        // Style cho header - màu xanh đậm hơn
+        dialog.getDialogPane().lookup(".header-panel").setStyle(
+                "-fx-background-color: #163a5f;" +
+                        "-fx-border-bottom: 1px solid #2a4a6f;"
+        );
+
+        dialog.getDialogPane().lookup(".header-panel .label").setStyle(
+                "-fx-text-fill: #ffffff;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        // Style buttons giống trong ảnh
+        Node okButton = dialog.getDialogPane().lookupButton(okButtonType);
+        Node cancelButton = dialog.getDialogPane().lookupButton(cancelButtonType);
+
+        if (okButton != null) {
+            okButton.setStyle(
+                    "-fx-background-color: #2a6a9e;" +
+                            "-fx-text-fill: #ffffff;" +
+                            "-fx-border-radius: 3;" +
+                            "-fx-background-radius: 3;" +
+                            "-fx-padding: 6 20;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            );
+
+            okButton.setOnMouseEntered(e -> okButton.setStyle(
+                    "-fx-background-color: #3a7aae;" +
+                            "-fx-text-fill: #ffffff;" +
+                            "-fx-border-radius: 3;" +
+                            "-fx-background-radius: 3;" +
+                            "-fx-padding: 6 20;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            ));
+
+            okButton.setOnMouseExited(e -> okButton.setStyle(
+                    "-fx-background-color: #2a6a9e;" +
+                            "-fx-text-fill: #ffffff;" +
+                            "-fx-border-radius: 3;" +
+                            "-fx-background-radius: 3;" +
+                            "-fx-padding: 6 20;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            ));
+        }
+
+        if (cancelButton != null) {
+            cancelButton.setStyle(
+                    "-fx-background-color: #f0f0f0;" +
+                            "-fx-text-fill: #333333;" +
+                            "-fx-border-color: #cccccc;" +
+                            "-fx-border-width: 1;" +
+                            "-fx-border-radius: 3;" +
+                            "-fx-background-radius: 3;" +
+                            "-fx-padding: 6 18;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            );
+
+            cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(
+                    "-fx-background-color: #e6e6e6;" +
+                            "-fx-text-fill: #333333;" +
+                            "-fx-border-color: #bbbbbb;" +
+                            "-fx-border-width: 1;" +
+                            "-fx-border-radius: 3;" +
+                            "-fx-background-radius: 3;" +
+                            "-fx-padding: 6 18;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            ));
+
+            cancelButton.setOnMouseExited(e -> cancelButton.setStyle(
+                    "-fx-background-color: #f0f0f0;" +
+                            "-fx-text-fill: #333333;" +
+                            "-fx-border-color: #cccccc;" +
+                            "-fx-border-width: 1;" +
+                            "-fx-border-radius: 3;" +
+                            "-fx-background-radius: 3;" +
+                            "-fx-padding: 6 18;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            ));
+        }
 
         dialog.showAndWait().ifPresent(button -> {
             if (button == okButtonType) {
                 AppRunConfig.configure(
                         baseUrlField.getText(),
-                        alertModeBox.getValue(),
-                        runnerField.getText()
+                        alertModeBox.getValue()
                 );
 
                 viewCache.remove("views/testcase-view.fxml");
@@ -329,6 +498,4 @@ public class MainController implements Initializable {
 
         clientMachineRepository.save(cm);
     }
-
-    
 }

@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 
+
 public final class AppRunConfig {
     public static final String DEFAULT_BASE_URL ="http://group3.it4788.sukkaito.id.vn/api";
     public static final String DEFAULT_RUN_MODE = "ALL";
@@ -14,7 +15,7 @@ public final class AppRunConfig {
     private static String baseUrl = "";
     // ĐÃ XÓA: runMode
     private static String alertMode = DEFAULT_ALERT_MODE;
-    private static String runner = DEFAULT_USER;
+    // ĐÃ XÓA: private static String runner = DEFAULT_USER;
     private static LocalDateTime configuredAt;
     private static boolean configured;
 
@@ -25,17 +26,17 @@ public final class AppRunConfig {
         baseUrl = "";
         // ĐÃ XÓA: runMode = DEFAULT_RUN_MODE;
         alertMode = DEFAULT_ALERT_MODE;
-        runner = DEFAULT_USER;
+        // ĐÃ XÓA: runner = DEFAULT_USER;
         configured = false;
         configuredAt = null;
     }
 
-    // ĐÃ XÓA tham số selectedRunMode ở hàm configure
-    public static void configure(String selectedBaseUrl, String selectedAlertMode, String selectedRunner) {
+    // ĐÃ XÓA tham số selectedRunner
+    public static void configure(String selectedBaseUrl, String selectedAlertMode) {
         baseUrl = normalizeBaseUrl(selectedBaseUrl);
         // ĐÃ XÓA gán runMode
         alertMode = selectedAlertMode;
-        runner = selectedRunner == null || selectedRunner.isBlank() ? DEFAULT_USER : selectedRunner.trim();
+        // ĐÃ XÓA: runner = selectedRunner == null || selectedRunner.isBlank() ? DEFAULT_USER : selectedRunner.trim();
         configuredAt = LocalDateTime.now();
         configured = true;
     }
@@ -54,8 +55,19 @@ public final class AppRunConfig {
         return alertMode;
     }
 
+    // ĐÃ XÓA: hàm getRunner()
+    // Thay thế bằng phương thức trả về DEFAULT_USER hoặc AppSession username
     public static String getRunner() {
-        return runner;
+        // Sử dụng username từ AppSession nếu có, ngược lại dùng DEFAULT_USER
+        try {
+            String username = AppSession.getUsername();
+            if (username != null && !username.isBlank()) {
+                return username;
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return DEFAULT_USER;
     }
 
     public static String getOs() {

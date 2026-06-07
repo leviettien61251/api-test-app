@@ -2,6 +2,8 @@ package com.example.apitestapp.controllers;
 
 import com.example.apitestapp.models.TestRun;
 import com.example.apitestapp.services.RunStorage;
+import com.example.apitestapp.config.AppSession;
+import com.example.apitestapp.models.User;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -18,8 +20,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class DashboardController implements Initializable, RefreshableView {
 
@@ -50,8 +54,10 @@ public class DashboardController implements Initializable, RefreshableView {
 
     @Override
     public void refresh() {
-        List<TestRun> runs = runStorage.getAllRuns();
+        // Lấy danh sách run dựa trên quyền
+        List<TestRun> runs = getAccessibleRuns();
 
+        // Tính tổng hợp
         int totalTc = runs.stream().mapToInt(TestRun::getTotalCases).sum();
         int totalPass = runs.stream().mapToInt(TestRun::getPassedCases).sum();
         int totalFail = runs.stream().mapToInt(TestRun::getFailedCases).sum();
@@ -61,21 +67,42 @@ public class DashboardController implements Initializable, RefreshableView {
         lblTotalPass.setText(String.valueOf(totalPass));
         lblTotalFail.setText(String.valueOf(totalFail));
 
+        // Cập nhật biểu đồ
         passFailChart.setData(FXCollections.observableArrayList(
                 new PieChart.Data("Pass", Math.max(totalPass, 0)),
                 new PieChart.Data("Fail", Math.max(totalFail, 0))
         ));
+
         if (totalPass + totalFail == 0) {
             passFailChart.setTitle("Chưa có dữ liệu");
         } else {
             passFailChart.setTitle(null);
         }
 
+        // Lấy 8 run gần nhất
         List<TestRun> recent = runs.stream()
                 .sorted(Comparator.comparing(TestRun::getStartedAt, Comparator.nullsLast(Comparator.reverseOrder())))
                 .limit(8)
-                .toList();
+                .collect(Collectors.toList());
+
         historyTable.setItems(FXCollections.observableArrayList(recent));
+    }
+
+    // Thêm method kiểm tra quyền xem run (giống HistoryController)
+    private List<TestRun> getAccessibleRuns() {
+        User currentUser = AppSession.getInstance().getCurrentUser();
+        List<TestRun> allRuns = runStorage.getAllRuns();
+
+        // Admin có thể xem tất cả
+        if (currentUser != null && Integer.valueOf(1).equals(currentUser.getRoleId())) {
+            return allRuns;
+        }
+
+        // Tester chỉ xem được run của mình
+        String currentEmail = currentUser != null ? currentUser.getEmail() : AppSession.getUsername();
+        return allRuns.stream()
+                .filter(run -> normalize(run.getUser()).equals(normalize(currentEmail)))
+                .collect(Collectors.toList());
     }
 
     private void setupRecentTable() {
@@ -112,5 +139,9 @@ public class DashboardController implements Initializable, RefreshableView {
             return id;
         }
         return id.substring(0, 8);
+    }
+
+    private static String normalize(String value) {
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 }

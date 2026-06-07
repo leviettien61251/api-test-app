@@ -22,6 +22,9 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.example.apitestapp.config.AppSession;
+import com.example.apitestapp.models.User;
+
 public class HistoryController implements Initializable, RefreshableView {
 
     private static final DateTimeFormatter TIME_FMT =
@@ -38,7 +41,7 @@ public class HistoryController implements Initializable, RefreshableView {
     @FXML
     private TableView<TestRun> historyTable;
     @FXML
-    private TableColumn<TestRun, String> colId, colTime, colRunner, colMachine, colOs, colMode, colResult, colStatus;
+    private TableColumn<TestRun, String> colId, colTime, colTestSuite, colRunner, colMachine, colOs, colMode, colResult, colStatus;
     @FXML
     private TableColumn<TestRun, TestRun> colDetails, colDelete;
 
@@ -77,14 +80,27 @@ public class HistoryController implements Initializable, RefreshableView {
     @Override
     public void refresh() {
         allRuns = runStorage.getAllRuns().stream()
+                .filter(this::canCurrentUserSeeRun)
                 .sorted(Comparator.comparing(TestRun::getStartedAt, Comparator.nullsLast(Comparator.reverseOrder())))
                 .collect(Collectors.toList());
         applyFilters();
     }
 
+    private boolean canCurrentUserSeeRun(TestRun run) {
+        User currentUser = AppSession.getInstance().getCurrentUser();
+
+        if (currentUser != null && Integer.valueOf(1).equals(currentUser.getRoleId())) {
+            return true; // Admin xem tất cả
+        }
+
+        String currentEmail = currentUser != null ? currentUser.getEmail() : AppSession.getUsername();
+        return normalize(run.getUser()).equals(normalize(currentEmail));
+    }
+
     private void setupColumns() {
         colId.setCellValueFactory(data -> new ReadOnlyStringWrapper(shortId(data.getValue().getId())));
         colTime.setCellValueFactory(data -> new ReadOnlyStringWrapper(formatTime(data.getValue())));
+        colTestSuite.setCellValueFactory(data -> new ReadOnlyStringWrapper(displayTestSuite(data.getValue())));
         colRunner.setCellValueFactory(new PropertyValueFactory<>("user"));
         colMachine.setCellValueFactory(new PropertyValueFactory<>("machine"));
         colOs.setCellValueFactory(new PropertyValueFactory<>("os"));
@@ -209,6 +225,7 @@ public class HistoryController implements Initializable, RefreshableView {
                 || contains(run.getOs(), keyword)
                 || contains(run.getRunMode(), keyword)
                 || contains(run.getRunName(), keyword)
+                || contains(run.getTestSuite(), keyword)
                 || contains(run.getId(), keyword)
                 || contains(formatTime(run), keyword)
                 || contains(run.getPassedCases() + " / " + run.getFailedCases(), keyword)
@@ -228,6 +245,13 @@ public class HistoryController implements Initializable, RefreshableView {
             return "-";
         }
         return TIME_FMT.format(run.getStartedAt());
+    }
+
+    private static String displayTestSuite(TestRun run) {
+        if (run == null || run.getTestSuite() == null || run.getTestSuite().isBlank()) {
+            return "-";
+        }
+        return run.getTestSuite();
     }
 
     private static String shortId(String id) {

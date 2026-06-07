@@ -1,5 +1,7 @@
+
 insert into users(role_id, full_name, phone, email, password)
 values
+    ('2', 'TESTER 4', '0980000005', 'c', 'c');
     ('2', 'TESTER 3', '0980000004', 'b', 'b'),
     ('2', 'TESTER 2', '0980000003', 'a', 'a'),
        ('2', 'TESTER 1', '0980000001', 'tester1@tester.com', 'tester1@tester.com'),

@@ -13,15 +13,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class ProfileController implements Initializable {
-    /**
-     * Called to initialize a controller after its root element has been
-     * completely processed.
-     *
-     * @param location  The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
-     */
 
     @FXML
     private ComboBox<String> roleComboBox;
@@ -37,21 +28,34 @@ public class ProfileController implements Initializable {
         System.out.println("ProfileController initialized.");
         roleComboBox.getItems().addAll("Tester", "Admin");
 
-        // 2. Chọn giá trị mặc định (để nó hiện chữ Tester ngay khi mới vào)
-        roleComboBox.setValue("Tester");
-
-
         User user = AppSession.getInstance().getCurrentUser();
+
+        // Lấy tên role từ user
+        String roleName = resolveRoleName(user);
+
+        // Set đồng bộ cho tất cả các thành phần hiển thị role
+        roleComboBox.setValue(roleName);
+        lblRoleProfile.setText(roleName);
+        lblIconRoleProfile.setText("Vai trò: " + roleName);
+
+        // Set các thông tin khác
         lblTenHienThiProfile.setText(user.getFullName());
-        lblRoleProfile.setText("Tester");
         lblEmailProfile.setText(user.getEmail());
-        lblIconRoleProfile.setText("Vai trò: " + "Tester");
         lblIconNgayThamGiaProfile.setText(user.getCreatedAt().toString());
         txtTenHienThi.setText(user.getFullName());
         txtEmail.setText(user.getEmail());
         txtSoDienThoai.setText(user.getPhoneNumber());
-
     }
 
-
+    /**
+     * Xác định tên role dựa vào roleId của user
+     * @param user đối tượng User hiện tại
+     * @return "Admin" nếu roleId = 1, "Tester" nếu roleId = 2 hoặc user null
+     */
+    private String resolveRoleName(User user) {
+        if (user != null && Integer.valueOf(1).equals(user.getRoleId())) {
+            return "Admin";
+        }
+        return "Tester";
+    }
 }

@@ -4,285 +4,120 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fitToWidth="true" styleClass="main-scroll-pane"
+<?import javafx.scene.paint.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fitToHeight="true" fitToWidth="true" styleClass="main-scroll-pane"
             stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/26"
             fx:controller="com.example.apitestapp.controllers.ProfileController">
     <content>
-        <VBox spacing="20.0" styleClass="root-container">
+        <VBox spacing="20.0" styleClass="root-container" VBox.vgrow="ALWAYS">
             <padding>
                 <Insets bottom="30.0" left="30.0" right="30.0" top="20.0"/>
             </padding>
             <children>
                 <Label styleClass="page-title" text="THÔNG TIN NGƯỜI DÙNG"/>
 
-                <GridPane hgap="20.0" vgap="20.0">
+                <GridPane hgap="25.0" vgap="20.0" VBox.vgrow="ALWAYS">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0"/>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="65.0"/>
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+                        <!-- Quan trọng: RowConstraints có vgrow="ALWAYS" -->
+                        <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
                     </rowConstraints>
                     <children>
-
-                        <VBox spacing="20.0" GridPane.columnIndex="0">
+                        <!-- Cột trái: Avatar và thông tin cơ bản -->
+                        <VBox spacing="20.0" GridPane.columnIndex="0" fillWidth="true" VBox.vgrow="ALWAYS">
                             <children>
-                                <VBox alignment="CENTER" spacing="10.0" styleClass="card">
+                                <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="card" VBox.vgrow="ALWAYS">
                                     <children>
-                                        <StackPane styleClass="profile-avatar-container">
-                                            <Circle fill="#dbeafe" radius="45.0"/>
-                                            <Label style="-fx-font-size: 40px; -fx-text-fill: #2563eb;" text="👤"/>
+                                        <StackPane styleClass="profile-avatar-container" maxHeight="90" maxWidth="90">
+                                            <Circle radius="45.0">
+                                                <fill>
+                                                    <LinearGradient endX="1.0" endY="1.0">
+                                                        <stops>
+                                                            <Stop offset="0.0" color="#e0f2fe" />
+                                                            <Stop offset="1.0" color="#d1fae5" />
+                                                        </stops>
+                                                    </LinearGradient>
+                                                </fill>
+                                            </Circle>
+                                            <Label style="-fx-font-size: 38px; -fx-text-fill: linear-gradient(to bottom right, #2563eb, #10b981);" text="👤"/>
                                         </StackPane>
-                                        <Label fx:id="lblTenHienThiProfile" styleClass="profile-name" text="Sơn"/>
-                                        <Label fx:id="lblRoleProfile" styleClass="profile-role-tag" text="Tester"/>
 
-                                        <VBox spacing="8.0" styleClass="info-list">
-                                            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                <Label styleClass="unicode-icon" text="✉"/>
-                                                <Label fx:id="lblEmailProfile" styleClass="text-small"
-                                                       text="son.nguyen@example.com"/>
+                                        <VBox alignment="CENTER" spacing="5.0">
+                                            <children>
+                                                <Label fx:id="lblTenHienThiProfile" styleClass="profile-name" text="Sơn"/>
+                                                <Label fx:id="lblRoleProfile" styleClass="profile-role-tag" text="Tester"/>
+                                            </children>
+                                        </VBox>
+
+                                        <Separator prefWidth="200.0" style="-fx-opacity: 0.4;"/>
+
+                                        <VBox spacing="15.0" styleClass="info-list" alignment="CENTER_LEFT">
+                                            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                                <Label styleClass="unicode-icon-blue" text="✉"/>
+                                                <Label fx:id="lblEmailProfile" styleClass="text-small" text="son.nguyen@example.com"/>
                                             </HBox>
-                                            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                <Label styleClass="unicode-icon" text="🛡"/>
-                                                <Label fx:id="lblIconRoleProfile" styleClass="text-small"
-                                                       text="Vai trò: Tester"/>
+                                            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                                <Label styleClass="unicode-icon-green" text="🛡"/>
+                                                <Label fx:id="lblIconRoleProfile" styleClass="text-small" text="Vai trò: Tester"/>
                                             </HBox>
-                                            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                <Label styleClass="unicode-icon" text="📅"/>
-                                                <Label fx:id="lblIconNgayThamGiaProfile" styleClass="text-small"
-                                                       text="Tham gia: 01/01/2025"/>
+                                            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                                <Label styleClass="unicode-icon-blue" text="📅"/>
+                                                <Label fx:id="lblIconNgayThamGiaProfile" styleClass="text-small" text="Tham gia: 01/01/2025"/>
                                             </HBox>
                                         </VBox>
-                                        <Button fx:id="btnChinhSuaHoSo" maxWidth="1.7976931348623157E308"
-                                                styleClass="btn-primary" text="Chỉnh sửa hồ sơ"/>
-                                    </children>
-                                    <padding>
-                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-                                    </padding>
-                                </VBox>
 
-                                <VBox spacing="15.0" styleClass="card">
-                                    <children>
-                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
-                                            <Label style="-fx-font-size: 16px;" text="📈"/>
-                                            <Label styleClass="section-header" text="Thống kê hoạt động"/>
-                                        </HBox>
-                                        <VBox spacing="10.0">
-                                            <HBox styleClass="stat-item">
-                                                <Label styleClass="stat-label" text="Tổng TC đã tạo"/>
-                                                <Region HBox.hgrow="ALWAYS"/>
-                                                <Label styleClass="stat-value, text-blue" text="45"/>
-                                            </HBox>
-                                            <HBox styleClass="stat-item">
-                                                <Label styleClass="stat-label" text="Tổng lần chạy"/>
-                                                <Region HBox.hgrow="ALWAYS"/>
-                                                <Label styleClass="stat-value, text-green" text="128"/>
-                                            </HBox>
-                                            <HBox styleClass="stat-item">
-                                                <Label styleClass="stat-label" text="Collection"/>
-                                                <Region HBox.hgrow="ALWAYS"/>
-                                                <Label styleClass="stat-value, text-green" text="8"/>
-                                            </HBox>
-                                            <HBox styleClass="stat-item">
-                                                <Label styleClass="stat-label" text="Tỉ lệ pass "/>
-                                                <Region HBox.hgrow="ALWAYS"/>
-                                                <Label styleClass="stat-value, text-green" text="36%"/>
-                                            </HBox>
-                                            <HBox styleClass="stat-item">
-                                                <Region HBox.hgrow="ALWAYS"/>
-                                            </HBox>
-                                        </VBox>
+                                        <!-- Thêm VBox trống để đẩy nội dung lên trên (optional) -->
+                                        <VBox VBox.vgrow="ALWAYS"/>
                                     </children>
                                     <padding>
-                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                                        <Insets bottom="30.0" left="25.0" right="25.0" top="30.0"/>
                                     </padding>
                                 </VBox>
                             </children>
                         </VBox>
 
-                        <VBox spacing="20.0" GridPane.columnIndex="1">
+                        <!-- Cột phải: Thông tin chi tiết tài khoản -->
+                        <VBox spacing="20.0" GridPane.columnIndex="1" fillWidth="true" VBox.vgrow="ALWAYS">
                             <children>
-                                <VBox spacing="15.0" styleClass="card">
+                                <VBox spacing="20.0" styleClass="card" VBox.vgrow="ALWAYS">
                                     <children>
-                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
-                                            <Label style="-fx-font-size: 16px;" text="⚙"/>
-                                            <Label styleClass="section-header" text="Cài đặt tài khoản"/>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                            <Label style="-fx-font-size: 18px; -fx-text-fill: linear-gradient(to right, #2563eb, #10b981);" text="📋"/>
+                                            <Label styleClass="section-header" text="Thông tin chi tiết tài khoản"/>
                                         </HBox>
-                                        <GridPane hgap="15.0" vgap="15.0">
-                                            <columnConstraints>
-                                                <ColumnConstraints percentWidth="50"/>
-                                                <ColumnConstraints percentWidth="50"/>
-                                            </columnConstraints>
+
+                                        <VBox spacing="18.0" VBox.vgrow="ALWAYS">
                                             <children>
-                                                <VBox spacing="5.0" GridPane.columnIndex="0">
+                                                <VBox spacing="6.0">
                                                     <Label styleClass="form-label" text="Tên hiển thị"/>
-                                                    <TextField fx:id="txtTenHienThi" styleClass="form-input"
-                                                               text="Sơn"/>
+                                                    <TextField fx:id="txtTenHienThi" editable="false" maxWidth="1.7976931348623157E308" styleClass="form-input-readonly"/>
                                                 </VBox>
-                                                <VBox spacing="5.0" GridPane.columnIndex="1">
-                                                    <Label styleClass="form-label" text="Email"/>
-                                                    <TextField fx:id="txtEmail" styleClass="form-input"
-                                                               text="son.nguyen@example.com"/>
+
+                                                <VBox spacing="6.0">
+                                                    <Label styleClass="form-label" text="Email địa chỉ"/>
+                                                    <TextField fx:id="txtEmail" editable="false" maxWidth="1.7976931348623157E308" styleClass="form-input-readonly"/>
                                                 </VBox>
-                                                <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+
+                                                <VBox spacing="6.0">
                                                     <Label styleClass="form-label" text="Số điện thoại"/>
-                                                    <TextField fx:id="txtSoDienThoai" promptText="Nhập số điện thoại"
-                                                               styleClass="form-input"/>
-                                                </VBox>
-                                                <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                                    <Label styleClass="form-label" text="Vai trò"/>
-                                                    <ComboBox fx:id="roleComboBox" maxWidth="1.7976931348623157E308"
-                                                              promptText="Chọn vai trò" styleClass="form-select"/>
-                                                </VBox>
-                                            </children>
-                                            <rowConstraints>
-                                                <RowConstraints/>
-                                                <RowConstraints/>
-                                            </rowConstraints>
-                                        </GridPane>
-                                        <HBox spacing="10.0">
-                                            <Button fx:id="btnLuuThayDoi" styleClass="btn-primary" text="Lưu thay đổi"/>
-                                            <Button fx:id="btnHuy" styleClass="btn-secondary" text="Hủy"/>
-                                        </HBox>
-                                    </children>
-                                    <padding>
-                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-                                    </padding>
-                                </VBox>
-
-
-                                <VBox spacing="15.0" styleClass="card">
-                                    <children>
-                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
-                                            <Label style="-fx-font-size: 16px;" text="🔒"/>
-                                            <Label styleClass="section-header" text="Bảo mật"/>
-                                        </HBox>
-
-                                        <VBox spacing="15.0">
-                                            <children>
-                                                <VBox spacing="5.0">
-                                                    <Label styleClass="form-label" text="Mật khẩu hiện tại"/>
-                                                    <PasswordField fx:id="txtMatKhauHienTai"
-                                                                   promptText="Nhập mật khẩu hiện tại"
-                                                                   styleClass="form-input"/>
+                                                    <TextField fx:id="txtSoDienThoai" editable="false" promptText="Chưa cập nhật" maxWidth="1.7976931348623157E308" styleClass="form-input-readonly"/>
                                                 </VBox>
 
-                                                <VBox spacing="5.0">
-                                                    <Label styleClass="form-label" text="Mật khẩu mới"/>
-                                                    <PasswordField fx:id="txtMatKhauMoi" promptText="Nhập mật khẩu mới"
-                                                                   styleClass="form-input"/>
+                                                <VBox spacing="6.0">
+                                                    <Label styleClass="form-label" text="Vai trò hệ thống"/>
+                                                    <ComboBox fx:id="roleComboBox" disable="true" maxWidth="1.7976931348623157E308" promptText="Chọn vai trò" styleClass="form-select-disabled"/>
                                                 </VBox>
-
-                                                <VBox spacing="5.0">
-                                                    <Label styleClass="form-label" text="Xác nhận mật khẩu mới"/>
-                                                    <PasswordField fx:id="txtXacNhanMatKhau"
-                                                                   promptText="Nhập lại mật khẩu mới"
-                                                                   styleClass="form-input"/>
-                                                </VBox>
-
-                                                <Button fx:id="btnDoiMatKhau" styleClass="btn-primary"
-                                                        text="Đổi mật khẩu"/>
                                             </children>
                                         </VBox>
                                     </children>
                                     <padding>
-                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                                        <Insets bottom="30.0" left="30.0" right="30.0" top="25.0"/>
                                     </padding>
                                 </VBox>
-
-                                <VBox spacing="15.0" styleClass="card">
-                                    <children>
-                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
-                                            <Label style="-fx-font-size: 16px;" text="🔔"/>
-                                            <Label styleClass="section-header" text="Thông báo"/>
-                                        </HBox>
-
-                                        <VBox spacing="20.0">
-                                            <HBox alignment="CENTER_LEFT">
-                                                <VBox spacing="2.0" HBox.hgrow="ALWAYS">
-                                                    <Label style="-fx-font-weight: bold;" text="Email khi test fail"/>
-                                                    <Label styleClass="text-small"
-                                                           text="Nhận email thông báo khi có test case fail"/>
-                                                </VBox>
-                                                <CheckBox selected="true"/>
-                                            </HBox>
-
-                                            <HBox alignment="CENTER_LEFT">
-                                                <VBox spacing="2.0" HBox.hgrow="ALWAYS">
-                                                    <Label style="-fx-font-weight: bold;"
-                                                           text="Email báo cáo hàng ngày"/>
-                                                    <Label styleClass="text-small"
-                                                           text="Nhận báo cáo tổng hợp mỗi ngày"/>
-                                                </VBox>
-                                                <CheckBox selected="true"/>
-                                            </HBox>
-
-                                            <HBox alignment="CENTER_LEFT">
-                                                <VBox spacing="2.0" HBox.hgrow="ALWAYS">
-                                                    <Label style="-fx-font-weight: bold;"
-                                                           text="Thông báo khi được assign TC"/>
-                                                    <Label styleClass="text-small"
-                                                           text="Nhận thông báo khi được giao testcase"/>
-                                                </VBox>
-                                                <CheckBox/>
-                                            </HBox>
-                                        </VBox>
-                                    </children>
-                                    <padding>
-                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-                                    </padding>
-                                </VBox>
-
-
-                                <VBox spacing="15.0" styleClass="card">
-                                    <children>
-                                        <Label styleClass="section-header" text="Hoạt động gần đây"/>
-
-                                        <VBox spacing="15.0">
-                                            <VBox spacing="5.0">
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                    <Circle fill="#2563eb" radius="4.0"/>
-                                                    <Label text="Chạy test suite &quot;Authentication&quot;"/>
-                                                </HBox>
-                                                <Label style="-fx-padding: 0 0 0 18;" styleClass="text-small"
-                                                       text="2 giờ trước"/>
-                                            </VBox>
-
-                                            <VBox spacing="5.0">
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                    <Circle fill="#10b981" radius="4.0"/>
-                                                    <Label text="Tạo testcase mới &quot;TC08 - Get all departments&quot;"/>
-                                                </HBox>
-                                                <Label style="-fx-padding: 0 0 0 18;" styleClass="text-small"
-                                                       text="5 giờ trước"/>
-                                            </VBox>
-
-                                            <VBox spacing="5.0">
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                    <Circle fill="#b90e0e" radius="4.0"/>
-                                                    <Label text="Cập nhật collection &quot;Customer API&quot;"/>
-                                                </HBox>
-                                                <Label style="-fx-padding: 0 0 0 18;" styleClass="text-small"
-                                                       text="1 ngày trước"/>
-                                            </VBox>
-
-                                            <VBox spacing="5.0">
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                    <Circle fill="#b9ac18" radius="4.0"/>
-                                                    <Label text="Tạo environment  &quot;Staging&quot;"/>
-                                                </HBox>
-                                                <Label style="-fx-padding: 0 0 0 18;" styleClass="text-small"
-                                                       text="2 ngày trước"/>
-                                            </VBox>
-
-                                        </VBox>
-                                    </children>
-                                    <padding>
-                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-                                    </padding>
-                                </VBox>
-
-
                             </children>
                         </VBox>
                     </children>
