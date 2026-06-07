@@ -30,6 +30,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+
+
+
 public class TestcaseController implements Initializable {
 
     private static final String CONTINUE_ALERT_MODE = "Continue";
@@ -209,15 +212,12 @@ public class TestcaseController implements Initializable {
 
 
     private void setupComboBoxes() {
-        executionModeCombo.getItems().addAll("Lần lượt (Sequential)", "Song song (Parallel)");
-        executionModeCombo.setValue("Lần lượt (Sequential)");
-
+        // Đã xóa executionModeCombo (chạy tuần tự mặc định)
         stopConditionCombo.getItems().addAll(RUN_UNTIL_FINISHED_LABEL, STOP_ON_FAIL_LABEL);
         stopConditionCombo.setValue(CONTINUE_ALERT_MODE.equals(AppRunConfig.getAlertMode())
                 ? RUN_UNTIL_FINISHED_LABEL
                 : STOP_ON_FAIL_LABEL);
     }
-
     private void initTreeView() {
         userSuiteNodes.clear();
         List<ApiScenarioDefinition> definitions = scenarioRegistry.getDefinitions();
@@ -465,7 +465,7 @@ public class TestcaseController implements Initializable {
                 mainBaseUrlField.setText(baseUrl);
             }
 
-            AppRunConfig.configure(baseUrl, AppRunConfig.getAlertMode(), AppRunConfig.getRunner());
+            AppRunConfig.configure(baseUrl, AppRunConfig.getAlertMode());
             refreshCurrentTargetUrl();
 
             // Hiển thị dialog thông báo thành công - Cách 1: Dùng Alert trực tiếp
@@ -781,10 +781,13 @@ public class TestcaseController implements Initializable {
 
     private TestRun buildTestRunFromLastExecution() {
         String apiLabel = currentDefinition != null ? currentDefinition.getApiLabel() : "API Test";
+        String testSuite = currentUserSuite != null ? currentUserSuite.getName() :
+                (currentDefinition != null ? currentDefinition.getModuleName() : "User Test Suites");
         String runName = apiLabel + " - " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
 
         TestRun run = new TestRun();
         run.setRunName(runName);
+        run.setTestSuite(testSuite);
         run.setRunMode(lastRunWasAll ? "Run All" : "Run Selected");
         run.setFailureStrategy(stopConditionCombo.getValue());
         run.setStartedAt(lastRunStartedAt != null ? lastRunStartedAt : Instant.now());

@@ -264,116 +264,181 @@
 }
 
 
-/*REQUEST*/
-/* Tổng thể */
-.root {
-    -fx-font-family: "Segoe UI", sans-serif;
-    -fx-background-color: #f8fafc;
+
+/* ==========================================================================
+   4. PROFILE & TEXT STYLES (GRADIENT UPDATE)
+   ========================================================================== */
+
+/* Biến màu chủ đạo */
+.root-container {
+    -fx-background-color: #f1f5f9; /* Nền xám nhạt hẳn để nổi bật Card trắng */
+}
+.main-scroll-pane {
+    -fx-background-color: #f1f5fslate;
 }
 
-/* Panel bên trái */
-.left-panel {
-    -fx-background-color: white;
+/* Định nghĩa Gradient Xanh Dương - Xanh Lá */
+:root {
+    -gradient-primary: linear-gradient(to right, #2563eb, #10b981);
+    -gradient-avatar: linear-gradient(to bottom right, #eff6ff, #ecfdf5);
+}
+
+/* Tiêu đề trang */
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(to right, #1d4ed8, #047857);
+    -fx-padding: 0 0 10 0;
+}
+
+.section-header {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+/* Phong cách các khối nội dung (Card) */
+.card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16px;
+    -fx-border-radius: 16px;
+    /* Đổ bóng nhẹ nhàng giúp giao diện có chiều sâu */
+    -fx-effect: dropshadow(three-pass-box, rgba(148, 163, 184, 0.12), 10, 0, 0, 4);
     -fx-border-color: #e2e8f0;
-    -fx-border-width: 0 1 0 0;
+    -fx-border-width: 1px;
 }
 
-.header-text {
+/* Avatar Container */
+.profile-avatar-container {
+    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.15), 8, 0, 0, 2);
+}
+
+.profile-name {
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+/* Badge Vai trò - Gradient mượt */
+.profile-role-tag {
+    -fx-background-color: linear-gradient(to right, rgba(37, 99, 235, 0.1), rgba(16, 114, 241, 0.1));
+    -fx-text-fill: #2563eb;
+    -fx-padding: 6px 18px;
+    -fx-background-radius: 20px;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-border-color: rgba(37, 99, 235, 0.2);
+    -fx-border-radius: 20px;
+}
+
+/* Icon Unicode được tô màu theo cụm phối hợp xanh dương/xanh lá */
+.unicode-icon-blue {
+    -fx-font-size: 18px;
+    -fx-text-fill: #2563eb;
+    -fx-min-width: 24px;
+}
+.unicode-icon-green {
+    -fx-font-size: 18px;
+    -fx-text-fill: #10b981;
+    -fx-min-width: 24px;
+}
+
+.text-small {
+    -fx-font-size: 14px;
+    -fx-text-fill: #334155;
+    -fx-font-weight: 500;
+}
+
+.form-label {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1e293b;
-}
-
-.label-form {
-    -fx-font-size: 12px;
-    -fx-text-fill: #475569;
-    -fx-font-weight: bold;
-}
-
-/* Buttons */
-.btn-run-all {
-    -fx-background-color: #16a34a;
-    -fx-text-fill: white;
-    -fx-cursor: hand;
-}
-
-.btn-run-all:hover {
-    -fx-background-color: #15803d;
-}
-
-.btn-run-selected {
-    -fx-background-color: #2563eb;
-    -fx-text-fill: white;
-    -fx-cursor: hand;
-}
-
-.btn-send {
-    -fx-background-color: #2563eb;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-padding: 8 20;
-}
-
-.btn-secondary {
-    -fx-background-color: #e2e8f0;
     -fx-text-fill: #475569;
 }
 
-.btn-link {
-    -fx-background-color: transparent;
-    -fx-text-fill: #2563eb;
-    -fx-border-color: transparent transparent #2563eb transparent;
-    -fx-border-width: 0 0 2 0;
+/* CUSTOM CHO CÁC Ô NHẬP LIỆU CHỈ ĐỌC (READONLY) TRÔNG ĐẸP MẮT */
+.form-input-readonly {
+    -fx-font-size: 15px;
+    -fx-padding: 10px 15px;
+    -fx-pref-height: 44px;
+    -fx-background-color: #f8fafc; /* Màu nền xám cực nhẹ tạo cảm giác ko sửa được */
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-text-fill: #0f172a; /* Chữ vẫn nét và rõ ràng */
+}
+
+/* Đồng bộ ComboBox Disabled */
+.form-select-disabled:disabled {
+    -fx-opacity: 1.0;
+    -fx-font-size: 15px;
+    -fx-padding: 6px 12px;
+    -fx-pref-height: 44px;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.form-select-disabled:disabled .text {
+    -fx-opacity: 1.0;
+    -fx-fill: #0f172a;
+    -fx-font-weight: normal;
+}
+
+/* Ẩn hoàn toàn mũi tên của combobox khi disable để giống một TextField */
+.form-select-disabled:disabled .arrow-button,
+.form-select-disabled:disabled .arrow {
+    -fx-visibility: hidden;
+    -fx-opacity: 0;
 }
 
 
 /* ==========================================================================
-   4. PROFILE & TEXT STYLES
+   6.1. CUSTOM MENU XỔ XUỐNG (TONE GRADIENT XANH DƯƠNG - XANH LÁ)
    ========================================================================== */
 
-.main-scroll-pane, .root-container { -fx-background-color: #f8fafc; }
+/* Định dạng toàn bộ khung hộp thoại xổ xuống */
+.user-menu .context-menu {
+    -fx-background-color: #ffffff;            /* Giữ nền trắng để tương phản tốt với text */
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    /* Làm viền gradient Xanh Dương - Xanh Lá đậm nét hơn để phân tách rõ với Dashboard */
+    -fx-border-color: linear-gradient(to right, #0284c7, #22c55e);
+    -fx-border-width: 1.5px;
+    -fx-padding: 6px;
+    /* Đổ bóng đổ mạnh hơn một chút để menu nổi hẳn lên trên */
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.15), 12, 0, 0, 6);
+}
 
-.page-title { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a; -fx-padding: 0 0 10 0; }
-.section-header { -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #334155; }
-.section-subtitle { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #4b5563; }
-.form-label { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #64748b; }
-
-/* Profile Tags & Stats */
-.profile-name { -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a; }
-.profile-role-tag { -fx-background-color: #dbeafe; -fx-text-fill: #1e40af; -fx-padding: 4px 12px; -fx-background-radius: 20px; -fx-font-size: 12px; -fx-font-weight: bold; }
-.unicode-icon { -fx-font-size: 16px; -fx-text-fill: #64748b; -fx-min-width: 20px; }
-
-.stat-label { -fx-text-fill: #64748b; -fx-font-size: 13px; }
-.stat-value { -fx-font-weight: bold; -fx-font-size: 14px; }
-
-.text-muted { -fx-text-fill: #6b7280; }
-.text-small { -fx-font-size: 12px; -fx-text-fill: #6b7280; }
-.text-bold { -fx-font-weight: bold; }
-.text-blue { -fx-text-fill: #3b82f6; }
-.text-green { -fx-text-fill: #22c55e; }
-.text-emerald { -fx-text-fill: #10b981; }
-
-
-
-
-
-
-/* ==========================================================================
-   6. USER PROFILE DROPDOWN MENU
-   ========================================================================== */
-
-.user-menu {
-    -fx-background-color: #f3f4f6;
-    -fx-background-radius: 8;
-    -fx-padding: 6 12;
+/* Định dạng cho từng item bên trong (Thông tin cá nhân, Đăng xuất) */
+.user-menu .menu-item {
+    -fx-background-radius: 6px;               /* Bo góc nhẹ cho các mục bên trong */
+    -fx-padding: 10px 18px;                   /* Tăng padding để dòng chữ to và thoáng hơn */
     -fx-cursor: hand;
 }
 
-.user-menu:hover {
-    -fx-background-color: #e5e7eb;
+/* Chữ mặc định bên trong mỗi item khi chưa hover */
+.user-menu .menu-item .label {
+    -fx-text-fill: #1e293b;                    /* Màu chữ xám đậm, nhìn cực kỳ rõ nét */
+    -fx-font-weight: 600;                     /* Cho chữ dày dặn hơn */
+    -fx-font-size: 14px;                      /* Tăng size chữ lên một chút */
 }
 
-.user-menu .label {
-    -fx-text-fill: #111827;
-    -fx-font-weight: 700;
+/* Hiệu ứng khi di chuột (Hover) hoặc chọn dòng */
+.user-menu .menu-item:focused,
+.user-menu .menu-item:hover {
+    /* Khi hover: Cả dòng đó sẽ ăn màu nền gradient Xanh Dương - Xanh Lá rực rỡ */
+    -fx-background-color: linear-gradient(to right, #0284c7, #22c55e);
 }
+
+/* Hiệu ứng cho chữ khi di chuột (Hover) qua */
+.user-menu .menu-item:focused .label,
+.user-menu .menu-item:hover .label {
+    -fx-text-fill: #ffffff;                    /* Chữ tự động chuyển sang TRẮNG để nổi bần bật trên nền gradient */
+    -fx-font-weight: bold;
+}
+
+
+
+
+

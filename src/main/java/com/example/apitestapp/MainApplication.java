@@ -55,8 +55,8 @@ public class MainApplication extends Application {
         }
         scene.getStylesheets().add(cssUrl.toExternalForm());
         stage.setTitle("API Test App");
-        stage.setMinWidth(1920);
-        stage.setMinHeight(1080);
+        stage.setMinWidth(960);
+        stage.setMinHeight(640);
         stage.setScene(scene);
         stage.sizeToScene();
         stage.centerOnScreen();

@@ -6,10 +6,7 @@ import com.example.apitestapp.models.User;
 import com.example.apitestapp.repository.UserRepository;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -18,54 +15,71 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
-    UserRepository userRepository = new UserRepository();
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private ComboBox<String> roleComboBox;
-    @FXML
-    private Label errorLabel;
+    private final UserRepository userRepository = new UserRepository();
+
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
+    @FXML private TextField passwordTextField;
+    @FXML private Button togglePasswordBtn;
+    @FXML private Label errorLabel;
+
+    private boolean isPasswordVisible = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        roleComboBox.getItems().setAll("Tester", "Admin");
-        roleComboBox.setValue("Tester");
         errorLabel.setText("");
+        passwordField.textProperty().bindBidirectional(passwordTextField.textProperty());
+
+        // Mặc định ẩn mật khẩu
+        setPasswordVisibility(false);
+    }
+
+    @FXML
+    private void togglePasswordVisibility() {
+        isPasswordVisible = !isPasswordVisible;
+        setPasswordVisibility(isPasswordVisible);
+    }
+
+    private void setPasswordVisibility(boolean visible) {
+        passwordField.setVisible(!visible);
+        passwordField.setManaged(!visible);
+
+        passwordTextField.setVisible(visible);
+        passwordTextField.setManaged(visible);
+
+        togglePasswordBtn.setText(visible ? "👁" : "🙈");
+
+        TextField activeField = visible ? passwordTextField : passwordField;
+        activeField.requestFocus();
+        activeField.positionCaret(activeField.getText().length());
     }
 
     @FXML
     private void handleLogin() throws SQLException {
         String username = usernameField.getText();
-        String password = passwordField.getText();
-        String role = roleComboBox.getValue();
-
-        List<User> user = userRepository.findUserByEmailAndPassword(username, password);
-
+        String password = passwordField.getText(); // đã bind 2 chiều
 
         if (username == null || username.isBlank()) {
             errorLabel.setText("Vui lòng nhập tên đăng nhập.");
             usernameField.requestFocus();
-
             return;
         }
+
         if (password == null || password.isBlank()) {
             errorLabel.setText("Vui lòng nhập mật khẩu.");
-            passwordField.requestFocus();
+            (isPasswordVisible ? passwordTextField : passwordField).requestFocus();
             return;
         }
+
+        List<User> user = userRepository.findUserByEmailAndPassword(username, password);
         if (user.isEmpty()) {
             errorLabel.setText("Không tìm thấy tài khoản");
             return;
         }
+
         AppSession.getInstance().setCurrentUser(user.get(0));
         AppSession.setUsername(username);
-        AppSession.setRole(role);
         errorLabel.setText("");
         MainApplication.showMainView();
-
-
     }
 }
-

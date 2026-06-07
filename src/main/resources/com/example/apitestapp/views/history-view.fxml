@@ -65,6 +65,9 @@
                         <TableColumn fx:id="colMachine" styleClass="table-col-machine" prefWidth="150.0" text="Máy Chạy"/>
                         <TableColumn fx:id="colOs" styleClass="table-col-os" prefWidth="120.0" text="Hệ Điều Hành"/>
                         <TableColumn fx:id="colMode" styleClass="table-col-mode" prefWidth="110.0" text="Chế Độ"/>
+
+                        <TableColumn fx:id="colTestSuite" styleClass="table-col-testsuite" prefWidth="140.0" text="Test Suite"/>
+
                         <TableColumn fx:id="colResult" styleClass="table-col-result" prefWidth="100.0" text="PASS/FAIL"/>
                         <TableColumn fx:id="colStatus" styleClass="table-col-status" prefWidth="90.0" text="Kết Quả"/>
                         <TableColumn fx:id="colDetails" styleClass="table-col-action" prefWidth="100.0" text="Chi Tiết"/>
