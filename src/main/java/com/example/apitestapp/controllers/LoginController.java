@@ -3,10 +3,13 @@ package com.example.apitestapp.controllers;
 import com.example.apitestapp.MainApplication;
 import com.example.apitestapp.config.AppSession;
 import com.example.apitestapp.models.User;
-import com.example.apitestapp.repository.UserRepository;
+import com.example.apitestapp.services.UserService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -15,13 +18,17 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
-    private final UserRepository userRepository = new UserRepository();
-
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private TextField passwordTextField;
-    @FXML private Button togglePasswordBtn;
-    @FXML private Label errorLabel;
+    private final UserService userService = new UserService();
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private TextField passwordTextField;
+    @FXML
+    private Button togglePasswordBtn;
+    @FXML
+    private Label errorLabel;
 
     private boolean isPasswordVisible = false;
 
@@ -55,7 +62,7 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void handleLogin() throws SQLException {
+    private void handleLogin() {
         String username = usernameField.getText();
         String password = passwordField.getText(); // đã bind 2 chiều
 
@@ -71,7 +78,14 @@ public class LoginController implements Initializable {
             return;
         }
 
-        List<User> user = userRepository.findUserByEmailAndPassword(username, password);
+        List<User> user;
+        try {
+            user = userService.findUserByEmailAndPassword(username, password);
+        } catch (SQLException e) {
+            errorLabel.setText("Không thể kết nối cơ sở dữ liệu.");
+            return;
+        }
+
         if (user.isEmpty()) {
             errorLabel.setText("Không tìm thấy tài khoản");
             return;
