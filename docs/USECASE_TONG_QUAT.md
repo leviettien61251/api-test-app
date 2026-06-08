@@ -1,20 +1,18 @@
 # Use case tong quat
 
-Tai lieu nay mo ta use case tong quat cua `API Test App` dua tren code hien tai trong repo.
-
-Ban phan ra chi tiet hon nam tai [USECASE_PHAN_RA.md](/D:/code/api-test-app/docs/USECASE_PHAN_RA.md).
+Tai lieu nay mo ta use case muc cao cua `API Test App` dua tren code hien tai.
 
 ## 1. Actor
 
-### Nguoi dung chinh
+### Actor chinh
 
-- `Tester`: actor chinh, su dung toan bo workflow chay test API, xem ket qua va quan ly testcase do minh tao.
+- `Tester`: dang nhap, cau hinh base URL, tao/chay testcase, gui request thu cong, xem report va history.
 
 ### He thong ngoai
 
-- `Backend API`: dich vu duoc goi de chay testcase hoac gui request thu cong.
-- `PostgreSQL`: noi luu user, role, client machine, user test suite, user test case.
-- `RunStorage JSON`: file local luu lich su thuc thi test.
+- `Backend API`: dich vu duoc test.
+- `PostgreSQL`: luu user, role, client machine, user suite va user testcase.
+- `RunStorage JSON`: file local luu lich su run.
 
 ## 2. So do use case
 
@@ -27,19 +25,20 @@ flowchart LR
 
     subgraph app["API Test App"]
         uc1["Dang nhap"]
-        uc2["Cau hinh run mac dinh"]
+        uc2["Cau hinh Base URL va Alert mode"]
         uc3["Xem dashboard"]
         uc4["Chon scenario co san"]
         uc5["Quan ly user test suite"]
         uc6["Quan ly user test case"]
-        uc7["Chay testcase da chon"]
+        uc7["Chay testcase"]
         uc8["Thuc thi setup/cleanup"]
-        uc8b["Danh gia payload response"]
-        uc9["Goi request thu cong"]
-        uc10["Xem report"]
-        uc11["Xem lich su"]
-        uc12["Xoa lich su run"]
-        uc13["Xem thong tin profile"]
+        uc9["Danh gia response"]
+        uc10["Gui request thu cong"]
+        uc11["Chay test script thu cong"]
+        uc12["Xem report"]
+        uc13["Xem/loc lich su"]
+        uc14["Xoa run"]
+        uc15["Xem profile"]
     end
 
     tester --> uc1
@@ -49,25 +48,27 @@ flowchart LR
     tester --> uc5
     tester --> uc6
     tester --> uc7
-    tester --> uc9
     tester --> uc10
     tester --> uc11
     tester --> uc12
     tester --> uc13
+    tester --> uc14
+    tester --> uc15
 
     uc1 --> db
     uc5 --> db
     uc6 --> db
     uc7 --> uc8
-    uc7 --> uc8b
+    uc7 --> uc9
     uc7 --> backend
     uc8 --> backend
-    uc8b --> backend
-    uc7 --> storage
     uc9 --> backend
-    uc10 --> storage
-    uc11 --> storage
+    uc7 --> storage
+    uc10 --> backend
+    uc11 --> backend
     uc12 --> storage
+    uc13 --> storage
+    uc14 --> storage
 ```
 
 ## 3. Danh sach use case
@@ -75,42 +76,42 @@ flowchart LR
 ### UC-01: Dang nhap
 
 - Actor: `Tester`
-- Muc tieu: vao duoc ung dung voi session hien tai.
-- Dau vao: username/email, password, role tren combobox.
+- Dau vao: email/username va password.
+- Ket qua: `AppSession` co current user, main shell duoc mo.
 - He thong lien quan: `PostgreSQL`
 
-### UC-02: Cau hinh run mac dinh
+### UC-02: Cau hinh Base URL va Alert mode
 
 - Actor: `Tester`
-- Muc tieu: dat `Base URL`, `Alert mode`, `Runner` truoc khi chay test.
-- Ket qua: gia tri duoc luu trong `AppRunConfig`.
+- Dau vao: `Base URL`, `Alert mode`.
+- Ket qua: `AppRunConfig` duoc cau hinh; app chuyen sang Testcase.
 
 ### UC-03: Xem dashboard
 
 - Actor: `Tester`
-- Muc tieu: xem tong quan so run, tong testcase, tong pass/fail va cac run gan day.
+- Muc tieu: xem tong quan run/testcase/pass/fail va run gan day.
 - He thong lien quan: `RunStorage JSON`
 
 ### UC-04: Chon scenario co san
 
 - Actor: `Tester`
-- Muc tieu: nap testcase duoc hardcode trong `ApiScenarioRegistry`.
-- Dau ra: danh sach testcase, sample request, headers, endpoint.
+- Muc tieu: nap testcase hardcode tu `ApiScenarioRegistry`.
+- Dau ra: method, endpoint, sample body, headers va danh sach testcase.
 
 ### UC-05: Quan ly user test suite
 
 - Actor: `Tester`
-- Muc tieu: tao, sua, xoa nhom testcase rieng.
+- Muc tieu: tao, sua, soft delete suite va cap nhat cleanup requests.
 - He thong lien quan: `PostgreSQL`
 
 ### UC-06: Quan ly user test case
 
 - Actor: `Tester`
-- Muc tieu: tao, sua, xoa testcase tu dinh nghia boi nguoi dung.
+- Muc tieu: tao, sua, soft delete testcase do user dinh nghia.
+- Du lieu: method, endpoint, headers, query params, path params, body, setup, cleanup, payload assertions, expected response body, expected status.
 - He thong lien quan: `PostgreSQL`
-- Du lieu chinh: method, endpoint, headers, query params, path params, request body, expected status, setup, cleanup, payload assertions, expected response body.
 
-### UC-07: Chay testcase da chon
+### UC-07: Chay testcase
 
 - Actor: `Tester`
 - Muc tieu: chay `Run All` hoac `Run Selected`.
@@ -118,48 +119,51 @@ flowchart LR
 
 ### UC-08: Thuc thi setup/cleanup
 
-- Actor: `Tester` (kich hoat gian tiep khi run test)
-- Muc tieu: tao du lieu phu tro truoc test, capture bien runtime, cleanup sau test.
+- Actor: `Tester` kich hoat gian tiep.
+- Muc tieu: tao du lieu truoc test, capture bien response, don dep sau test.
 - He thong lien quan: `Backend API`
 
-### UC-08B: Danh gia payload response
+### UC-09: Danh gia response
 
-- Actor: `Tester` (kich hoat gian tiep khi run test)
-- Muc tieu: so sanh payload theo `jsonPath` hoac so sanh toan bo response JSON.
+- Actor: `Tester` kich hoat gian tiep.
+- Muc tieu: so sanh status code, payload assertions theo `jsonPath`, hoac full expected response JSON.
+
+### UC-10: Gui request thu cong
+
+- Actor: `Tester`
+- Muc tieu: debug endpoint bang method, URL, params, headers, body va auth.
 - He thong lien quan: `Backend API`
 
-### UC-09: Goi request thu cong
+### UC-11: Chay test script thu cong
 
 - Actor: `Tester`
-- Muc tieu: debug nhanh endpoint bang man hinh `Request`.
-- He thong lien quan: `Backend API`
+- Muc tieu: kiem tra nhanh response bang script assert don gian trong man hinh Request.
 
-### UC-10: Xem report
+### UC-12: Xem report
 
 - Actor: `Tester`
-- Muc tieu: xem chi tiet ket qua cua mot lan chay.
+- Muc tieu: xem chi tiet mot run da luu.
 - He thong lien quan: `RunStorage JSON`
 
-### UC-11: Xem lich su
+### UC-13: Xem/loc lich su
 
 - Actor: `Tester`
-- Muc tieu: loc va tra cuu cac run da luu.
+- Muc tieu: loc run theo ngay, status, keyword va mo report.
 - He thong lien quan: `RunStorage JSON`
 
-### UC-12: Xoa lich su run
+### UC-14: Xoa run
 
 - Actor: `Tester`
-- Muc tieu: xoa mot run khoi danh sach lich su.
+- Muc tieu: xoa mot run khoi lich su local.
 - He thong lien quan: `RunStorage JSON`
 
-### UC-13: Xem thong tin profile
+### UC-15: Xem profile
 
 - Actor: `Tester`
-- Muc tieu: xem thong tin nguoi dung hien tai trong man hinh profile.
+- Muc tieu: xem thong tin user hien tai.
 
 ## 4. Ghi chu pham vi
 
-- Use case tong quat hien tai duoc xay quanh actor `Tester`, vi code chua the hien ro luong nghiep vu rieng cho `Admin`.
-- `Environments` va `Collections` co mat trong UI/controller nhung chua thay ro workflow nghiep vu hoan chinh, nen chua tach thanh use case rieng.
-- UI auth trong man hinh `Request` da co, nhung hien chua duoc dua vao request thuc te; use case `Goi request thu cong` vi vay moi chi duoc xem la gui request co ban.
-- Neu sau nay co phan quyen thuc te, nen tach so do thanh hai actor `Tester` va `Admin`.
+- Chua tach actor `Admin` vi code hien khong co workflow authorization rieng.
+- `Collections` va `Environments` chua duoc dua thanh use case chinh.
+- Request auth da duoc ap vao header `Authorization`, nhung chua co auth scheme nang cao nhu OAuth flow.

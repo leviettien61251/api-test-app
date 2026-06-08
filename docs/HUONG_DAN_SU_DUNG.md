@@ -2,30 +2,24 @@
 
 ## 1. Dang nhap
 
-Khi mo app:
+1. Mo app.
+2. Nhap email/username.
+3. Nhap password.
+4. Bam login.
 
-1. nhap username/email
-2. nhap password
-3. chon role tren combobox
-4. login de vao main shell
-
-Sau khi login thanh cong, app hien dialog `Default run config`.
+Sau khi login thanh cong, app mo main shell va hien dialog `Default run config`.
 
 ## 2. Cau hinh run mac dinh
 
 Dialog gom:
 
-- `Base URL`
-- `Alert mode`
-  - `Stop on fail`
-  - `Continue`
-- `Runner`
+- `Base URL`: URL backend duoc test.
+- `Alert mode`: `Stop on fail` hoac `Continue`.
+- `Machine` va `OS`: thong tin hien thi, khong phai input.
 
-Gia tri nay duoc luu vao `AppRunConfig` va anh huong truc tiep den `Testcase` va `Request`.
+Khi bam OK, app luu vao `AppRunConfig`, reload `Testcase`/`Request` cache va chuyen sang man hinh `Testcase`.
 
 ## 3. Dieu huong nhanh
-
-Phim tat hien co:
 
 - `Ctrl + D`: Dashboard
 - `Ctrl + T`: Testcase
@@ -33,26 +27,49 @@ Phim tat hien co:
 - `Ctrl + E`: Report
 - `Ctrl + H`: History
 
-## 4. Man hinh Testcase
+Profile va Logout nam trong user menu.
 
-Day la man hinh nghiep vu chinh.
+## 4. Man hinh Testcase
 
 ### 4.1 Nap testcase
 
-Nguoi dung co the nap testcase tu:
+Nguon testcase:
 
 - scenario co san trong `ApiScenarioRegistry`
-- `User Test Suites` trong database
+- `User Test Suites` va `User Test Cases` trong PostgreSQL
 
-Khi chon mot API/scenario, app hien:
+Khi chon API/suite, app hien method, endpoint, request data va bang testcase.
 
+### 4.2 Tao user suite
+
+Nhap cac truong chinh:
+
+- name
 - method
-- URL dich
-- headers
-- body
-- bang testcase
+- endpoint
+- description
+- cleanup requests JSON array neu can
 
-### 4.2 Chay test
+Suite duoc gan owner theo user dang login va luu vao `user_test_suites`.
+
+### 4.3 Tao user testcase
+
+User testcase co the khai bao:
+
+- name, description
+- method, endpoint
+- headers
+- query params va path params
+- request body
+- setup requests
+- cleanup requests
+- payload assertions
+- expected response body
+- expected status code
+
+Body JSON va expected response body se duoc validate cu phap. Token runtime dang dang `${variable}` duoc chap nhan trong qua trinh validate.
+
+### 4.4 Chay testcase
 
 Nut chinh:
 
@@ -60,107 +77,109 @@ Nut chinh:
 - `Run Selected`
 - `Stop`
 
-Trong qua trinh chay, app co the:
+Khi run, app thuc hien:
 
-1. resolve URL tu `Base URL` + endpoint
-2. thay `path params` vao URL
-3. ap `query params`
-4. chay `setup requests`
-5. capture runtime variables tu response setup
-6. tu dong auth setup neu request can `${token}` hoac `${authorizationHeader}`
-7. goi request chinh
-8. so sanh `expected status code`
-9. so sanh `payload assertions`
-10. so sanh `expected response body` neu co
-11. chay `cleanup requests`
-12. luu ket qua vao `RunStorage`
+1. resolve endpoint voi `Base URL`
+2. thay path params vao URL
+3. them query params
+4. them headers
+5. chay setup requests
+6. capture response variables
+7. chay auth setup neu phat hien `${token}` hoac `${authorizationHeader}`
+8. goi request chinh
+9. so sanh expected status code
+10. so sanh payload assertions
+11. so sanh expected response body neu co
+12. chay cleanup requests
+13. luu run vao `RunStorage`
 
-### 4.3 Y nghia du lieu user testcase
+`Stop on fail` dung tiep cac testcase sau khi gap fail. `Continue` tiep tuc chay.
 
-User testcase hien tai co the chua:
+## 5. Man hinh Request
 
-- `headers`
-- `query params`
-- `path params`
-- `request body`
-- `setup requests`
-- `cleanup requests`
-- `payload assertions`
-- `expected response body`
-- `expected status code`
+Dung de debug endpoint thu cong.
 
-### 4.4 Ket qua va log
+### 5.1 URL va params
 
-- bang testcase hien `PASS`, `FAIL`, `Dang test`, `Cho`
-- list log hien setup, cleanup, auth setup, loi runtime
-- summary hien tong pass/fail
+- Nhap URL tuyet doi: `https://example.com/api/users`.
+- Nhap endpoint tuong doi: `/users` hoac `users`, app ghep voi `AppRunConfig.baseUrl`.
+- Query string tren URL duoc parse vao bang Params.
+- Sua bang Params se dong bo lai URL.
 
-## 5. Quan ly user test suite va user test case
+### 5.2 Headers va auth
 
-Code hien co CRUD cho:
+- Them custom header trong tab Headers.
+- Chon `Basic Auth` de gui `Authorization: Basic ...`.
+- Chon `Bearer Token` de gui `Authorization: Bearer ...`.
+- Neu custom header va auth cung set `Authorization`, auth header se ghi de bang `builder.header`.
 
-- `UserTestSuiteService`
-- `UserTestCaseService`
+### 5.3 Body
 
-Workflow tong quat:
+- Raw body ho tro `JSON`, `Text`, `XML`.
+- Form-data gui multipart text fields.
+- `GET` va `DELETE` khong gui body trong luong Request hien tai.
 
-1. tao suite
-2. tao testcase thuoc suite hoac thuoc API label hien tai
-3. nhap params/body/assertions
-4. save vao PostgreSQL
-5. nap lai trong tree `User Test Suites`
+### 5.4 Response va tests
 
-## 6. Man hinh Request
+Sau khi gui request, app hien:
 
-Dung de debug nhanh endpoint.
+- HTTP status
+- response time
+- response body
+- response headers
 
-### Ho tro hien tai
+Tab Tests ho tro assert don gian:
 
-- chon HTTP method
-- nhap endpoint tuong doi hoac URL tuyet doi
-- chon body `JSON`, `Text`, `XML`
-- xem status, response time, response body, response headers
+```text
+assert status == 200 : "Kiem tra status";
+assert duration < 500 : "Kiem tra thoi gian";
+assert body contains "1000" : "Kiem tra noi dung";
+```
 
-### Gioi han hien tai
+## 6. Dashboard
 
-- UI auth co `No Auth`, `Basic Auth`, `Bearer Token`
-- nhung thong tin auth nay chua duoc ap vao request khi gui
-
-## 7. Dashboard, Report, History
-
-### Dashboard
+Dashboard hien:
 
 - tong testcase da chay
 - tong so run
 - tong pass/fail
 - danh sach run gan day
 
-Double-click mot dong de mo report.
+Double-click run de mo report.
 
-### Report
+## 7. Report
 
-- thong tin run: runner, machine, os, started time
+Report hien:
+
+- runner, machine, OS, thoi gian bat dau
 - tong testcase, pass, fail
 - pie chart pass/fail
 - bar chart response time
-- bang chi tiet tung testcase
+- bang ket qua tung testcase
 
-### History
+Report doc run ID tu `SelectedRunContext` khi mo tu Dashboard/History.
+
+## 8. History
+
+History cho phep:
 
 - loc theo ngay
 - loc theo status
-- tim theo keyword
+- tim keyword
 - mo report
 - xoa run
 
-## 8. Profile
+Du lieu den tu file local `runs.json`.
 
-Man hinh `Profile` hien tai chu yeu de xem thong tin user hien tai. Khong nen xem day la module chinh sua profile day du.
+## 9. Profile va logout
 
-## 9. Meo su dung
+- `Profile` hien thong tin user hien tai.
+- `Logout` clear session, reset run config va quay ve login.
 
-- doi `Base URL` truoc khi test backend khac moi truong
-- dung `Request` de debug endpoint truoc khi viet testcase
-- dung `payload assertions` khi khong can so sanh full response JSON
-- dung `expected response body` khi can so sanh toan bo response
-- mo `History` sau nhieu lan run de doi chieu ket qua hoi quy
+## 10. Meo su dung
+
+- Luon kiem tra `Base URL` sau login neu doi moi truong backend.
+- Dung `Request` de debug endpoint truoc khi tao testcase.
+- Dung `payload assertions` khi response co field dong.
+- Dung `expected response body` khi can so sanh full JSON.
+- Xem `History` sau nhieu lan run de doi chieu hoi quy.
