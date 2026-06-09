@@ -1,12 +1,12 @@
-package com.example.apitestapp.models;
+package com.example.apitestapp.models.entity;
 
-import com.example.apitestapp.services.ApiCleanupRequest;
-import com.example.apitestapp.services.ApiPayloadAssertion;
-import com.example.apitestapp.services.ApiSetupRequest;
+import com.example.apitestapp.models.dto.ApiCleanupRequest;
+import com.example.apitestapp.models.dto.ApiPayloadAssertion;
+import com.example.apitestapp.models.dto.ApiSetupRequest;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserTestCase {

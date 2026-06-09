@@ -1,11 +1,35 @@
 package com.example.apitestapp.services.map;
 
-import com.example.apitestapp.services.*;
+import com.example.apitestapp.models.dto.*;
+import com.example.apitestapp.services.ApiScenarioProvider;
 
 import java.util.List;
 import java.util.Map;
 
 public class NodeTestScenarioProvider implements ApiScenarioProvider {
+
+    private static List<ApiSetupRequest> createMapSetupRequests(String suffix) {
+        return List.of(
+                new ApiSetupRequest(
+                        "Tạo dữ liệu mồi Map",
+                        "POST",
+                        "/api/v1/insert-map-test",
+                        """
+                                {
+                                    "buildingCode": "B-NODE-%s",
+                                    "buildingName": "Building Node %s",
+                                    "imageUrl": "https://example.com/node-test.jpg",
+                                    "scaleX": 30,
+                                    "scaleY": 30
+                                  }
+                                """.formatted(suffix, suffix),
+                        Map.of("Authorization", "Bearer ${token}"),
+                        List.of("1000"),
+                        true,
+                        List.of(new ApiResponseVariable("mapId", "data.0.id"))
+                )
+        );
+    }
 
     @Override
     public ApiScenarioDefinition getDefinition() {
@@ -370,7 +394,7 @@ public class NodeTestScenarioProvider implements ApiScenarioProvider {
                                 Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
-                        ),new ApiCleanupRequest(
+                        ), new ApiCleanupRequest(
                                 "Clean login test data",
                                 "DELETE",
                                 "/api/v1/clean/login",
@@ -399,28 +423,5 @@ public class NodeTestScenarioProvider implements ApiScenarioProvider {
                         )
                 ))
                 .build();
-    }
-
-    private static List<ApiSetupRequest> createMapSetupRequests(String suffix) {
-        return List.of(
-                new ApiSetupRequest(
-                        "Tạo dữ liệu mồi Map",
-                        "POST",
-                        "/api/v1/insert-map-test",
-                        """
-                                {
-                                    "buildingCode": "B-NODE-%s",
-                                    "buildingName": "Building Node %s",
-                                    "imageUrl": "https://example.com/node-test.jpg",
-                                    "scaleX": 30,
-                                    "scaleY": 30
-                                  }
-                                """.formatted(suffix, suffix),
-                        Map.of("Authorization", "Bearer ${token}"),
-                        List.of("1000"),
-                        true,
-                        List.of(new ApiResponseVariable("mapId", "data.0.id"))
-                )
-        );
     }
 }

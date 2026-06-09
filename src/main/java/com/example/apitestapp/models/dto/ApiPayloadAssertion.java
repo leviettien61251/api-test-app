@@ -1,27 +1,6 @@
-package com.example.apitestapp.services;
+package com.example.apitestapp.models.dto;
 
 public class ApiPayloadAssertion {
-    public enum Operator {
-        EQUALS,
-        NOT_EQUALS,
-        GREATER_THAN,
-        LESS_THAN,
-        STARTS_WITH,
-        CONTAINS,
-        EXISTS,
-        ARRAY_LENGTH,
-        JSON_TYPE
-    }
-
-    public enum JsonType {
-        STRING,
-        NUMBER,
-        BOOLEAN,
-        ARRAY,
-        OBJECT,
-        NULL
-    }
-
     private final String jsonPath;
     private final Operator operator;
     private final String expectedValue;
@@ -30,18 +9,6 @@ public class ApiPayloadAssertion {
         this.jsonPath = jsonPath;
         this.operator = operator;
         this.expectedValue = expectedValue;
-    }
-
-    public String getJsonPath() {
-        return jsonPath;
-    }
-
-    public Operator getOperator() {
-        return operator;
-    }
-
-    public String getExpectedValue() {
-        return expectedValue;
     }
 
     public static ApiPayloadAssertion equalsTo(String jsonPath, String expectedValue) {
@@ -62,5 +29,38 @@ public class ApiPayloadAssertion {
 
     public static ApiPayloadAssertion isType(String jsonPath, JsonType expectedType) {
         return new ApiPayloadAssertion(jsonPath, Operator.JSON_TYPE, expectedType.name());
+    }
+
+    public String getJsonPath() {
+        return jsonPath;
+    }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public String getExpectedValue() {
+        return expectedValue;
+    }
+
+    public enum Operator {
+        EQUALS,
+        NOT_EQUALS,
+        GREATER_THAN,
+        LESS_THAN,
+        STARTS_WITH,
+        CONTAINS,
+        EXISTS,
+        ARRAY_LENGTH,
+        JSON_TYPE
+    }
+
+    public enum JsonType {
+        STRING,
+        NUMBER,
+        BOOLEAN,
+        ARRAY,
+        OBJECT,
+        NULL
     }
 }

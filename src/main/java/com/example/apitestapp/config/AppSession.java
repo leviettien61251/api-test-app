@@ -1,7 +1,7 @@
 package com.example.apitestapp.config;
 
-import com.example.apitestapp.models.ClientMachine;
-import com.example.apitestapp.models.User;
+import com.example.apitestapp.models.entity.ClientMachine;
+import com.example.apitestapp.models.entity.User;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 

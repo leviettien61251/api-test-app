@@ -85,7 +85,8 @@ Dialog sau login cho phep cau hinh:
 - `Base URL`
 - `Alert mode`: `Stop on fail` hoac `Continue`
 
-Runner khong con la input trong dialog. `AppRunConfig.getRunner()` lay username trong session, fallback ve user he dieu hanh.
+Runner khong con la input trong dialog. `AppRunConfig.getRunner()` lay username trong session, fallback ve user he dieu
+hanh.
 
 ### 4.4 Testcase runner
 
@@ -131,7 +132,8 @@ Mot so label/module trong code chua dong nhat; tai lieu ghi nhan trang thai that
 - xem status, response time, response body va response headers
 - test script don gian voi `assert status == 200`, `duration < 500`, `body contains "..."`
 
-Gioi han: form-data chi gui text fields, chua co upload file; test script la bo parse don gian, khong phai JavaScript/Postman sandbox.
+Gioi han: form-data chi gui text fields, chua co upload file; test script la bo parse don gian, khong phai
+JavaScript/Postman sandbox.
 
 ### 4.7 Dashboard, report, history
 

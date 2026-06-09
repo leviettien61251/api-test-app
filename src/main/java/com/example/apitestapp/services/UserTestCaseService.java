@@ -1,8 +1,12 @@
 package com.example.apitestapp.services;
 
 import com.example.apitestapp.config.AppSession;
-import com.example.apitestapp.models.User;
-import com.example.apitestapp.models.UserTestCase;
+import com.example.apitestapp.models.dto.ApiCleanupRequest;
+import com.example.apitestapp.models.dto.ApiPayloadAssertion;
+import com.example.apitestapp.models.dto.ApiResponseVariable;
+import com.example.apitestapp.models.dto.ApiSetupRequest;
+import com.example.apitestapp.models.entity.User;
+import com.example.apitestapp.models.entity.UserTestCase;
 import com.example.apitestapp.repository.UserTestCaseRepository;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -305,9 +309,6 @@ public class UserTestCaseService {
         return object;
     }
 
-    public record RequestParams(Map<String, List<String>> queryParams, Map<String, String> pathParams) {
-    }
-
     private List<? extends ApiSetupRequest> parseHookRequests(String json, boolean cleanup) {
         if (json == null || json.isBlank()) {
             return List.of();
@@ -429,5 +430,8 @@ public class UserTestCaseService {
     private boolean getBoolean(JsonObject object, String key, boolean defaultValue) {
         JsonElement value = object.get(key);
         return value == null || value.isJsonNull() ? defaultValue : value.getAsBoolean();
+    }
+
+    public record RequestParams(Map<String, List<String>> queryParams, Map<String, String> pathParams) {
     }
 }

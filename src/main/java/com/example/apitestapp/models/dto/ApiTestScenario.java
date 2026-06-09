@@ -1,4 +1,4 @@
-package com.example.apitestapp.services;
+package com.example.apitestapp.models.dto;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -62,6 +62,10 @@ public class ApiTestScenario {
         this.expectedResponseBody = expectedResponseBody;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getScenario() {
         return scenario;
     }
@@ -107,10 +111,6 @@ public class ApiTestScenario {
             return scenario;
         }
         return scenario + " - " + description;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static class Builder {

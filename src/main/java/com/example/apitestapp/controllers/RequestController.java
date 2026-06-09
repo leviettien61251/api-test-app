@@ -23,58 +23,89 @@ import java.util.ResourceBundle;
 public class RequestController implements Initializable {
 
     private final OkHttpClient client = new OkHttpClient();
-
-    @FXML private ComboBox<String> methodComboBox;
-    @FXML private TextField urlField;
-    @FXML private Button sendButton;
-    @FXML private ComboBox<String> authTypeComboBox;
-    @FXML private VBox authConfigContainer;
-    @FXML private ToggleButton rawBtn;
-    @FXML private ToggleButton formDataBtn;
-    @FXML private ComboBox<String> rawTypeComboBox;
-    @FXML private VBox bodyContentContainer;
-    @FXML private TextArea bodyTextArea;
-    @FXML private Label statusLabel;
-    @FXML private Label timeLabel;
-    @FXML private TextArea responseBodyTextArea;
-    @FXML private TextArea preRequestScriptTextArea;
-    @FXML private TextArea testScriptTextArea;
-    @FXML private VBox testsResultContainer;
-
-    // --- Cấu hình cho giao diện Form-Data mới ---
-    @FXML private VBox formDataContainer;
-    @FXML private TableView<DataRowModel> formDataTableView;
-    @FXML private TableColumn<DataRowModel, String> formKeyCol;
-    @FXML private TableColumn<DataRowModel, String> formValueCol;
-    @FXML private TableColumn<DataRowModel, String> formDescCol;
-    @FXML private Button addFormRowBtn;
-    @FXML private Button deleteFormRowBtn;
-
-    // TableView hiển thị danh sách Response Header nhận về
-    @FXML private TableView<HeaderModel> headersTableView;
-    @FXML private TableColumn<HeaderModel, String> headerKeyCol;
-    @FXML private TableColumn<HeaderModel, String> headerValueCol;
-
-    // Cấu hình TableView động cho Params đầu vào
-    @FXML private TableView<DataRowModel> paramsTableView;
-    @FXML private TableColumn<DataRowModel, String> paramKeyCol;
-    @FXML private TableColumn<DataRowModel, String> paramValueCol;
-    @FXML private TableColumn<DataRowModel, String> paramDescCol;
-    @FXML private Button addParamBtn;
-    @FXML private Button deleteParamBtn;
-
-    // Cấu hình TableView động cho Request Headers đầu vào
-    @FXML private TableView<DataRowModel> requestHeadersTableView;
-    @FXML private TableColumn<DataRowModel, String> reqHeaderKeyCol;
-    @FXML private TableColumn<DataRowModel, String> reqHeaderValueCol;
-    @FXML private TableColumn<DataRowModel, String> reqHeaderDescCol;
-    @FXML private Button addHeaderBtn;
-    @FXML private Button deleteHeaderBtn;
-
     private final ObservableList<DataRowModel> paramDataList = FXCollections.observableArrayList();
     private final ObservableList<DataRowModel> requestHeaderDataList = FXCollections.observableArrayList();
     private final ObservableList<DataRowModel> formDataList = FXCollections.observableArrayList();
-
+    @FXML
+    private ComboBox<String> methodComboBox;
+    @FXML
+    private TextField urlField;
+    @FXML
+    private Button sendButton;
+    @FXML
+    private ComboBox<String> authTypeComboBox;
+    @FXML
+    private VBox authConfigContainer;
+    @FXML
+    private ToggleButton rawBtn;
+    @FXML
+    private ToggleButton formDataBtn;
+    @FXML
+    private ComboBox<String> rawTypeComboBox;
+    @FXML
+    private VBox bodyContentContainer;
+    @FXML
+    private TextArea bodyTextArea;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private Label timeLabel;
+    @FXML
+    private TextArea responseBodyTextArea;
+    @FXML
+    private TextArea preRequestScriptTextArea;
+    @FXML
+    private TextArea testScriptTextArea;
+    @FXML
+    private VBox testsResultContainer;
+    // --- Cấu hình cho giao diện Form-Data mới ---
+    @FXML
+    private VBox formDataContainer;
+    @FXML
+    private TableView<DataRowModel> formDataTableView;
+    @FXML
+    private TableColumn<DataRowModel, String> formKeyCol;
+    @FXML
+    private TableColumn<DataRowModel, String> formValueCol;
+    @FXML
+    private TableColumn<DataRowModel, String> formDescCol;
+    @FXML
+    private Button addFormRowBtn;
+    @FXML
+    private Button deleteFormRowBtn;
+    // TableView hiển thị danh sách Response Header nhận về
+    @FXML
+    private TableView<HeaderModel> headersTableView;
+    @FXML
+    private TableColumn<HeaderModel, String> headerKeyCol;
+    @FXML
+    private TableColumn<HeaderModel, String> headerValueCol;
+    // Cấu hình TableView động cho Params đầu vào
+    @FXML
+    private TableView<DataRowModel> paramsTableView;
+    @FXML
+    private TableColumn<DataRowModel, String> paramKeyCol;
+    @FXML
+    private TableColumn<DataRowModel, String> paramValueCol;
+    @FXML
+    private TableColumn<DataRowModel, String> paramDescCol;
+    @FXML
+    private Button addParamBtn;
+    @FXML
+    private Button deleteParamBtn;
+    // Cấu hình TableView động cho Request Headers đầu vào
+    @FXML
+    private TableView<DataRowModel> requestHeadersTableView;
+    @FXML
+    private TableColumn<DataRowModel, String> reqHeaderKeyCol;
+    @FXML
+    private TableColumn<DataRowModel, String> reqHeaderValueCol;
+    @FXML
+    private TableColumn<DataRowModel, String> reqHeaderDescCol;
+    @FXML
+    private Button addHeaderBtn;
+    @FXML
+    private Button deleteHeaderBtn;
     private boolean isUpdatingUrlFromTable = false;
     private boolean isUpdatingTableFromUrl = false;
 
@@ -199,7 +230,8 @@ public class RequestController implements Initializable {
                     paramDataList.add(new DataRowModel(key, value, ""));
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     private void syncTableToUrl() {
@@ -404,8 +436,7 @@ public class RequestController implements Initializable {
                                     pass = false;
                                     desc = "POST thất bại (không phải 200/201/202/204)";
                                 }
-                            }
-                            else if ("DELETE".equals(method)) {
+                            } else if ("DELETE".equals(method)) {
                                 if (statusCode == 204 || statusCode == 200 || statusCode == 202) {
                                     pass = true;
                                     desc = statusCode == 204 ? "DELETE thành công (204 No Content)" :
@@ -415,8 +446,7 @@ public class RequestController implements Initializable {
                                     pass = false;
                                     desc = "DELETE thất bại (không phải 200/202/204)";
                                 }
-                            }
-                            else if ("PUT".equals(method) || "PATCH".equals(method)) {
+                            } else if ("PUT".equals(method) || "PATCH".equals(method)) {
                                 if (statusCode == 200 || statusCode == 202 || statusCode == 204) {
                                     pass = true;
                                     desc = "PUT/PATCH thành công: " +
@@ -427,8 +457,7 @@ public class RequestController implements Initializable {
                                     pass = false;
                                     desc = "PUT/PATCH thất bại (không phải 200/202/204)";
                                 }
-                            }
-                            else if ("GET".equals(method)) {
+                            } else if ("GET".equals(method)) {
                                 if (statusCode == 200 || statusCode == 206) {
                                     pass = true;
                                     desc = statusCode == 200 ? "GET thành công (200 OK)" : "GET partial content (206)";
@@ -436,8 +465,7 @@ public class RequestController implements Initializable {
                                     pass = false;
                                     desc = "GET thất bại (không phải 200/206)";
                                 }
-                            }
-                            else {
+                            } else {
                                 // HEAD, OPTIONS, TRACE, CONNECT...
                                 if (statusCode == 200 || statusCode == 202 || statusCode == 204) {
                                     pass = true;
@@ -447,8 +475,7 @@ public class RequestController implements Initializable {
                                     desc = "Thất bại (không phải 2xx thành công)";
                                 }
                             }
-                        }
-                        else if (conditionText.contains("duration < 500")) {
+                        } else if (conditionText.contains("duration < 500")) {
                             pass = (duration < 500);
                         } else if (conditionText.contains("body contains")) {
                             String target = conditionText.substring(conditionText.indexOf("\"") + 1, conditionText.lastIndexOf("\""));
@@ -507,10 +534,25 @@ public class RequestController implements Initializable {
 
         for (int i = 0; i < trimmed.length(); i++) {
             char current = trimmed.charAt(i);
-            if (escaped) { formatted.append(current); escaped = false; continue; }
-            if (current == '\\') { formatted.append(current); escaped = true; continue; }
-            if (current == '"') { formatted.append(current); inString = !inString; continue; }
-            if (inString) { formatted.append(current); continue; }
+            if (escaped) {
+                formatted.append(current);
+                escaped = false;
+                continue;
+            }
+            if (current == '\\') {
+                formatted.append(current);
+                escaped = true;
+                continue;
+            }
+            if (current == '"') {
+                formatted.append(current);
+                inString = !inString;
+                continue;
+            }
+            if (inString) {
+                formatted.append(current);
+                continue;
+            }
 
             switch (current) {
                 case '{', '[' -> {
@@ -626,24 +668,58 @@ public class RequestController implements Initializable {
             this.description = new SimpleStringProperty(description);
         }
 
-        public String getKey() { return key.get(); }
-        public void setKey(String v) { this.key.set(v); }
-        public SimpleStringProperty keyProperty() { return key; }
+        public String getKey() {
+            return key.get();
+        }
 
-        public String getValue() { return value.get(); }
-        public void setValue(String v) { this.value.set(v); }
-        public SimpleStringProperty valueProperty() { return value; }
+        public void setKey(String v) {
+            this.key.set(v);
+        }
 
-        public String getDescription() { return description.get(); }
-        public void setDescription(String v) { this.description.set(v); }
-        public SimpleStringProperty descriptionProperty() { return description; }
+        public SimpleStringProperty keyProperty() {
+            return key;
+        }
+
+        public String getValue() {
+            return value.get();
+        }
+
+        public void setValue(String v) {
+            this.value.set(v);
+        }
+
+        public SimpleStringProperty valueProperty() {
+            return value;
+        }
+
+        public String getDescription() {
+            return description.get();
+        }
+
+        public void setDescription(String v) {
+            this.description.set(v);
+        }
+
+        public SimpleStringProperty descriptionProperty() {
+            return description;
+        }
     }
 
     public static class HeaderModel {
         private final String key;
         private final String value;
-        public HeaderModel(String key, String value) { this.key = key; this.value = value; }
-        public String getKey() { return key; }
-        public String getValue() { return value; }
+
+        public HeaderModel(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 }

@@ -27,8 +27,10 @@ Bo tai lieu nay duoc cap nhat theo code hien tai cua `API Test App`.
 ## Diem can luu y khi doc
 
 - `database.sql` la file tham khao dang tron DDL, DML va cau truy van debug; khong nen xem la migration sach.
-- Thu muc `src/main/resources/db/migrations` co cac migration bo sung cho `path_params`, `payload_assertions`, `expected_response_body`.
+- Thu muc `src/main/resources/db/migrations` co cac migration bo sung cho `path_params`, `payload_assertions`,
+  `expected_response_body`.
 - `Request` hien da ap dung custom headers, Basic Auth va Bearer Token vao HTTP request.
 - `Request` co form-data UI va multipart form-data cho method khong phai `GET`/`DELETE`.
 - `Collections` va `Environments` ton tai trong repo nhung chua nam trong navigation chinh.
-- `Default run config` hien chi cho nhap `Base URL` va `Alert mode`; runner duoc lay tu session username hoac system user.
+- `Default run config` hien chi cho nhap `Base URL` va `Alert mode`; runner duoc lay tu session username hoac system
+  user.

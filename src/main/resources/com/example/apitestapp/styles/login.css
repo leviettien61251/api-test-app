@@ -65,13 +65,16 @@
     -fx-padding: 6 10;
     -fx-font-size: 14px;
 }
+
 .login-input-combo .label {
     -fx-text-fill: #ffffff; /* Đảm bảo chữ được chọn trong combo luôn màu trắng */
 }
+
 .login-input-combo:focused {
     -fx-background-color: rgba(15, 23, 42, 0.45);
     -fx-border-color: #34d399;
 }
+
 /* Mũi tên của combobox đổ sang màu trắng */
 .login-input-combo .arrow-button .arrow {
     -fx-background-color: #ffffff;
@@ -159,6 +162,7 @@
     -fx-font-size: 13px;
     -fx-padding: 0;
 }
+
 .login-link:hover {
     -fx-text-fill: #34d399; /* Di chuột đổi sang xanh lá tươi */
 }
@@ -170,6 +174,7 @@
     -fx-font-size: 13px;
     -fx-alignment: CENTER;
 }
+
 /* ==========================================================================
    TÙY BIẾN DANH SÁCH XỔ XUỐNG (COMBOBOX POPUP) ĐỒNG BỘ KÍNH MỜ
    ========================================================================== */
@@ -249,19 +254,18 @@
 }
 
 
-
 .password-toggle-btn {
     -fx-background-color: transparent; /* Xóa màu nền trắng của nút */
-    -fx-border-color: transparent;     /* Xóa viền của nút */
+    -fx-border-color: transparent; /* Xóa viền của nút */
     -fx-background-radius: 0;
     -fx-border-radius: 0;
-    -fx-padding: 0;                    /* Xóa khoảng cách đệm thừa xung quanh icon */
-    -fx-cursor: hand;                  /* Đổi chuột thành hình bàn tay khi rê vào */
-    -fx-opacity: 0.6;                  /* Làm mờ nhẹ cho tệp màu ô nhập */
+    -fx-padding: 0; /* Xóa khoảng cách đệm thừa xung quanh icon */
+    -fx-cursor: hand; /* Đổi chuột thành hình bàn tay khi rê vào */
+    -fx-opacity: 0.6; /* Làm mờ nhẹ cho tệp màu ô nhập */
 }
 
 .password-toggle-btn:hover {
-    -fx-opacity: 1.0;                  /* Sáng rõ lên khi di chuột vào */
+    -fx-opacity: 1.0; /* Sáng rõ lên khi di chuột vào */
 }
 
 /* Xóa bỏ viền xanh khi nút được focus */
@@ -271,7 +275,7 @@
 }
 
 .login-icon {
-    -fx-font-size: 48px;   /* chỉnh kích thước icon */
+    -fx-font-size: 48px; /* chỉnh kích thước icon */
     /*-fx-text-fill: #4CAF50; !* màu sắc nếu muốn *!*/
     -fx-text-fill: #3fdada;
 

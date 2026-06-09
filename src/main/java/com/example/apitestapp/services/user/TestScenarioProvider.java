@@ -1,10 +1,65 @@
 package com.example.apitestapp.services.user;
 
-import com.example.apitestapp.services.*;
+import com.example.apitestapp.models.dto.ApiCleanupRequest;
+import com.example.apitestapp.models.dto.ApiScenarioDefinition;
+import com.example.apitestapp.models.dto.ApiSetupRequest;
+import com.example.apitestapp.models.dto.ApiTestScenario;
+import com.example.apitestapp.services.ApiScenarioProvider;
 
 import java.util.List;
 
 public class TestScenarioProvider implements ApiScenarioProvider {
+    private static List<ApiSetupRequest> createAuthSetupRequests(String phoneNumber) {
+        return List.of(
+                createSignupSetupRequest(phoneNumber),
+                new ApiSetupRequest(
+                        "Thêm dữ liệu mồi Login",
+                        "POST",
+                        "api/v1/login",
+                        createAuthRequestBody(phoneNumber),
+                        List.of("1000"),
+                        true
+                )
+        );
+    }
+
+    private static ApiSetupRequest createSignupSetupRequest(String phoneNumber) {
+        return new ApiSetupRequest(
+                "Thêm dữ liệu mồi Signup",
+                "POST",
+                "api/v1/signup",
+                createAuthRequestBody(phoneNumber),
+                List.of("1000"),
+                true
+        );
+    }
+
+    private static String createAuthRequestBody(String phoneNumber) {
+        return """
+                {
+                  "phoneNumber": "%s",
+                  "password": "111111"
+                }
+                """.formatted(phoneNumber);
+    }
+
+    private static String createSetUserInfoRequestBody(String fullName, String phoneNumber, String address) {
+        return """
+                {
+                  "fullName": %s,
+                  "phoneNumber": %s,
+                  "address": %s
+                }
+                """.formatted(toJsonString(fullName), toJsonString(phoneNumber), toJsonString(address));
+    }
+
+    private static String toJsonString(String value) {
+        if (value == null) {
+            return "null";
+        }
+        return "\"" + value + "\"";
+    }
+
     @Override
     public ApiScenarioDefinition getDefinition() {
         List<ApiTestScenario> scenarios = List.of(
@@ -152,56 +207,5 @@ public class TestScenarioProvider implements ApiScenarioProvider {
                         )
                 ))
                 .build();
-    }
-
-    private static List<ApiSetupRequest> createAuthSetupRequests(String phoneNumber) {
-        return List.of(
-                createSignupSetupRequest(phoneNumber),
-                new ApiSetupRequest(
-                        "Thêm dữ liệu mồi Login",
-                        "POST",
-                        "api/v1/login",
-                        createAuthRequestBody(phoneNumber),
-                        List.of("1000"),
-                        true
-                )
-        );
-    }
-
-    private static ApiSetupRequest createSignupSetupRequest(String phoneNumber) {
-        return new ApiSetupRequest(
-                "Thêm dữ liệu mồi Signup",
-                "POST",
-                "api/v1/signup",
-                createAuthRequestBody(phoneNumber),
-                List.of("1000"),
-                true
-        );
-    }
-
-    private static String createAuthRequestBody(String phoneNumber) {
-        return """
-                {
-                  "phoneNumber": "%s",
-                  "password": "111111"
-                }
-                """.formatted(phoneNumber);
-    }
-
-    private static String createSetUserInfoRequestBody(String fullName, String phoneNumber, String address) {
-        return """
-                {
-                  "fullName": %s,
-                  "phoneNumber": %s,
-                  "address": %s
-                }
-                """.formatted(toJsonString(fullName), toJsonString(phoneNumber), toJsonString(address));
-    }
-
-    private static String toJsonString(String value) {
-        if (value == null) {
-            return "null";
-        }
-        return "\"" + value + "\"";
     }
 }

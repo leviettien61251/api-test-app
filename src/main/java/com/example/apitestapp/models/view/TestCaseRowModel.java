@@ -1,7 +1,7 @@
-package com.example.apitestapp.models;
+package com.example.apitestapp.models.view;
 
-import com.example.apitestapp.services.ApiTestScenario;
-import com.example.apitestapp.services.ApiCleanupRequest;
+import com.example.apitestapp.models.dto.ApiCleanupRequest;
+import com.example.apitestapp.models.dto.ApiTestScenario;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;

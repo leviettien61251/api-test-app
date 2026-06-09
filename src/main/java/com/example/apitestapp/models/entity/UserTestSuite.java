@@ -1,6 +1,6 @@
-package com.example.apitestapp.models;
+package com.example.apitestapp.models.entity;
 
-import com.example.apitestapp.services.ApiCleanupRequest;
+import com.example.apitestapp.models.dto.ApiCleanupRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;

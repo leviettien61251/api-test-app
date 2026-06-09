@@ -1,26 +1,15 @@
 package com.example.apitestapp.services;
 
+import com.example.apitestapp.models.dto.ApiScenarioDefinition;
 import com.example.apitestapp.services.auth.ChangePasswordScenarioProvider;
 import com.example.apitestapp.services.auth.GetUserInfoScenarioProvider;
 import com.example.apitestapp.services.auth.LoginScenarioProvider;
 import com.example.apitestapp.services.auth.SignupScenarioProvider;
-import com.example.apitestapp.services.flow.FlowAlertScenarioProvider;
-import com.example.apitestapp.services.flow.FlowBottleneckScenarioProvider;
-import com.example.apitestapp.services.flow.FlowDensityScenarioProvider;
-import com.example.apitestapp.services.flow.FlowHeatmapScenarioProvider;
-import com.example.apitestapp.services.flow.GetAlertsScenarioProvider;
-import com.example.apitestapp.services.flow.GetBottlenecksScenarioProvider;
-import com.example.apitestapp.services.flow.GetDensityScenarioProvider;
-import com.example.apitestapp.services.flow.GetEdgeStatusScenarioProvider;
-import com.example.apitestapp.services.flow.GetHeatmapScenarioProvider;
-import com.example.apitestapp.services.flow.InsertEdgeDensityScenarioProvider;
-import com.example.apitestapp.services.flow.InsertEdgeScenarioProvider;
-import com.example.apitestapp.services.flow.InsertEdgeStatusScenarioProvider;
+import com.example.apitestapp.services.flow.*;
 import com.example.apitestapp.services.map.*;
 import com.example.apitestapp.services.realapitest.GetMapNodeFromRealApiScenarioProvider;
 import com.example.apitestapp.services.user.SetAvatarScenarioProvider;
 import com.example.apitestapp.services.user.SetUserInfoScenarioProvider;
-import com.example.apitestapp.services.user.TestScenarioProvider;
 
 import java.util.List;
 import java.util.Optional;

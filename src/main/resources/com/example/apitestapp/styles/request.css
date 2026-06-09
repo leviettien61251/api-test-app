@@ -9,7 +9,7 @@
     -fx-background-color: #ffffff;
     -fx-border-color: #e2e8f0;
     -fx-border-width: 0 1 0 0;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
 }
 
 /* Header text */
@@ -33,6 +33,7 @@
     -fx-cursor: hand;
     -fx-background-radius: 6;
 }
+
 .btn-run-all:hover {
     -fx-background-color: linear-gradient(to right, #15803d, #16a34a);
 }
@@ -43,6 +44,7 @@
     -fx-cursor: hand;
     -fx-background-radius: 6;
 }
+
 .btn-run-selected:hover {
     -fx-background-color: linear-gradient(to right, #1e40af, #2563eb);
 }
@@ -96,7 +98,7 @@
     -fx-background-radius: 12;
     -fx-border-color: #e2e8f0;
     -fx-border-radius: 12;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 12, 0, 0, 4);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 12, 0, 0, 4);
 }
 
 /* Input & TextArea */

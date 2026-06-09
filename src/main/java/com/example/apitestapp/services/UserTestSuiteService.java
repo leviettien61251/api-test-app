@@ -1,8 +1,9 @@
 package com.example.apitestapp.services;
 
 import com.example.apitestapp.config.AppSession;
-import com.example.apitestapp.models.User;
-import com.example.apitestapp.models.UserTestSuite;
+import com.example.apitestapp.models.dto.ApiCleanupRequest;
+import com.example.apitestapp.models.entity.User;
+import com.example.apitestapp.models.entity.UserTestSuite;
 import com.example.apitestapp.repository.UserTestSuiteRepository;
 
 import java.sql.SQLException;

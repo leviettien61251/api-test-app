@@ -1,8 +1,8 @@
 package com.example.apitestapp.controllers;
 
 import com.example.apitestapp.config.SelectedRunContext;
-import com.example.apitestapp.models.TestResult;
-import com.example.apitestapp.models.TestRun;
+import com.example.apitestapp.models.dto.TestResult;
+import com.example.apitestapp.models.dto.TestRun;
 import com.example.apitestapp.services.RunStorage;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -10,8 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
@@ -29,7 +27,7 @@ public class ReportController implements Initializable, RefreshableView {
 
     private static final DateTimeFormatter TIME_FMT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
-
+    private final RunStorage runStorage = RunStorage.getInstance();
     @FXML
     private Label lblRunId, lblRunner, lblMachine, lblOS, lblTime, lblOverall;
     @FXML
@@ -45,7 +43,16 @@ public class ReportController implements Initializable, RefreshableView {
     @FXML
     private TableColumn<TestResult, String> colName, colStatus, colTime, colNote;
 
-    private final RunStorage runStorage = RunStorage.getInstance();
+    private static String nullToDash(String value) {
+        return value == null || value.isBlank() ? "-" : value;
+    }
+
+    private static String shortId(String id) {
+        if (id == null || id.length() <= 8) {
+            return id;
+        }
+        return id.substring(0, 8) + "...";
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -128,16 +135,5 @@ public class ReportController implements Initializable, RefreshableView {
         pieChart.setData(FXCollections.observableArrayList());
         barChart.getData().clear();
         reportTable.setItems(FXCollections.observableArrayList());
-    }
-
-    private static String nullToDash(String value) {
-        return value == null || value.isBlank() ? "-" : value;
-    }
-
-    private static String shortId(String id) {
-        if (id == null || id.length() <= 8) {
-            return id;
-        }
-        return id.substring(0, 8) + "...";
     }
 }

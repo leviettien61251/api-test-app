@@ -1,6 +1,7 @@
 package com.example.apitestapp.services.map;
 
-import com.example.apitestapp.services.*;
+import com.example.apitestapp.models.dto.*;
+import com.example.apitestapp.services.ApiScenarioProvider;
 
 import java.util.List;
 import java.util.Map;
@@ -9,46 +10,6 @@ public class PostAreaTestScenarioProvider implements ApiScenarioProvider {
 
     private static final String ENDPOINT = "/api/v1/map/area";
     private static final Map<String, String> AUTH_HEADERS = Map.of("Authorization", "Bearer ${token}");
-
-    @Override
-    public ApiScenarioDefinition getDefinition() {
-        List<ApiTestScenario> scenarios = List.of(
-                scenario("Scenario 1", "Body null - MISSING_BODY", "null", "2006", false),
-                scenario("Scenario 2", "Body rỗng {}", "{}", "2001", false),
-                scenario("Scenario 3", "Thiếu areaId", """
-                        {
-                            "mapId": 1
-                        }
-                        """, "2001", false),
-                scenario("Scenario 4", "Thiếu mapId", """
-                        {
-                            "areaId": "AREA_MISSING_MAP"
-                        }
-                        """, "2001", false),
-                scenario("Scenario 5", "areaId null", areaBody("null", "1"), "2001", false),
-                scenario("Scenario 6", "mapId null", areaBody("\"AREA_MAP_NULL\"", "null"), "2001", false),
-                scenario("Scenario 7", "areaId rỗng", areaBody("\"\"", "1"), "2001", false),
-                scenario("Scenario 8", "areaId chỉ chứa whitespace", areaBody("\"   \"", "1"), "2001", false),
-                scenario("Scenario 9", "areaId không phải String", areaBody("123", "1"), "2002", false),
-                scenario("Scenario 10", "mapId không phải integer", areaBody("\"AREA_MAP_STRING\"", "\"1\""), "2002", false),
-                scenario("Scenario 11", "mapId là decimal", areaBody("\"AREA_MAP_DECIMAL\"", "1.5"), "2002", false),
-                scenario("Scenario 12", "mapId <= 0", areaBody("\"AREA_MAP_ZERO\"", "0"), "2003", false),
-                scenario("Scenario 13", "mapId không tồn tại", areaBody("\"AREA_MAP_NOT_FOUND\"", "999999"), "4001", false),
-                scenario("Scenario 14", "areaId đã tồn tại", areaBody("\"AREA_DUP\"", "${mapId}"), "2003", true, duplicateAreaSetupRequests()),
-                scenario("Scenario 15", "JSON invalid - INVALID_BODY", "{", "2005", false),
-                scenario("Scenario 16", "Body valid", areaBody("\"AREA_VALID\"", "${mapId}"), "1000", true)
-        );
-
-        return ApiScenarioDefinition.builder()
-                .collectionName("Collections")
-                .moduleName("Map Module")
-                .apiLabel("POST /api/v1/map/area")
-                .endpoint(ENDPOINT)
-                .sampleRequestBody(scenarios.get(15).getRequestBody())
-                .scenarios(scenarios)
-                .cleanupRequests(cleanupRequests("/api/v1/clean/map/area", "/api/v1/clean/map"))
-                .build();
-    }
 
     private static ApiTestScenario scenario(String name,
                                             String description,
@@ -137,5 +98,45 @@ public class PostAreaTestScenarioProvider implements ApiScenarioProvider {
                     "mapId": %s
                 }
                 """.formatted(areaId, mapId);
+    }
+
+    @Override
+    public ApiScenarioDefinition getDefinition() {
+        List<ApiTestScenario> scenarios = List.of(
+                scenario("Scenario 1", "Body null - MISSING_BODY", "null", "2006", false),
+                scenario("Scenario 2", "Body rỗng {}", "{}", "2001", false),
+                scenario("Scenario 3", "Thiếu areaId", """
+                        {
+                            "mapId": 1
+                        }
+                        """, "2001", false),
+                scenario("Scenario 4", "Thiếu mapId", """
+                        {
+                            "areaId": "AREA_MISSING_MAP"
+                        }
+                        """, "2001", false),
+                scenario("Scenario 5", "areaId null", areaBody("null", "1"), "2001", false),
+                scenario("Scenario 6", "mapId null", areaBody("\"AREA_MAP_NULL\"", "null"), "2001", false),
+                scenario("Scenario 7", "areaId rỗng", areaBody("\"\"", "1"), "2001", false),
+                scenario("Scenario 8", "areaId chỉ chứa whitespace", areaBody("\"   \"", "1"), "2001", false),
+                scenario("Scenario 9", "areaId không phải String", areaBody("123", "1"), "2002", false),
+                scenario("Scenario 10", "mapId không phải integer", areaBody("\"AREA_MAP_STRING\"", "\"1\""), "2002", false),
+                scenario("Scenario 11", "mapId là decimal", areaBody("\"AREA_MAP_DECIMAL\"", "1.5"), "2002", false),
+                scenario("Scenario 12", "mapId <= 0", areaBody("\"AREA_MAP_ZERO\"", "0"), "2003", false),
+                scenario("Scenario 13", "mapId không tồn tại", areaBody("\"AREA_MAP_NOT_FOUND\"", "999999"), "4001", false),
+                scenario("Scenario 14", "areaId đã tồn tại", areaBody("\"AREA_DUP\"", "${mapId}"), "2003", true, duplicateAreaSetupRequests()),
+                scenario("Scenario 15", "JSON invalid - INVALID_BODY", "{", "2005", false),
+                scenario("Scenario 16", "Body valid", areaBody("\"AREA_VALID\"", "${mapId}"), "1000", true)
+        );
+
+        return ApiScenarioDefinition.builder()
+                .collectionName("Collections")
+                .moduleName("Map Module")
+                .apiLabel("POST /api/v1/map/area")
+                .endpoint(ENDPOINT)
+                .sampleRequestBody(scenarios.get(15).getRequestBody())
+                .scenarios(scenarios)
+                .cleanupRequests(cleanupRequests("/api/v1/clean/map/area", "/api/v1/clean/map"))
+                .build();
     }
 }

@@ -1,7 +1,7 @@
 package com.example.apitestapp.repository;
 
 import com.example.apitestapp.db.ConnectionManager;
-import com.example.apitestapp.models.ClientMachine;
+import com.example.apitestapp.models.entity.ClientMachine;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

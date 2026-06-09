@@ -2,7 +2,7 @@ package com.example.apitestapp.controllers;
 
 import com.example.apitestapp.MainApplication;
 import com.example.apitestapp.config.AppSession;
-import com.example.apitestapp.models.User;
+import com.example.apitestapp.models.entity.User;
 import com.example.apitestapp.services.UserService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

@@ -1,15 +1,7 @@
 package com.example.apitestapp.repository;
 
-import com.example.apitestapp.models.TestRun;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.example.apitestapp.models.dto.TestRun;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -32,6 +24,17 @@ public class RunHistoryRepository {
                 .setPrettyPrinting()
                 .registerTypeAdapter(Instant.class, new InstantAdapter())
                 .create();
+    }
+
+    /**
+     * Windows: %LOCALAPPDATA%\api-test-app\runs.json - không bị OneDrive khóa file.
+     */
+    private static Path resolveStorageFile() {
+        String localAppData = System.getenv("LOCALAPPDATA");
+        Path base = localAppData != null && !localAppData.isBlank()
+                ? Path.of(localAppData, "api-test-app")
+                : Path.of(System.getProperty("user.home"), ".api-test-app");
+        return base.resolve("runs.json");
     }
 
     public List<TestRun> loadRuns() {
@@ -72,15 +75,6 @@ public class RunHistoryRepository {
 
     public Path getStorageFile() {
         return storageFile.toAbsolutePath();
-    }
-
-    /** Windows: %LOCALAPPDATA%\api-test-app\runs.json - không bị OneDrive khóa file. */
-    private static Path resolveStorageFile() {
-        String localAppData = System.getenv("LOCALAPPDATA");
-        Path base = localAppData != null && !localAppData.isBlank()
-                ? Path.of(localAppData, "api-test-app")
-                : Path.of(System.getProperty("user.home"), ".api-test-app");
-        return base.resolve("runs.json");
     }
 
     private static final class InstantAdapter implements JsonSerializer<Instant>, JsonDeserializer<Instant> {

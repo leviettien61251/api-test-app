@@ -67,7 +67,8 @@ User testcase co the khai bao:
 - expected response body
 - expected status code
 
-Body JSON va expected response body se duoc validate cu phap. Token runtime dang dang `${variable}` duoc chap nhan trong qua trinh validate.
+Body JSON va expected response body se duoc validate cu phap. Token runtime dang dang `${variable}` duoc chap nhan trong
+qua trinh validate.
 
 ### 4.4 Chay testcase
 

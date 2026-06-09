@@ -4,7 +4,10 @@ package com.example.apitestapp.controllers;
 import com.example.apitestapp.config.AppRunConfig;
 import com.example.apitestapp.config.AppSession;
 import com.example.apitestapp.config.SelectedRunContext;
-import com.example.apitestapp.models.*;
+import com.example.apitestapp.models.dto.*;
+import com.example.apitestapp.models.entity.UserTestCase;
+import com.example.apitestapp.models.entity.UserTestSuite;
+import com.example.apitestapp.models.view.TestCaseRowModel;
 import com.example.apitestapp.services.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -31,8 +34,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
-
-
 public class TestcaseController implements Initializable {
 
     private static final String CONTINUE_ALERT_MODE = "Continue";
@@ -46,6 +47,10 @@ public class TestcaseController implements Initializable {
     private static final PseudoClass LOG_ERROR_STATE = PseudoClass.getPseudoClass("log-error");
 
     private final ObservableList<TestCaseRowModel> testData = FXCollections.observableArrayList();
+    private final ApiPayloadAssertionEvaluator payloadAssertionEvaluator = new ApiPayloadAssertionEvaluator();
+    private final Map<TreeItem<String>, UserTestSuite> userSuiteNodes = new IdentityHashMap<>();
+    private final RunStorage runStorage = RunStorage.getInstance();
+    private final List<TestResult> lastRunResults = new ArrayList<>();
     private String baseUrl;
     @FXML
     private TreeView<String> testSuiteTree;
@@ -79,20 +84,30 @@ public class TestcaseController implements Initializable {
     private TextArea bodyTextArea;   // Khung JSON Body
     private volatile boolean isRunning = false;
     private ApiTestService apiTestService;
-    private final ApiPayloadAssertionEvaluator payloadAssertionEvaluator = new ApiPayloadAssertionEvaluator();
     private UserTestSuiteService userTestSuiteService;
     private UserTestCaseService userTestCaseService;
     private ApiScenarioRegistry scenarioRegistry;
     private ApiScenarioDefinition currentDefinition;
     private UserTestSuite currentUserSuite;
-    private final Map<TreeItem<String>, UserTestSuite> userSuiteNodes = new IdentityHashMap<>();
-    private final RunStorage runStorage = RunStorage.getInstance();
-    private final List<TestResult> lastRunResults = new ArrayList<>();
     private int lastPassCount;
     private int lastFailCount;
     private Instant lastRunStartedAt;
     private boolean lastRunWasAll;
 
+    private static int parseCode(String code) {
+        try {
+            return Integer.parseInt(code);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private static String shortId(String id) {
+        if (id == null || id.length() <= 8) {
+            return id;
+        }
+        return id.substring(0, 8) + "...";
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -210,7 +225,6 @@ public class TestcaseController implements Initializable {
         cell.pseudoClassStateChanged(LOG_ERROR_STATE, hasError);
     }
 
-
     private void setupComboBoxes() {
         // Đã xóa executionModeCombo (chạy tuần tự mặc định)
         stopConditionCombo.getItems().addAll(RUN_UNTIL_FINISHED_LABEL, STOP_ON_FAIL_LABEL);
@@ -218,6 +232,7 @@ public class TestcaseController implements Initializable {
                 ? RUN_UNTIL_FINISHED_LABEL
                 : STOP_ON_FAIL_LABEL);
     }
+
     private void initTreeView() {
         userSuiteNodes.clear();
         List<ApiScenarioDefinition> definitions = scenarioRegistry.getDefinitions();
@@ -1003,21 +1018,6 @@ public class TestcaseController implements Initializable {
         return result;
     }
 
-    private static int parseCode(String code) {
-        try {
-            return Integer.parseInt(code);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    private static String shortId(String id) {
-        if (id == null || id.length() <= 8) {
-            return id;
-        }
-        return id.substring(0, 8) + "...";
-    }
-
     private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -1327,40 +1327,6 @@ public class TestcaseController implements Initializable {
             return "";
         }
         return name.startsWith("[User] ") ? name.substring("[User] ".length()) : name;
-    }
-
-    private record TestSuiteDialogData(String name,
-                                       String method,
-                                       String endpoint,
-                                       String cleanupRequestsJson) {
-    }
-
-    private record TestCaseDialogData(String name,
-                                      String expectedStatusCode,
-                                      String setupRequestsJson,
-                                      String requestParamsJson,
-                                      String payloadAssertionsJson,
-                                      String expectedResponseBody) {
-    }
-
-    private static final class CaseOutcome {
-        final boolean passed;
-        final String expectedCodeText;
-        final String actualCodeText;
-        final long responseTimeMs;
-        final String message;
-
-        CaseOutcome(boolean passed, String expectedCodeText, String actualCodeText, long responseTimeMs, String message) {
-            this.passed = passed;
-            this.expectedCodeText = expectedCodeText;
-            this.actualCodeText = actualCodeText;
-            this.responseTimeMs = responseTimeMs;
-            this.message = message;
-        }
-
-        static CaseOutcome failed(String message) {
-            return new CaseOutcome(false, "-", "-", 0, message);
-        }
     }
 
     private void runScenarioCleanup(ApiScenarioDefinition definition, Map<String, String> runtimeVariables) {
@@ -1897,5 +1863,39 @@ public class TestcaseController implements Initializable {
                 .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
                 .anyMatch(this::containsAuthToken);
+    }
+
+    private record TestSuiteDialogData(String name,
+                                       String method,
+                                       String endpoint,
+                                       String cleanupRequestsJson) {
+    }
+
+    private record TestCaseDialogData(String name,
+                                      String expectedStatusCode,
+                                      String setupRequestsJson,
+                                      String requestParamsJson,
+                                      String payloadAssertionsJson,
+                                      String expectedResponseBody) {
+    }
+
+    private static final class CaseOutcome {
+        final boolean passed;
+        final String expectedCodeText;
+        final String actualCodeText;
+        final long responseTimeMs;
+        final String message;
+
+        CaseOutcome(boolean passed, String expectedCodeText, String actualCodeText, long responseTimeMs, String message) {
+            this.passed = passed;
+            this.expectedCodeText = expectedCodeText;
+            this.actualCodeText = actualCodeText;
+            this.responseTimeMs = responseTimeMs;
+            this.message = message;
+        }
+
+        static CaseOutcome failed(String message) {
+            return new CaseOutcome(false, "-", "-", 0, message);
+        }
     }
 }

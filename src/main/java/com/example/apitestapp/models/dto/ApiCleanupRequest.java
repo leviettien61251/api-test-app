@@ -1,4 +1,4 @@
-package com.example.apitestapp.services;
+package com.example.apitestapp.models.dto;
 
 import java.util.List;
 import java.util.Map;

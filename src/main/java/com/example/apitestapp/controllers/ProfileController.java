@@ -1,7 +1,7 @@
 package com.example.apitestapp.controllers;
 
 import com.example.apitestapp.config.AppSession;
-import com.example.apitestapp.models.User;
+import com.example.apitestapp.models.entity.User;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -49,6 +49,7 @@ public class ProfileController implements Initializable {
 
     /**
      * Xác định tên role dựa vào roleId của user
+     *
      * @param user đối tượng User hiện tại
      * @return "Admin" nếu roleId = 1, "Tester" nếu roleId = 2 hoặc user null
      */

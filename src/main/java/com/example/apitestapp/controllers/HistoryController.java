@@ -1,6 +1,8 @@
 package com.example.apitestapp.controllers;
 
-import com.example.apitestapp.models.TestRun;
+import com.example.apitestapp.config.AppSession;
+import com.example.apitestapp.models.dto.TestRun;
+import com.example.apitestapp.models.entity.User;
 import com.example.apitestapp.services.RunStorage;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -22,14 +24,11 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.example.apitestapp.config.AppSession;
-import com.example.apitestapp.models.User;
-
 public class HistoryController implements Initializable, RefreshableView {
 
     private static final DateTimeFormatter TIME_FMT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
-
+    private final RunStorage runStorage = RunStorage.getInstance();
     @FXML
     private ComboBox<String> cbResult;
     @FXML
@@ -44,10 +43,80 @@ public class HistoryController implements Initializable, RefreshableView {
     private TableColumn<TestRun, String> colId, colTime, colTestSuite, colRunner, colMachine, colOs, colMode, colResult, colStatus;
     @FXML
     private TableColumn<TestRun, TestRun> colDetails, colDelete;
-
-    private final RunStorage runStorage = RunStorage.getInstance();
     private List<TestRun> allRuns = List.of();
     private Consumer<String> onOpenReport;
+
+    private static boolean matchDate(TestRun run, LocalDate from, LocalDate to) {
+        if (run.getStartedAt() == null) {
+            return true;
+        }
+        LocalDate runDate = run.getStartedAt().atZone(ZoneId.systemDefault()).toLocalDate();
+        if (from != null && runDate.isBefore(from)) {
+            return false;
+        }
+        if (to != null && runDate.isAfter(to)) {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean matchResult(TestRun run, String filter) {
+        if (filter == null || "Tất cả".equals(filter)) {
+            return true;
+        }
+        if ("Pass".equals(filter)) {
+            return run.getFailedCases() == 0;
+        }
+        if ("Fail".equals(filter)) {
+            return run.getFailedCases() > 0;
+        }
+        return true;
+    }
+
+    private static boolean matchKeyword(TestRun run, String keyword) {
+        if (keyword.isEmpty()) {
+            return true;
+        }
+        return contains(run.getUser(), keyword)
+                || contains(run.getMachine(), keyword)
+                || contains(run.getOs(), keyword)
+                || contains(run.getRunMode(), keyword)
+                || contains(run.getRunName(), keyword)
+                || contains(run.getTestSuite(), keyword)
+                || contains(run.getId(), keyword)
+                || contains(formatTime(run), keyword)
+                || contains(run.getPassedCases() + " / " + run.getFailedCases(), keyword)
+                || contains(run.getFailedCases() > 0 ? "FAIL" : "PASS", keyword);
+    }
+
+    private static boolean contains(String value, String keyword) {
+        return normalize(value).contains(keyword);
+    }
+
+    private static String normalize(String value) {
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private static String formatTime(TestRun run) {
+        if (run.getStartedAt() == null) {
+            return "-";
+        }
+        return TIME_FMT.format(run.getStartedAt());
+    }
+
+    private static String displayTestSuite(TestRun run) {
+        if (run == null || run.getTestSuite() == null || run.getTestSuite().isBlank()) {
+            return "-";
+        }
+        return run.getTestSuite();
+    }
+
+    private static String shortId(String id) {
+        if (id == null || id.length() <= 8) {
+            return id;
+        }
+        return id.substring(0, 8);
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -187,77 +256,5 @@ public class HistoryController implements Initializable, RefreshableView {
                 .collect(Collectors.toList());
 
         historyTable.setItems(FXCollections.observableArrayList(filtered));
-    }
-
-    private static boolean matchDate(TestRun run, LocalDate from, LocalDate to) {
-        if (run.getStartedAt() == null) {
-            return true;
-        }
-        LocalDate runDate = run.getStartedAt().atZone(ZoneId.systemDefault()).toLocalDate();
-        if (from != null && runDate.isBefore(from)) {
-            return false;
-        }
-        if (to != null && runDate.isAfter(to)) {
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean matchResult(TestRun run, String filter) {
-        if (filter == null || "Tất cả".equals(filter)) {
-            return true;
-        }
-        if ("Pass".equals(filter)) {
-            return run.getFailedCases() == 0;
-        }
-        if ("Fail".equals(filter)) {
-            return run.getFailedCases() > 0;
-        }
-        return true;
-    }
-
-    private static boolean matchKeyword(TestRun run, String keyword) {
-        if (keyword.isEmpty()) {
-            return true;
-        }
-        return contains(run.getUser(), keyword)
-                || contains(run.getMachine(), keyword)
-                || contains(run.getOs(), keyword)
-                || contains(run.getRunMode(), keyword)
-                || contains(run.getRunName(), keyword)
-                || contains(run.getTestSuite(), keyword)
-                || contains(run.getId(), keyword)
-                || contains(formatTime(run), keyword)
-                || contains(run.getPassedCases() + " / " + run.getFailedCases(), keyword)
-                || contains(run.getFailedCases() > 0 ? "FAIL" : "PASS", keyword);
-    }
-
-    private static boolean contains(String value, String keyword) {
-        return normalize(value).contains(keyword);
-    }
-
-    private static String normalize(String value) {
-        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
-    }
-
-    private static String formatTime(TestRun run) {
-        if (run.getStartedAt() == null) {
-            return "-";
-        }
-        return TIME_FMT.format(run.getStartedAt());
-    }
-
-    private static String displayTestSuite(TestRun run) {
-        if (run == null || run.getTestSuite() == null || run.getTestSuite().isBlank()) {
-            return "-";
-        }
-        return run.getTestSuite();
-    }
-
-    private static String shortId(String id) {
-        if (id == null || id.length() <= 8) {
-            return id;
-        }
-        return id.substring(0, 8);
     }
 }
