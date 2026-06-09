@@ -108,7 +108,8 @@ flowchart LR
 
 - Actor: `Tester`
 - Muc tieu: tao, sua, soft delete testcase do user dinh nghia.
-- Du lieu: method, endpoint, headers, query params, path params, body, setup, cleanup, payload assertions, expected response body, expected status.
+- Du lieu: method, endpoint, headers, query params, path params, body, setup, cleanup, payload assertions, expected
+  response body, expected status.
 - He thong lien quan: `PostgreSQL`
 
 ### UC-07: Chay testcase

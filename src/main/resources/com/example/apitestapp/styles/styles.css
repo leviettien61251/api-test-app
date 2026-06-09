@@ -52,10 +52,12 @@
     -fx-padding: 12 16;
     -fx-cursor: hand;
 }
+
 .nav-item:hover {
     -fx-background-color: #1e293b;
     -fx-text-fill: #ffffff;
 }
+
 .nav-item:selected {
     -fx-background-color: linear-gradient(to right, #0284c7, #10b981);
     -fx-text-fill: #ffffff;
@@ -107,32 +109,59 @@
     -fx-font-weight: bold;
     -fx-cursor: hand;
 }
-.btn-primary:hover { -fx-background-color: #1d4ed8; }
+
+.btn-primary:hover {
+    -fx-background-color: #1d4ed8;
+}
 
 .btn-secondary {
     -fx-background-color: #f3f4f6;
     -fx-text-fill: #374151;
     -fx-background-radius: 6;
 }
-.btn-secondary:hover { -fx-background-color: #e5e7eb; }
+
+.btn-secondary:hover {
+    -fx-background-color: #e5e7eb;
+}
 
 .btn-success, .btn-active {
     -fx-background-color: #16a34a;
     -fx-text-fill: white;
     -fx-background-radius: 6;
 }
-.btn-success:hover { -fx-background-color: #15803d; }
+
+.btn-success:hover {
+    -fx-background-color: #15803d;
+}
 
 .btn-danger, .btn-delete {
     -fx-background-color: #dc2626;
     -fx-text-fill: white;
     -fx-background-radius: 6;
 }
-.btn-danger:hover { -fx-background-color: #b91c1c; }
 
-.btn-action { -fx-background-color: #4b5563; -fx-text-fill: white; -fx-background-radius: 6; }
-.btn-outline { -fx-background-color: #f3f4f6; -fx-text-fill: #374151; -fx-border-color: #d1d5db; -fx-border-radius: 6; }
-.btn-link { -fx-background-color: transparent; -fx-text-fill: #2563eb; -fx-underline: true; }
+.btn-danger:hover {
+    -fx-background-color: #b91c1c;
+}
+
+.btn-action {
+    -fx-background-color: #4b5563;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+}
+
+.btn-outline {
+    -fx-background-color: #f3f4f6;
+    -fx-text-fill: #374151;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 6;
+}
+
+.btn-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2563eb;
+    -fx-underline: true;
+}
 
 /* Bảng dữ liệu (Table View) */
 .table-view {
@@ -140,6 +169,7 @@
     -fx-border-color: #e2e8f0;
     -fx-font-family: "Segoe UI", sans-serif;
 }
+
 .table-view .column-header-background {
     -fx-background-color: #f8fafc;
 }
@@ -152,11 +182,15 @@
     -fx-background-radius: 6px;
     -fx-padding: 8px;
 }
+
 .text-field:focused, .form-input:focused {
     -fx-border-color: #3b82f6;
     -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.15), 4, 0, 0, 0);
 }
-.text-area-mono { -fx-font-family: "Consolas", monospace; }
+
+.text-area-mono {
+    -fx-font-family: "Consolas", monospace;
+}
 
 
 /* ==========================================================================
@@ -178,7 +212,10 @@
     -fx-background-radius: 8;
     -fx-cursor: hand;
 }
-.env-item:hover { -fx-background-color: #f1f5f9; }
+
+.env-item:hover {
+    -fx-background-color: #f1f5f9;
+}
 
 .env-item-selected {
     -fx-background-color: #eff6ff;
@@ -186,6 +223,7 @@
     -fx-border-width: 0 0 0 4;
     -fx-effect: innershadow(three-pass-box, rgba(0, 0, 0, 0.05), 4, 0, 1, 1);
 }
+
 .env-item-selected Label {
     -fx-text-fill: #2563eb;
     -fx-font-weight: bold;
@@ -196,10 +234,12 @@
     -fx-background-color: transparent;
     -fx-border-width: 0;
 }
+
 .custom-tree-view .tree-cell, .suite-tree .tree-cell {
     -fx-padding: 6 4;
     -fx-background-color: transparent;
 }
+
 .custom-tree-view .tree-cell:selected, .suite-tree .tree-cell:selected {
     -fx-background-color: #dbeafe;
     -fx-text-fill: #1e40af;
@@ -213,6 +253,7 @@
     -fx-cursor: hand;
     -fx-font-weight: bold;
 }
+
 .body-mode-btn:selected {
     -fx-text-fill: #2196f3;
     -fx-border-color: transparent transparent #2196f3 transparent;
@@ -264,7 +305,6 @@
 }
 
 
-
 /* ==========================================================================
    4. PROFILE & TEXT STYLES (GRADIENT UPDATE)
    ========================================================================== */
@@ -273,6 +313,7 @@
 .root-container {
     -fx-background-color: #f1f5f9; /* Nền xám nhạt hẳn để nổi bật Card trắng */
 }
+
 .main-scroll-pane {
     -fx-background-color: #f1f5fslate;
 }
@@ -337,6 +378,7 @@
     -fx-text-fill: #2563eb;
     -fx-min-width: 24px;
 }
+
 .unicode-icon-green {
     -fx-font-size: 18px;
     -fx-text-fill: #10b981;
@@ -399,7 +441,7 @@
 
 /* Định dạng toàn bộ khung hộp thoại xổ xuống */
 .user-menu .context-menu {
-    -fx-background-color: #ffffff;            /* Giữ nền trắng để tương phản tốt với text */
+    -fx-background-color: #ffffff; /* Giữ nền trắng để tương phản tốt với text */
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
     /* Làm viền gradient Xanh Dương - Xanh Lá đậm nét hơn để phân tách rõ với Dashboard */
@@ -412,16 +454,16 @@
 
 /* Định dạng cho từng item bên trong (Thông tin cá nhân, Đăng xuất) */
 .user-menu .menu-item {
-    -fx-background-radius: 6px;               /* Bo góc nhẹ cho các mục bên trong */
-    -fx-padding: 10px 18px;                   /* Tăng padding để dòng chữ to và thoáng hơn */
+    -fx-background-radius: 6px; /* Bo góc nhẹ cho các mục bên trong */
+    -fx-padding: 10px 18px; /* Tăng padding để dòng chữ to và thoáng hơn */
     -fx-cursor: hand;
 }
 
 /* Chữ mặc định bên trong mỗi item khi chưa hover */
 .user-menu .menu-item .label {
-    -fx-text-fill: #1e293b;                    /* Màu chữ xám đậm, nhìn cực kỳ rõ nét */
-    -fx-font-weight: 600;                     /* Cho chữ dày dặn hơn */
-    -fx-font-size: 14px;                      /* Tăng size chữ lên một chút */
+    -fx-text-fill: #1e293b; /* Màu chữ xám đậm, nhìn cực kỳ rõ nét */
+    -fx-font-weight: 600; /* Cho chữ dày dặn hơn */
+    -fx-font-size: 14px; /* Tăng size chữ lên một chút */
 }
 
 /* Hiệu ứng khi di chuột (Hover) hoặc chọn dòng */
@@ -434,7 +476,7 @@
 /* Hiệu ứng cho chữ khi di chuột (Hover) qua */
 .user-menu .menu-item:focused .label,
 .user-menu .menu-item:hover .label {
-    -fx-text-fill: #ffffff;                    /* Chữ tự động chuyển sang TRẮNG để nổi bần bật trên nền gradient */
+    -fx-text-fill: #ffffff; /* Chữ tự động chuyển sang TRẮNG để nổi bần bật trên nền gradient */
     -fx-font-weight: bold;
 }
 

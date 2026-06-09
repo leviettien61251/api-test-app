@@ -1,5 +1,6 @@
 package com.example.apitestapp.services;
 
+import com.example.apitestapp.models.dto.ApiPayloadAssertion;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;

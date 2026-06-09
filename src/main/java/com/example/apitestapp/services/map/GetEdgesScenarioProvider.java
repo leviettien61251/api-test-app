@@ -1,6 +1,7 @@
 package com.example.apitestapp.services.map;
 
-import com.example.apitestapp.services.*;
+import com.example.apitestapp.models.dto.*;
+import com.example.apitestapp.services.ApiScenarioProvider;
 
 import java.util.List;
 import java.util.Map;
@@ -166,7 +167,7 @@ public class GetEdgesScenarioProvider implements ApiScenarioProvider {
                                 Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
-                        ),new ApiCleanupRequest(
+                        ), new ApiCleanupRequest(
                                 "Clean login test data",
                                 "DELETE",
                                 "/api/v1/clean/login",

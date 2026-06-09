@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <ScrollPane xmlns:fx="http://javafx.com/fxml/1" fitToWidth="true" prefHeight="700.0" prefWidth="1000.0"
             styleClass="right-panel" stylesheets="@../styles/request.css" xmlns="http://javafx.com/javafx/17"
             fx:controller="com.example.apitestapp.controllers.RequestController">
@@ -14,8 +13,10 @@
 
                 <HBox spacing="10.0" styleClass="card">
                     <children>
-                        <ComboBox fx:id="methodComboBox" styleClass="method-combobox" prefWidth="100.0" promptText="GET"/>
-                        <TextField fx:id="urlField" HBox.hgrow="ALWAYS" promptText="Enter request URL" styleClass="input-field"/>
+                        <ComboBox fx:id="methodComboBox" styleClass="method-combobox" prefWidth="100.0"
+                                  promptText="GET"/>
+                        <TextField fx:id="urlField" HBox.hgrow="ALWAYS" promptText="Enter request URL"
+                                   styleClass="input-field"/>
                         <Button fx:id="sendButton" styleClass="btn-send" text="Send"/>
                     </children>
                     <padding>
@@ -29,17 +30,19 @@
                             <content>
                                 <VBox spacing="10.0" style="-fx-padding: 10 0 0 0;">
                                     <children>
-                                        <TableView fx:id="paramsTableView" editable="true" prefHeight="250.0" VBox.vgrow="ALWAYS">
+                                        <TableView fx:id="paramsTableView" editable="true" prefHeight="250.0"
+                                                   VBox.vgrow="ALWAYS">
                                             <columns>
-                                                <TableColumn fx:id="paramKeyCol" prefWidth="200.0" text="Key" />
-                                                <TableColumn fx:id="paramValueCol" prefWidth="300.0" text="Value" />
-                                                <TableColumn fx:id="paramDescCol" prefWidth="350.0" text="Description" />
+                                                <TableColumn fx:id="paramKeyCol" prefWidth="200.0" text="Key"/>
+                                                <TableColumn fx:id="paramValueCol" prefWidth="300.0" text="Value"/>
+                                                <TableColumn fx:id="paramDescCol" prefWidth="350.0" text="Description"/>
                                             </columns>
                                         </TableView>
                                         <HBox spacing="10.0">
                                             <children>
                                                 <Button fx:id="addParamBtn" styleClass="btn-link" text="+ Add Param"/>
-                                                <Button fx:id="deleteParamBtn" style="-fx-text-fill: #e74c3c;" styleClass="btn-link" text="- Delete Selected"/>
+                                                <Button fx:id="deleteParamBtn" style="-fx-text-fill: #e74c3c;"
+                                                        styleClass="btn-link" text="- Delete Selected"/>
                                             </children>
                                         </HBox>
                                     </children>
@@ -64,17 +67,20 @@
                             <content>
                                 <VBox spacing="10.0" style="-fx-padding: 10 0 0 0;">
                                     <children>
-                                        <TableView fx:id="requestHeadersTableView" editable="true" prefHeight="250.0" VBox.vgrow="ALWAYS">
+                                        <TableView fx:id="requestHeadersTableView" editable="true" prefHeight="250.0"
+                                                   VBox.vgrow="ALWAYS">
                                             <columns>
-                                                <TableColumn fx:id="reqHeaderKeyCol" prefWidth="200.0" text="Key" />
-                                                <TableColumn fx:id="reqHeaderValueCol" prefWidth="300.0" text="Value" />
-                                                <TableColumn fx:id="reqHeaderDescCol" prefWidth="350.0" text="Description" />
+                                                <TableColumn fx:id="reqHeaderKeyCol" prefWidth="200.0" text="Key"/>
+                                                <TableColumn fx:id="reqHeaderValueCol" prefWidth="300.0" text="Value"/>
+                                                <TableColumn fx:id="reqHeaderDescCol" prefWidth="350.0"
+                                                             text="Description"/>
                                             </columns>
                                         </TableView>
                                         <HBox spacing="10.0">
                                             <children>
                                                 <Button fx:id="addHeaderBtn" styleClass="btn-link" text="+ Add Header"/>
-                                                <Button fx:id="deleteHeaderBtn" style="-fx-text-fill: #e74c3c;" styleClass="btn-link" text="- Delete Selected"/>
+                                                <Button fx:id="deleteHeaderBtn" style="-fx-text-fill: #e74c3c;"
+                                                        styleClass="btn-link" text="- Delete Selected"/>
                                             </children>
                                         </HBox>
                                     </children>
@@ -88,8 +94,10 @@
                                     <children>
                                         <HBox alignment="CENTER_LEFT" spacing="8.0" style="-fx-padding: 0 10 0 10;">
                                             <children>
-                                                <ToggleButton fx:id="rawBtn" selected="true" styleClass="body-mode-btn" text="Raw"/>
-                                                <ToggleButton fx:id="formDataBtn" styleClass="body-mode-btn" text="Form-Data"/>
+                                                <ToggleButton fx:id="rawBtn" selected="true" styleClass="body-mode-btn"
+                                                              text="Raw"/>
+                                                <ToggleButton fx:id="formDataBtn" styleClass="body-mode-btn"
+                                                              text="Form-Data"/>
                                                 <Region prefWidth="20.0"/>
                                                 <ComboBox fx:id="rawTypeComboBox" prefWidth="120.0" visible="true"/>
                                             </children>
@@ -97,21 +105,32 @@
 
                                         <VBox fx:id="bodyContentContainer" spacing="10.0" VBox.vgrow="ALWAYS">
                                             <children>
-                                                <TextArea fx:id="bodyTextArea" prefHeight="200.0" styleClass="text-area-mono" text="{&#10;  &quot;field&quot;: &quot;value&quot;&#10;}" VBox.vgrow="ALWAYS"/>
+                                                <TextArea fx:id="bodyTextArea" prefHeight="200.0"
+                                                          styleClass="text-area-mono"
+                                                          text="{&#10;  &quot;field&quot;: &quot;value&quot;&#10;}"
+                                                          VBox.vgrow="ALWAYS"/>
 
-                                                <VBox fx:id="formDataContainer" spacing="10.0" visible="false" managed="false" VBox.vgrow="ALWAYS">
+                                                <VBox fx:id="formDataContainer" spacing="10.0" visible="false"
+                                                      managed="false" VBox.vgrow="ALWAYS">
                                                     <children>
-                                                        <TableView fx:id="formDataTableView" editable="true" prefHeight="200.0" VBox.vgrow="ALWAYS">
+                                                        <TableView fx:id="formDataTableView" editable="true"
+                                                                   prefHeight="200.0" VBox.vgrow="ALWAYS">
                                                             <columns>
-                                                                <TableColumn fx:id="formKeyCol" prefWidth="200.0" text="Key" />
-                                                                <TableColumn fx:id="formValueCol" prefWidth="300.0" text="Value" />
-                                                                <TableColumn fx:id="formDescCol" prefWidth="350.0" text="Description" />
+                                                                <TableColumn fx:id="formKeyCol" prefWidth="200.0"
+                                                                             text="Key"/>
+                                                                <TableColumn fx:id="formValueCol" prefWidth="300.0"
+                                                                             text="Value"/>
+                                                                <TableColumn fx:id="formDescCol" prefWidth="350.0"
+                                                                             text="Description"/>
                                                             </columns>
                                                         </TableView>
                                                         <HBox spacing="10.0">
                                                             <children>
-                                                                <Button fx:id="addFormRowBtn" styleClass="btn-link" text="+ Add Form Data"/>
-                                                                <Button fx:id="deleteFormRowBtn" style="-fx-text-fill: #e74c3c;" styleClass="btn-link" text="- Delete Selected"/>
+                                                                <Button fx:id="addFormRowBtn" styleClass="btn-link"
+                                                                        text="+ Add Form Data"/>
+                                                                <Button fx:id="deleteFormRowBtn"
+                                                                        style="-fx-text-fill: #e74c3c;"
+                                                                        styleClass="btn-link" text="- Delete Selected"/>
                                                             </children>
                                                         </HBox>
                                                     </children>
@@ -129,14 +148,19 @@
                                     <children>
                                         <VBox spacing="5.0">
                                             <children>
-                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Pre-request Script:"/>
-                                                <TextArea fx:id="preRequestScriptTextArea" prefHeight="100.0" styleClass="text-area-mono" text="// Pre-request script"/>
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #555;"
+                                                       text="Pre-request Script:"/>
+                                                <TextArea fx:id="preRequestScriptTextArea" prefHeight="100.0"
+                                                          styleClass="text-area-mono" text="// Pre-request script"/>
                                             </children>
                                         </VBox>
                                         <VBox spacing="5.0">
                                             <children>
-                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #555;" text="Test Script:"/>
-                                                <TextArea fx:id="testScriptTextArea" prefHeight="100.0" styleClass="text-area-mono" text="// Viết các hàm kiểm thử tại đây"/>
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #555;"
+                                                       text="Test Script:"/>
+                                                <TextArea fx:id="testScriptTextArea" prefHeight="100.0"
+                                                          styleClass="text-area-mono"
+                                                          text="// Viết các hàm kiểm thử tại đây"/>
                                             </children>
                                         </VBox>
                                     </children>
@@ -148,7 +172,7 @@
                             <content>
                                 <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
                                     <content>
-                                        <VBox fx:id="testsResultContainer" spacing="8.0" style="-fx-padding: 10;" />
+                                        <VBox fx:id="testsResultContainer" spacing="8.0" style="-fx-padding: 10;"/>
                                     </content>
                                 </ScrollPane>
                             </content>
@@ -164,7 +188,8 @@
                                 <HBox alignment="CENTER_LEFT" spacing="5.0">
                                     <children>
                                         <Label text="Status:"/>
-                                        <Label fx:id="statusLabel" style="-fx-text-fill: #16a34a; -fx-font-weight: bold;" text=""/>
+                                        <Label fx:id="statusLabel"
+                                               style="-fx-text-fill: #16a34a; -fx-font-weight: bold;" text=""/>
                                     </children>
                                 </HBox>
                                 <Label fx:id="timeLabel" text="Time: 0ms"/>
@@ -174,7 +199,8 @@
                             <tabs>
                                 <Tab text="Body">
                                     <content>
-                                        <TextArea fx:id="responseBodyTextArea" editable="false" prefHeight="200.0" styleClass="response-body" text=""/>
+                                        <TextArea fx:id="responseBodyTextArea" editable="false" prefHeight="200.0"
+                                                  styleClass="response-body" text=""/>
                                     </content>
                                 </Tab>
                                 <Tab text="Headers">

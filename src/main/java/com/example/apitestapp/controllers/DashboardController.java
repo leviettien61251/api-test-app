@@ -1,9 +1,9 @@
 package com.example.apitestapp.controllers;
 
-import com.example.apitestapp.models.TestRun;
-import com.example.apitestapp.services.RunStorage;
 import com.example.apitestapp.config.AppSession;
-import com.example.apitestapp.models.User;
+import com.example.apitestapp.models.dto.TestRun;
+import com.example.apitestapp.models.entity.User;
+import com.example.apitestapp.services.RunStorage;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -29,7 +29,7 @@ public class DashboardController implements Initializable, RefreshableView {
 
     private static final DateTimeFormatter TIME_FMT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
-
+    private final RunStorage runStorage = RunStorage.getInstance();
     @FXML
     private Label lblTotalTc, lblTotalRun, lblTotalPass, lblTotalFail;
     @FXML
@@ -38,9 +38,30 @@ public class DashboardController implements Initializable, RefreshableView {
     private TableView<TestRun> historyTable;
     @FXML
     private TableColumn<TestRun, String> colTime, colUser, colMachine, colResult, colDetail;
-
-    private final RunStorage runStorage = RunStorage.getInstance();
     private Consumer<String> onOpenReport;
+
+    private static String formatTime(TestRun run) {
+        if (run.getStartedAt() == null) {
+            return "-";
+        }
+        return TIME_FMT.format(run.getStartedAt());
+    }
+
+    private static String summaryResult(TestRun run) {
+        return run.getFailedCases() > 0 ? "FAIL (" + run.getPassedCases() + "/" + run.getTotalCases() + ")" :
+                "PASS (" + run.getPassedCases() + "/" + run.getTotalCases() + ")";
+    }
+
+    private static String shortId(String id) {
+        if (id == null || id.length() <= 8) {
+            return id;
+        }
+        return id.substring(0, 8);
+    }
+
+    private static String normalize(String value) {
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -120,28 +141,5 @@ public class DashboardController implements Initializable, RefreshableView {
                 }
             }
         });
-    }
-
-    private static String formatTime(TestRun run) {
-        if (run.getStartedAt() == null) {
-            return "-";
-        }
-        return TIME_FMT.format(run.getStartedAt());
-    }
-
-    private static String summaryResult(TestRun run) {
-        return run.getFailedCases() > 0 ? "FAIL (" + run.getPassedCases() + "/" + run.getTotalCases() + ")" :
-                "PASS (" + run.getPassedCases() + "/" + run.getTotalCases() + ")";
-    }
-
-    private static String shortId(String id) {
-        if (id == null || id.length() <= 8) {
-            return id;
-        }
-        return id.substring(0, 8);
-    }
-
-    private static String normalize(String value) {
-        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 }

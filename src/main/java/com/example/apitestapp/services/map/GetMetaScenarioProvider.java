@@ -1,11 +1,39 @@
 package com.example.apitestapp.services.map;
 
-import com.example.apitestapp.services.*;
+import com.example.apitestapp.models.dto.*;
+import com.example.apitestapp.services.ApiScenarioProvider;
 
 import java.util.List;
 import java.util.Map;
 
 public class GetMetaScenarioProvider implements ApiScenarioProvider {
+    private static List<ApiSetupRequest> createMetaSetupRequests(String buildingCode,
+                                                                 String buildingName,
+                                                                 String imageUrl,
+                                                                 String scaleX,
+                                                                 String scaleY) {
+        return List.of(
+                new ApiSetupRequest(
+                        "Thêm dữ liệu mẫu Map",
+                        "POST",
+                        "/api/v1/insert-map-test",
+                        """
+                                {
+                                    "buildingCode": "%s",
+                                    "buildingName": "%s",
+                                    "imageUrl": "%s",
+                                    "scaleX": %s,
+                                    "scaleY": %s
+                                }
+                                """.formatted(buildingCode, buildingName, imageUrl, scaleX, scaleY),
+                        Map.of("Authorization", "Bearer ${token}"),
+                        List.of("1000", "200", "201"),
+                        true,
+                        List.of(new ApiResponseVariable("floor_id", "data.0.id"))
+                )
+        );
+    }
+
     @Override
     public ApiScenarioDefinition getDefinition() {
         List<ApiTestScenario> scenarios = List.of(
@@ -186,33 +214,6 @@ public class GetMetaScenarioProvider implements ApiScenarioProvider {
                                 List.of("1000", "200", "204", "201"),
                                 true
                         ))
-        );
-    }
-
-    private static List<ApiSetupRequest> createMetaSetupRequests(String buildingCode,
-                                                                 String buildingName,
-                                                                 String imageUrl,
-                                                                 String scaleX,
-                                                                 String scaleY) {
-        return List.of(
-                new ApiSetupRequest(
-                        "Thêm dữ liệu mẫu Map",
-                        "POST",
-                        "/api/v1/insert-map-test",
-                        """
-                                {
-                                    "buildingCode": "%s",
-                                    "buildingName": "%s",
-                                    "imageUrl": "%s",
-                                    "scaleX": %s,
-                                    "scaleY": %s
-                                }
-                                """.formatted(buildingCode, buildingName, imageUrl, scaleX, scaleY),
-                        Map.of("Authorization", "Bearer ${token}"),
-                        List.of("1000", "200", "201"),
-                        true,
-                        List.of(new ApiResponseVariable("floor_id", "data.0.id"))
-                )
         );
     }
 }

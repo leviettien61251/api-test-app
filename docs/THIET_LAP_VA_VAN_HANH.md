@@ -93,7 +93,8 @@ Thu tu setup moi khuyen nghi:
 `database.sql` co seed role va user mau, nhung phan dau file hien co dau hieu khong phai SQL seed sach:
 
 - co cau insert users bi tach boi dau `;` som
-- co cau `insert into client_machines ... values (?, ?, ...)` chi phu hop prepared statement, khong phai script chay truc tiep
+- co cau `insert into client_machines ... values (?, ?, ...)` chi phu hop prepared statement, khong phai script chay
+  truc tiep
 - co cac cau `SELECT` debug
 
 Nen tach rieng file seed hop le neu can deployment on dinh.

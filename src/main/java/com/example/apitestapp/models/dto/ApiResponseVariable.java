@@ -1,4 +1,4 @@
-package com.example.apitestapp.services;
+package com.example.apitestapp.models.dto;
 
 public class ApiResponseVariable {
     private final String name;

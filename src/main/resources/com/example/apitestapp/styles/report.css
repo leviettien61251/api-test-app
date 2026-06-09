@@ -10,6 +10,7 @@
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
+
 .scroll-pane .viewport {
     -fx-background-color: transparent;
 }
@@ -89,9 +90,11 @@
     -fx-font-size: 11px;
     -fx-font-weight: bold;
 }
+
 .default-color0.chart-pie {
     -fx-pie-color: #10b981; /* Màu Pass xanh lá */
 }
+
 .default-color1.chart-pie {
     -fx-pie-color: #f43f5e; /* Màu Fail đỏ hồng cao cấp */
 }
@@ -106,6 +109,7 @@
     -fx-stroke: #f1f5f9;
     -fx-stroke-width: 1px;
 }
+
 .chart-vertical-grid-lines {
     -fx-stroke: transparent;
 }
@@ -136,13 +140,16 @@
     -fx-font-size: 11px;
     -fx-font-weight: bold;
 }
+
 .axis-label {
     -fx-text-fill: #64748b;
     -fx-font-weight: bold;
 }
+
 .axis-tick-mark {
     -fx-stroke: #cbd5e1;
 }
+
 .axis-minor-tick-mark {
     -fx-stroke: transparent;
 }
@@ -162,11 +169,13 @@
     -fx-background-color: #f8fafc;
     -fx-background-radius: 16px 16px 0 0;
 }
+
 .table-view .column-header {
     -fx-background-color: transparent;
     -fx-border-color: transparent transparent #e2e8f0 transparent;
     -fx-size: 45px;
 }
+
 .table-view .column-header .label {
     -fx-text-fill: #475569;
     -fx-font-weight: bold;
@@ -178,12 +187,15 @@
     -fx-background-color: #ffffff;
     -fx-border-color: transparent transparent #f1f5f9 transparent;
 }
+
 .table-row-cell:filled:focused:selected {
     -fx-background-color: #e2e8f0;
 }
+
 .table-row-cell:filled:hover {
     -fx-background-color: #f1f5f9; /* Hiệu ứng hover dòng */
 }
+
 .table-view .table-cell {
     -fx-alignment: center-left;
     -fx-text-fill: #334155;

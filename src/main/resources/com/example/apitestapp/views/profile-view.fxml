@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.paint.*?>
-
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Circle?>
 <ScrollPane xmlns:fx="http://javafx.com/fxml/1" fitToHeight="true" fitToWidth="true" styleClass="main-scroll-pane"
             stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/26"
             fx:controller="com.example.apitestapp.controllers.ProfileController">
@@ -37,19 +37,22 @@
                                                 <fill>
                                                     <LinearGradient endX="1.0" endY="1.0">
                                                         <stops>
-                                                            <Stop offset="0.0" color="#e0f2fe" />
-                                                            <Stop offset="1.0" color="#d1fae5" />
+                                                            <Stop offset="0.0" color="#e0f2fe"/>
+                                                            <Stop offset="1.0" color="#d1fae5"/>
                                                         </stops>
                                                     </LinearGradient>
                                                 </fill>
                                             </Circle>
-                                            <Label style="-fx-font-size: 38px; -fx-text-fill: linear-gradient(to bottom right, #2563eb, #10b981);" text="👤"/>
+                                            <Label style="-fx-font-size: 38px; -fx-text-fill: linear-gradient(to bottom right, #2563eb, #10b981);"
+                                                   text="👤"/>
                                         </StackPane>
 
                                         <VBox alignment="CENTER" spacing="5.0">
                                             <children>
-                                                <Label fx:id="lblTenHienThiProfile" styleClass="profile-name" text="Sơn"/>
-                                                <Label fx:id="lblRoleProfile" styleClass="profile-role-tag" text="Tester"/>
+                                                <Label fx:id="lblTenHienThiProfile" styleClass="profile-name"
+                                                       text="Sơn"/>
+                                                <Label fx:id="lblRoleProfile" styleClass="profile-role-tag"
+                                                       text="Tester"/>
                                             </children>
                                         </VBox>
 
@@ -58,15 +61,18 @@
                                         <VBox spacing="15.0" styleClass="info-list" alignment="CENTER_LEFT">
                                             <HBox alignment="CENTER_LEFT" spacing="12.0">
                                                 <Label styleClass="unicode-icon-blue" text="✉"/>
-                                                <Label fx:id="lblEmailProfile" styleClass="text-small" text="son.nguyen@example.com"/>
+                                                <Label fx:id="lblEmailProfile" styleClass="text-small"
+                                                       text="son.nguyen@example.com"/>
                                             </HBox>
                                             <HBox alignment="CENTER_LEFT" spacing="12.0">
                                                 <Label styleClass="unicode-icon-green" text="🛡"/>
-                                                <Label fx:id="lblIconRoleProfile" styleClass="text-small" text="Vai trò: Tester"/>
+                                                <Label fx:id="lblIconRoleProfile" styleClass="text-small"
+                                                       text="Vai trò: Tester"/>
                                             </HBox>
                                             <HBox alignment="CENTER_LEFT" spacing="12.0">
                                                 <Label styleClass="unicode-icon-blue" text="📅"/>
-                                                <Label fx:id="lblIconNgayThamGiaProfile" styleClass="text-small" text="Tham gia: 01/01/2025"/>
+                                                <Label fx:id="lblIconNgayThamGiaProfile" styleClass="text-small"
+                                                       text="Tham gia: 01/01/2025"/>
                                             </HBox>
                                         </VBox>
 
@@ -86,7 +92,8 @@
                                 <VBox spacing="20.0" styleClass="card" VBox.vgrow="ALWAYS">
                                     <children>
                                         <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                            <Label style="-fx-font-size: 18px; -fx-text-fill: linear-gradient(to right, #2563eb, #10b981);" text="📋"/>
+                                            <Label style="-fx-font-size: 18px; -fx-text-fill: linear-gradient(to right, #2563eb, #10b981);"
+                                                   text="📋"/>
                                             <Label styleClass="section-header" text="Thông tin chi tiết tài khoản"/>
                                         </HBox>
 
@@ -94,22 +101,32 @@
                                             <children>
                                                 <VBox spacing="6.0">
                                                     <Label styleClass="form-label" text="Tên hiển thị"/>
-                                                    <TextField fx:id="txtTenHienThi" editable="false" maxWidth="1.7976931348623157E308" styleClass="form-input-readonly"/>
+                                                    <TextField fx:id="txtTenHienThi" editable="false"
+                                                               maxWidth="1.7976931348623157E308"
+                                                               styleClass="form-input-readonly"/>
                                                 </VBox>
 
                                                 <VBox spacing="6.0">
                                                     <Label styleClass="form-label" text="Email địa chỉ"/>
-                                                    <TextField fx:id="txtEmail" editable="false" maxWidth="1.7976931348623157E308" styleClass="form-input-readonly"/>
+                                                    <TextField fx:id="txtEmail" editable="false"
+                                                               maxWidth="1.7976931348623157E308"
+                                                               styleClass="form-input-readonly"/>
                                                 </VBox>
 
                                                 <VBox spacing="6.0">
                                                     <Label styleClass="form-label" text="Số điện thoại"/>
-                                                    <TextField fx:id="txtSoDienThoai" editable="false" promptText="Chưa cập nhật" maxWidth="1.7976931348623157E308" styleClass="form-input-readonly"/>
+                                                    <TextField fx:id="txtSoDienThoai" editable="false"
+                                                               promptText="Chưa cập nhật"
+                                                               maxWidth="1.7976931348623157E308"
+                                                               styleClass="form-input-readonly"/>
                                                 </VBox>
 
                                                 <VBox spacing="6.0">
                                                     <Label styleClass="form-label" text="Vai trò hệ thống"/>
-                                                    <ComboBox fx:id="roleComboBox" disable="true" maxWidth="1.7976931348623157E308" promptText="Chọn vai trò" styleClass="form-select-disabled"/>
+                                                    <ComboBox fx:id="roleComboBox" disable="true"
+                                                              maxWidth="1.7976931348623157E308"
+                                                              promptText="Chọn vai trò"
+                                                              styleClass="form-select-disabled"/>
                                                 </VBox>
                                             </children>
                                         </VBox>

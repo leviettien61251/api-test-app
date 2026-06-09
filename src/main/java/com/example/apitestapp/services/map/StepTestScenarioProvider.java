@@ -1,12 +1,72 @@
 package com.example.apitestapp.services.map;
 
-import com.example.apitestapp.services.*;
+import com.example.apitestapp.models.dto.*;
+import com.example.apitestapp.services.ApiScenarioProvider;
 
 import java.util.List;
 import java.util.Map;
 
 public class StepTestScenarioProvider implements ApiScenarioProvider {
 
+
+    private static List<ApiSetupRequest> createStepSetupRequests(String suffix) {
+        return List.of(
+                new ApiSetupRequest(
+                        "Thêm dữ liệu mẫu Map",
+                        "POST",
+                        "/api/v1/insert-map-test",
+                        """
+                                {
+                                    "buildingCode": "B-STEP-%s",
+                                    "buildingName": "Building Step %s",
+                                    "imageUrl": "https://example.com/step-test.jpg",
+                                    "scaleX": 10,
+                                    "scaleY": 10
+                                }
+                                """.formatted(suffix, suffix),
+                        Map.of("Authorization", "Bearer ${token}"),
+                        List.of("1000", "200", "201"),
+                        true,
+                        List.of(new ApiResponseVariable("mapId", "data.0.id"))
+                ),
+                new ApiSetupRequest(
+                        "Thêm dữ liệu mẫu Node bắt đầu",
+                        "POST",
+                        "/api/v1/insert-node-test",
+                        """
+                                {
+                                    "mapId": ${mapId},
+                                    "xCoordinate": 1,
+                                    "yCoordinate": 3,
+                                    "type": "abc",
+                                    "isPassable": true
+                                }
+                                """,
+                        Map.of("Authorization", "Bearer ${token}"),
+                        List.of("1000"),
+                        true,
+                        List.of(new ApiResponseVariable("startNodeId", "data.id"))
+                ),
+                new ApiSetupRequest(
+                        "Thêm dữ liệu mẫu Node kết thúc",
+                        "POST",
+                        "/api/v1/insert-node-test",
+                        """
+                                {
+                                    "mapId": ${mapId},
+                                    "xCoordinate": 2,
+                                    "yCoordinate": 4,
+                                    "type": "abc",
+                                    "isPassable": true
+                                }
+                                """,
+                        Map.of("Authorization", "Bearer ${token}"),
+                        List.of("1000"),
+                        true,
+                        List.of(new ApiResponseVariable("endNodeId", "data.id"))
+                )
+        );
+    }
 
     @Override
     public ApiScenarioDefinition getDefinition() {
@@ -427,65 +487,6 @@ public class StepTestScenarioProvider implements ApiScenarioProvider {
                                 List.of("1000", "200", "204", "201"),
                                 true
                         ))
-        );
-    }
-
-    private static List<ApiSetupRequest> createStepSetupRequests(String suffix) {
-        return List.of(
-                new ApiSetupRequest(
-                        "Thêm dữ liệu mẫu Map",
-                        "POST",
-                        "/api/v1/insert-map-test",
-                        """
-                                {
-                                    "buildingCode": "B-STEP-%s",
-                                    "buildingName": "Building Step %s",
-                                    "imageUrl": "https://example.com/step-test.jpg",
-                                    "scaleX": 10,
-                                    "scaleY": 10
-                                }
-                                """.formatted(suffix, suffix),
-                        Map.of("Authorization", "Bearer ${token}"),
-                        List.of("1000", "200", "201"),
-                        true,
-                        List.of(new ApiResponseVariable("mapId", "data.0.id"))
-                ),
-                new ApiSetupRequest(
-                        "Thêm dữ liệu mẫu Node bắt đầu",
-                        "POST",
-                        "/api/v1/insert-node-test",
-                        """
-                                {
-                                    "mapId": ${mapId},
-                                    "xCoordinate": 1,
-                                    "yCoordinate": 3,
-                                    "type": "abc",
-                                    "isPassable": true
-                                }
-                                """,
-                        Map.of("Authorization", "Bearer ${token}"),
-                        List.of("1000"),
-                        true,
-                        List.of(new ApiResponseVariable("startNodeId", "data.id"))
-                ),
-                new ApiSetupRequest(
-                        "Thêm dữ liệu mẫu Node kết thúc",
-                        "POST",
-                        "/api/v1/insert-node-test",
-                        """
-                                {
-                                    "mapId": ${mapId},
-                                    "xCoordinate": 2,
-                                    "yCoordinate": 4,
-                                    "type": "abc",
-                                    "isPassable": true
-                                }
-                                """,
-                        Map.of("Authorization", "Bearer ${token}"),
-                        List.of("1000"),
-                        true,
-                        List.of(new ApiResponseVariable("endNodeId", "data.id"))
-                )
         );
     }
 }

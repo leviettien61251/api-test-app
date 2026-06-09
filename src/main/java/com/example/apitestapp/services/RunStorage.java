@@ -1,15 +1,11 @@
 package com.example.apitestapp.services;
 
-import com.example.apitestapp.models.TestRun;
+import com.example.apitestapp.models.dto.TestRun;
 import com.example.apitestapp.repository.RunHistoryRepository;
 
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Lưu lịch sử chạy test: bộ nhớ + file JSON (tránh lỗi OneDrive trên thư mục project).

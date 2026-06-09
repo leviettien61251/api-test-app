@@ -1,5 +1,6 @@
 package com.example.apitestapp.services;
 
+import com.example.apitestapp.models.dto.ApiPayloadAssertion;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

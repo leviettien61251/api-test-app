@@ -4,22 +4,22 @@ Tai lieu nay liet ke cac man hinh trong repo va trang thai ket noi voi navigatio
 
 ## 1. Man hinh trong luong chinh
 
-| Man hinh | FXML | Controller | Cach mo | Trang thai |
-|---|---|---|---|---|
-| Login | `login-view.fxml` | `LoginController` | app start | hoat dong |
-| Main shell | `main-view.fxml` | `MainController` | sau login | hoat dong |
-| Dashboard | `views/dashboard-view.fxml` | `DashboardController` | menu, `Ctrl + D` | hoat dong |
-| Testcase | `views/testcase-view.fxml` | `TestcaseController` | menu, `Ctrl + T`, sau khi luu default config | hoat dong |
-| Request | `views/request-view.fxml` | `RequestController` | menu, `Ctrl + R` | hoat dong |
-| Report | `views/report-view.fxml` | `ReportController` | menu, `Ctrl + E`, Dashboard/History | hoat dong |
-| History | `views/history-view.fxml` | `HistoryController` | menu, `Ctrl + H` | hoat dong |
-| Profile | `views/profile-view.fxml` | `ProfileController` | user menu | hoat dong mot phan |
+| Man hinh   | FXML                        | Controller            | Cach mo                                      | Trang thai         |
+|------------|-----------------------------|-----------------------|----------------------------------------------|--------------------|
+| Login      | `login-view.fxml`           | `LoginController`     | app start                                    | hoat dong          |
+| Main shell | `main-view.fxml`            | `MainController`      | sau login                                    | hoat dong          |
+| Dashboard  | `views/dashboard-view.fxml` | `DashboardController` | menu, `Ctrl + D`                             | hoat dong          |
+| Testcase   | `views/testcase-view.fxml`  | `TestcaseController`  | menu, `Ctrl + T`, sau khi luu default config | hoat dong          |
+| Request    | `views/request-view.fxml`   | `RequestController`   | menu, `Ctrl + R`                             | hoat dong          |
+| Report     | `views/report-view.fxml`    | `ReportController`    | menu, `Ctrl + E`, Dashboard/History          | hoat dong          |
+| History    | `views/history-view.fxml`   | `HistoryController`   | menu, `Ctrl + H`                             | hoat dong          |
+| Profile    | `views/profile-view.fxml`   | `ProfileController`   | user menu                                    | hoat dong mot phan |
 
 ## 2. Man hinh ton tai nhung chua noi vao navigation chinh
 
-| Man hinh | FXML | Controller | Trang thai |
-|---|---|---|---|
-| Collections | `views/collections-view.fxml` | `CollectionsController` | scaffold / chua co menu chinh |
+| Man hinh     | FXML                           | Controller               | Trang thai                             |
+|--------------|--------------------------------|--------------------------|----------------------------------------|
+| Collections  | `views/collections-view.fxml`  | `CollectionsController`  | scaffold / chua co menu chinh          |
 | Environments | `views/environments-view.fxml` | `EnvironmentsController` | scaffold / chua noi voi `AppRunConfig` |
 
 ## 3. Nhan xet tung man hinh

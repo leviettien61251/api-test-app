@@ -1,9 +1,9 @@
 package com.example.apitestapp.services.flow;
 
-import com.example.apitestapp.services.ApiScenarioDefinition;
+import com.example.apitestapp.models.dto.ApiScenarioDefinition;
+import com.example.apitestapp.models.dto.ApiSetupRequest;
+import com.example.apitestapp.models.dto.ApiTestScenario;
 import com.example.apitestapp.services.ApiScenarioProvider;
-import com.example.apitestapp.services.ApiSetupRequest;
-import com.example.apitestapp.services.ApiTestScenario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,39 @@ public class FlowDensityScenarioProvider implements ApiScenarioProvider {
 
     private static final String ENDPOINT = "/api/v1/flow/insert-route-density";
     private static final String ROUTE_ID = "R_DENSITY";
+
+    private static String densityBody(String routeId, String currentPeople) {
+        return """
+                {
+                  "route_id": "%s",
+                  "current_people": %s
+                }
+                """.formatted(routeId, currentPeople);
+    }
+
+    private static List<ApiSetupRequest> createDensitySetupRequests() {
+        List<ApiSetupRequest> setupRequests = new ArrayList<>();
+        setupRequests.add(new ApiSetupRequest(
+                "Clean route density data before testcase",
+                "DELETE",
+                "/api/v1/clean/route-density",
+                "",
+                FlowScenarioSupport.AUTH_HEADERS,
+                List.of("1000", "200", "204", "201"),
+                true
+        ));
+        setupRequests.add(new ApiSetupRequest(
+                "Clean route data before testcase",
+                "DELETE",
+                "/api/v1/clean/route",
+                "",
+                FlowScenarioSupport.AUTH_HEADERS,
+                List.of("1000", "200", "204", "201"),
+                true
+        ));
+        setupRequests.addAll(FlowScenarioSupport.routeSetup(ROUTE_ID));
+        return setupRequests;
+    }
 
     @Override
     public ApiScenarioDefinition getDefinition() {
@@ -67,38 +100,5 @@ public class FlowDensityScenarioProvider implements ApiScenarioProvider {
                 .scenarios(scenarios)
                 .cleanupRequests(FlowScenarioSupport.cleanupRequests("/api/v1/clean/route-density"))
                 .build();
-    }
-
-    private static String densityBody(String routeId, String currentPeople) {
-        return """
-                {
-                  "route_id": "%s",
-                  "current_people": %s
-                }
-                """.formatted(routeId, currentPeople);
-    }
-
-    private static List<ApiSetupRequest> createDensitySetupRequests() {
-        List<ApiSetupRequest> setupRequests = new ArrayList<>();
-        setupRequests.add(new ApiSetupRequest(
-                "Clean route density data before testcase",
-                "DELETE",
-                "/api/v1/clean/route-density",
-                "",
-                FlowScenarioSupport.AUTH_HEADERS,
-                List.of("1000", "200", "204", "201"),
-                true
-        ));
-        setupRequests.add(new ApiSetupRequest(
-                "Clean route data before testcase",
-                "DELETE",
-                "/api/v1/clean/route",
-                "",
-                FlowScenarioSupport.AUTH_HEADERS,
-                List.of("1000", "200", "204", "201"),
-                true
-        ));
-        setupRequests.addAll(FlowScenarioSupport.routeSetup(ROUTE_ID));
-        return setupRequests;
     }
 }

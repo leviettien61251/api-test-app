@@ -1,6 +1,6 @@
 package com.example.apitestapp.services;
 
-import com.example.apitestapp.models.User;
+import com.example.apitestapp.models.entity.User;
 import com.example.apitestapp.repository.UserRepository;
 
 import java.sql.SQLException;

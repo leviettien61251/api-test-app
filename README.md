@@ -1,6 +1,8 @@
 # API Test App
 
-`API Test App` la ung dung desktop JavaFX dung de kiem thu API, tao testcase, chay test hang loat va xem lai ket qua run. Repo hien tai khong phai backend service; day la test client co UI login, dashboard, testcase runner, request builder, report, history va luu testcase do nguoi dung tao vao PostgreSQL.
+`API Test App` la ung dung desktop JavaFX dung de kiem thu API, tao testcase, chay test hang loat va xem lai ket qua
+run. Repo hien tai khong phai backend service; day la test client co UI login, dashboard, testcase runner, request
+builder, report, history va luu testcase do nguoi dung tao vao PostgreSQL.
 
 ## Tong quan nhanh
 
@@ -22,7 +24,8 @@
 - Tao, sua, xoa `user test suite` va `user test case`.
 - Chay `Run All`, `Run Selected`, dung run dang chay.
 - Ho tro setup request, cleanup request va capture bien response.
-- Ho tro path params, query params, headers, request body, expected status, payload assertions va expected response body.
+- Ho tro path params, query params, headers, request body, expected status, payload assertions va expected response
+  body.
 - Gui request thu cong voi method, URL, params, headers, raw body, form-data, Basic Auth, Bearer Token.
 - Xem report chi tiet va lich su run da luu.
 
