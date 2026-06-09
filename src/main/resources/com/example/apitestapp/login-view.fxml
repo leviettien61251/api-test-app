@@ -15,8 +15,10 @@
                 <Insets bottom="30" left="30" right="30" top="30" />
             </padding>
             <children>
+
+
                 <VBox alignment="CENTER" spacing="5.0">
-                    <Label text="🔰" styleClass="login-icon" />
+                    <Label styleClass="login-icon" text="🔰" />
                     <Label styleClass="login-title" text="ĐĂNG NHẬP" />
                     <Label styleClass="login-subtitle" text="Chào mừng bạn quay trở lại!" />
                 </VBox>
@@ -46,6 +48,7 @@
                 <Label fx:id="errorLabel" styleClass="login-error" text="" />
 
                 <Button maxWidth="1.7976931348623157E308" onAction="#handleLogin" styleClass="login-btn" text="ĐĂNG NHẬP" />
+
             </children>
         </VBox>
     </children>

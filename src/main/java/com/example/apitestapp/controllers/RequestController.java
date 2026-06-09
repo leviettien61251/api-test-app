@@ -41,7 +41,7 @@ public class RequestController implements Initializable {
     @FXML private TextArea testScriptTextArea;
     @FXML private VBox testsResultContainer;
 
-    // --- Cấu hình cho giao diện Form-Data mới ---
+    // --- Cấu hình cho giao diện Form-Data ---
     @FXML private VBox formDataContainer;
     @FXML private TableView<DataRowModel> formDataTableView;
     @FXML private TableColumn<DataRowModel, String> formKeyCol;
@@ -114,45 +114,160 @@ public class RequestController implements Initializable {
     }
 
     private void initDynamicTables() {
-        // Cấu hình bảng Params
+        // ========== CẤU HÌNH BẢNG PARAMS ==========
         paramsTableView.setItems(paramDataList);
-        setupEditableColumn(paramKeyCol, "key");
-        setupEditableColumn(paramValueCol, "value");
-        setupEditableColumn(paramDescCol, "description");
+        paramsTableView.setEditable(true);
+        paramsTableView.setPlaceholder(new Label("Nhấn '+ Add Param' để thêm tham số"));
 
-        addParamBtn.setOnAction(e -> paramDataList.add(new DataRowModel("", "", "")));
-        deleteParamBtn.setOnAction(e -> {
-            DataRowModel selected = paramsTableView.getSelectionModel().getSelectedItem();
-            if (selected != null) paramDataList.remove(selected);
+        // Thêm hàng trống mặc định để hiển thị khung nhập
+        if (paramDataList.isEmpty()) {
+            paramDataList.add(new DataRowModel("", "", ""));
+        }
+
+        setupEditableColumnWithPlaceholder(paramKeyCol, "key", "Nhập key...");
+        setupEditableColumnWithPlaceholder(paramValueCol, "value", "Nhập value...");
+        setupEditableColumnWithPlaceholder(paramDescCol, "description", "Mô tả (không bắt buộc)");
+
+        addParamBtn.setOnAction(e -> {
+            paramDataList.add(new DataRowModel("", "", ""));
+            paramsTableView.scrollTo(paramDataList.size() - 1);
         });
 
-        // Cấu hình bảng Request Headers
+        deleteParamBtn.setOnAction(e -> {
+            DataRowModel selected = paramsTableView.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                paramDataList.remove(selected);
+                // Luôn giữ ít nhất 1 hàng trống
+                if (paramDataList.isEmpty()) {
+                    paramDataList.add(new DataRowModel("", "", ""));
+                }
+            }
+        });
+
+        // ========== CẤU HÌNH BẢNG REQUEST HEADERS ==========
         requestHeadersTableView.setItems(requestHeaderDataList);
-        setupEditableColumn(reqHeaderKeyCol, "key");
-        setupEditableColumn(reqHeaderValueCol, "value");
-        setupEditableColumn(reqHeaderDescCol, "description");
+        requestHeadersTableView.setEditable(true);
+        requestHeadersTableView.setPlaceholder(new Label("Nhấn '+ Add Header' để thêm header"));
+
+        if (requestHeaderDataList.isEmpty()) {
+            requestHeaderDataList.add(new DataRowModel("", "", ""));
+        }
+
+        setupEditableColumnWithPlaceholder(reqHeaderKeyCol, "key", "Header name...");
+        setupEditableColumnWithPlaceholder(reqHeaderValueCol, "value", "Header value...");
+        setupEditableColumnWithPlaceholder(reqHeaderDescCol, "description", "Mô tả...");
 
         addHeaderBtn.setOnAction(e -> requestHeaderDataList.add(new DataRowModel("", "", "")));
         deleteHeaderBtn.setOnAction(e -> {
             DataRowModel selected = requestHeadersTableView.getSelectionModel().getSelectedItem();
             if (selected != null) requestHeaderDataList.remove(selected);
+            if (requestHeaderDataList.isEmpty()) {
+                requestHeaderDataList.add(new DataRowModel("", "", ""));
+            }
         });
 
-        // Cấu hình bảng Form-Data
+        // ========== CẤU HÌNH BẢNG FORM-DATA ==========
         formDataTableView.setItems(formDataList);
-        setupEditableColumn(formKeyCol, "key");
-        setupEditableColumn(formValueCol, "value");
-        setupEditableColumn(formDescCol, "description");
+        formDataTableView.setEditable(true);
+        formDataTableView.setPlaceholder(new Label("Nhấn '+ Add Form Data' để thêm field"));
+
+        if (formDataList.isEmpty()) {
+            formDataList.add(new DataRowModel("", "", ""));
+        }
+
+        setupEditableColumnWithPlaceholder(formKeyCol, "key", "Field name...");
+        setupEditableColumnWithPlaceholder(formValueCol, "value", "Field value...");
+        setupEditableColumnWithPlaceholder(formDescCol, "description", "Mô tả...");
 
         addFormRowBtn.setOnAction(e -> formDataList.add(new DataRowModel("", "", "")));
         deleteFormRowBtn.setOnAction(e -> {
             DataRowModel selected = formDataTableView.getSelectionModel().getSelectedItem();
             if (selected != null) formDataList.remove(selected);
+            if (formDataList.isEmpty()) {
+                formDataList.add(new DataRowModel("", "", ""));
+            }
         });
     }
 
-    private void setupEditableColumn(TableColumn<DataRowModel, String> column, String field) {
-        column.setCellFactory(TextFieldTableCell.forTableColumn());
+    /**
+     * Cấu hình TableColumn với Placeholder và khả năng edit trực quan
+     */
+    private void setupEditableColumnWithPlaceholder(TableColumn<DataRowModel, String> column, String field, String placeholder) {
+        column.setCellFactory(col -> new TableCell<DataRowModel, String>() {
+            private TextField textField;
+
+            @Override
+            public void startEdit() {
+                if (!isEmpty()) {
+                    super.startEdit();
+                    createTextField();
+                    setText(null);
+                    setGraphic(textField);
+                    if (textField != null) {
+                        textField.requestFocus();
+                        textField.selectAll();
+                    }
+                }
+            }
+
+            @Override
+            public void cancelEdit() {
+                super.cancelEdit();
+                setText(getItemDisplay());
+                setGraphic(null);
+            }
+
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(textField);
+                } else {
+                    setText(getItemDisplay());
+                    setGraphic(null);
+                }
+            }
+
+            private void createTextField() {
+                textField = new TextField(getString());
+                textField.setPromptText(placeholder);
+                textField.setStyle("-fx-prompt-text-fill: #999999;");
+                textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+
+                textField.setOnAction(e -> {
+                    String newValue = textField.getText();
+                    commitEdit(newValue);
+                });
+
+                textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+                    if (!newVal) {
+                        String newValue = textField.getText();
+                        commitEdit(newValue);
+                    }
+                });
+            }
+
+            private String getString() {
+                return getItem() == null ? "" : getItem();
+            }
+
+            private String getItemDisplay() {
+                String item = getItem();
+                if (item == null || item.isEmpty()) {
+                    return placeholder;
+                }
+                return item;
+            }
+        });
+
         column.setCellValueFactory(data -> {
             if ("key".equals(field)) return data.getValue().keyProperty();
             if ("value".equals(field)) return data.getValue().valueProperty();
@@ -161,13 +276,24 @@ public class RequestController implements Initializable {
 
         column.setOnEditCommit(event -> {
             DataRowModel row = event.getRowValue();
-            if ("key".equals(field)) row.setKey(event.getNewValue());
-            if ("value".equals(field)) row.setValue(event.getNewValue());
-            if ("description".equals(field)) row.setDescription(event.getNewValue());
+            String newValue = event.getNewValue() != null ? event.getNewValue() : "";
 
-            if (column.getTableView() == paramsTableView) {
-                syncTableToUrl();
+            if ("key".equals(field)) {
+                row.setKey(newValue);
+                // Khi key thay đổi ở Params, cập nhật URL
+                if (column.getTableView() == paramsTableView) {
+                    syncTableToUrl();
+                }
             }
+            if ("value".equals(field)) {
+                row.setValue(newValue);
+                if (column.getTableView() == paramsTableView) {
+                    syncTableToUrl();
+                }
+            }
+            if ("description".equals(field)) row.setDescription(newValue);
+
+            column.getTableView().refresh();
         });
     }
 
@@ -186,20 +312,35 @@ public class RequestController implements Initializable {
 
     private void parseUrlToTable(String urlStr) {
         paramDataList.clear();
-        if (urlStr == null || !urlStr.contains("?")) return;
+
+        if (urlStr == null || !urlStr.contains("?")) {
+            // Nếu không có params, thêm 1 hàng trống
+            paramDataList.add(new DataRowModel("", "", ""));
+            return;
+        }
 
         try {
             String queryString = urlStr.substring(urlStr.indexOf("?") + 1);
             String[] pairs = queryString.split("&");
+            boolean hasParams = false;
+
             for (String pair : pairs) {
-                String[] kv = pair.split("=");
+                String[] kv = pair.split("=", 2);
                 String key = kv.length > 0 ? kv[0] : "";
                 String value = kv.length > 1 ? kv[1] : "";
                 if (!key.isEmpty()) {
                     paramDataList.add(new DataRowModel(key, value, ""));
+                    hasParams = true;
                 }
             }
-        } catch (Exception ignored) {}
+
+            // Nếu không có params nào, thêm 1 hàng trống
+            if (!hasParams) {
+                paramDataList.add(new DataRowModel("", "", ""));
+            }
+        } catch (Exception ignored) {
+            paramDataList.add(new DataRowModel("", "", ""));
+        }
     }
 
     private void syncTableToUrl() {
@@ -209,15 +350,18 @@ public class RequestController implements Initializable {
         String currentUrl = urlField.getText();
         if (currentUrl == null) currentUrl = "";
 
+        // Xóa phần query cũ nếu có
         if (currentUrl.contains("?")) {
             currentUrl = currentUrl.substring(0, currentUrl.indexOf("?"));
         }
 
+        // Xây dựng query string từ các row có key không rỗng
         StringBuilder queryBuilder = new StringBuilder();
         for (DataRowModel row : paramDataList) {
-            if (!row.getKey().trim().isEmpty()) {
+            if (row.getKey() != null && !row.getKey().trim().isEmpty()) {
                 if (queryBuilder.length() > 0) queryBuilder.append("&");
-                queryBuilder.append(row.getKey().trim()).append("=").append(row.getValue().trim());
+                String value = row.getValue() != null ? row.getValue().trim() : "";
+                queryBuilder.append(row.getKey().trim()).append("=").append(value);
             }
         }
 
@@ -255,8 +399,9 @@ public class RequestController implements Initializable {
 
                 // Nạp tất cả các custom header từ bảng dữ liệu đầu vào của Tab Headers
                 for (DataRowModel headerRow : requestHeaderDataList) {
-                    if (!headerRow.getKey().trim().isEmpty()) {
-                        builder.addHeader(headerRow.getKey().trim(), headerRow.getValue().trim());
+                    if (headerRow.getKey() != null && !headerRow.getKey().trim().isEmpty()) {
+                        builder.addHeader(headerRow.getKey().trim(),
+                                headerRow.getValue() != null ? headerRow.getValue().trim() : "");
                     }
                 }
 
@@ -275,22 +420,21 @@ public class RequestController implements Initializable {
                     RequestBody requestBody;
 
                     if (formDataBtn.isSelected()) {
-                        // Cấu hình Multipart Form-Data giống hệt cấu trúc Postman
+                        // Cấu hình Multipart Form-Data
                         MultipartBody.Builder multipartBuilder = new MultipartBody.Builder()
                                 .setType(MultipartBody.FORM);
 
                         boolean hasData = false;
                         for (DataRowModel row : formDataList) {
-                            if (!row.getKey().trim().isEmpty()) {
-                                multipartBuilder.addFormDataPart(row.getKey().trim(), row.getValue().trim());
+                            if (row.getKey() != null && !row.getKey().trim().isEmpty()) {
+                                String value = row.getValue() != null ? row.getValue().trim() : "";
+                                multipartBuilder.addFormDataPart(row.getKey().trim(), value);
                                 hasData = true;
                             }
                         }
 
-                        // Nếu không có dữ liệu, truyền body rỗng tránh lỗi biên dịch OkHttp
                         requestBody = hasData ? multipartBuilder.build() : RequestBody.create("", null);
                     } else {
-                        // Ngược lại, nạp dữ liệu chuỗi Raw (JSON, XML, Text...) thông thường
                         requestBody = RequestBody.create(bodyText, mediaType);
                     }
 
@@ -339,7 +483,6 @@ public class RequestController implements Initializable {
         new Thread(task).start();
     }
 
-    // Mô phỏng bộ phân tích Script tự động hiển thị lên Tab Tests
     private void runTestScripts(int statusCode, long duration, String responseBody) {
         Platform.runLater(() -> {
             String scriptText = testScriptTextArea.getText();
@@ -374,7 +517,6 @@ public class RequestController implements Initializable {
                 renderTestResult(pass, message);
                 return;
             }
-
 
             // Phân tích cú pháp Script đơn giản dòng lệnh assert từ người dùng nhập
             String[] lines = scriptText.split("\n");
@@ -438,7 +580,6 @@ public class RequestController implements Initializable {
                                 }
                             }
                             else {
-                                // HEAD, OPTIONS, TRACE, CONNECT...
                                 if (statusCode == 200 || statusCode == 202 || statusCode == 204) {
                                     pass = true;
                                     desc = "Thành công (" + statusCode + ")";
@@ -574,9 +715,15 @@ public class RequestController implements Initializable {
     private void updateAuthUI(String authType) {
         authConfigContainer.getChildren().clear();
         if ("Basic Auth".equals(authType)) {
-            authConfigContainer.getChildren().addAll(new Label("Username"), authUserField, new Label("Password"), authPasswordField);
+            Label userLabel = new Label("Username");
+            userLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #555;");
+            Label passLabel = new Label("Password");
+            passLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #555;");
+            authConfigContainer.getChildren().addAll(userLabel, authUserField, passLabel, authPasswordField);
         } else if ("Bearer Token".equals(authType)) {
-            authConfigContainer.getChildren().addAll(new Label("Token"), authTokenField);
+            Label tokenLabel = new Label("Token");
+            tokenLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #555;");
+            authConfigContainer.getChildren().addAll(tokenLabel, authTokenField);
         }
     }
 
@@ -590,8 +737,6 @@ public class RequestController implements Initializable {
 
         // LOGIC CHUYỂN ĐỔI ẨN/HIỆN ĐỘNG GIỮA RAW VÀ FORM-DATA
         rawBtn.setOnAction(e -> {
-            rawBtn.setSelected(true); // Giữ trạng thái luôn có 1 nút được chọn
-
             bodyTextArea.setVisible(true);
             bodyTextArea.setManaged(true);
             rawTypeComboBox.setVisible(true);
@@ -602,8 +747,6 @@ public class RequestController implements Initializable {
         });
 
         formDataBtn.setOnAction(e -> {
-            formDataBtn.setSelected(true); // Giữ trạng thái luôn có 1 nút được chọn
-
             bodyTextArea.setVisible(false);
             bodyTextArea.setManaged(false);
             rawTypeComboBox.setVisible(false);
@@ -614,35 +757,39 @@ public class RequestController implements Initializable {
         });
     }
 
-    // --- Model Class cho TableView Đầu Vào Cấu Hình Động ---
+    // ========== MODEL CLASS ==========
+
     public static class DataRowModel {
         private final SimpleStringProperty key;
         private final SimpleStringProperty value;
         private final SimpleStringProperty description;
 
         public DataRowModel(String key, String value, String description) {
-            this.key = new SimpleStringProperty(key);
-            this.value = new SimpleStringProperty(value);
-            this.description = new SimpleStringProperty(description);
+            this.key = new SimpleStringProperty(key == null ? "" : key);
+            this.value = new SimpleStringProperty(value == null ? "" : value);
+            this.description = new SimpleStringProperty(description == null ? "" : description);
         }
 
         public String getKey() { return key.get(); }
-        public void setKey(String v) { this.key.set(v); }
+        public void setKey(String v) { this.key.set(v == null ? "" : v); }
         public SimpleStringProperty keyProperty() { return key; }
 
         public String getValue() { return value.get(); }
-        public void setValue(String v) { this.value.set(v); }
+        public void setValue(String v) { this.value.set(v == null ? "" : v); }
         public SimpleStringProperty valueProperty() { return value; }
 
         public String getDescription() { return description.get(); }
-        public void setDescription(String v) { this.description.set(v); }
+        public void setDescription(String v) { this.description.set(v == null ? "" : v); }
         public SimpleStringProperty descriptionProperty() { return description; }
     }
 
     public static class HeaderModel {
         private final String key;
         private final String value;
-        public HeaderModel(String key, String value) { this.key = key; this.value = value; }
+        public HeaderModel(String key, String value) {
+            this.key = key == null ? "" : key;
+            this.value = value == null ? "" : value;
+        }
         public String getKey() { return key; }
         public String getValue() { return value; }
     }

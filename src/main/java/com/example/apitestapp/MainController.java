@@ -82,13 +82,63 @@ public class MainController implements Initializable {
         Stage stage = (Stage) btnDashboard.getScene().getWindow();
 
         stage.setOnCloseRequest(event -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            // Dùng AlertType.NONE để xóa sạch icon chấm hỏi thô mộc mặc định
+            Alert alert = new Alert(Alert.AlertType.NONE);
             alert.setTitle("Xác nhận thoát");
-            alert.setHeaderText("Bạn có chắc chắn muốn thoát ứng dụng?");
+            alert.setHeaderText(null);
+            alert.setContentText("Bạn có chắc chắn muốn thoát ứng dụng?");
+
+            // 1. Custom tổng thể hộp thoại (DialogPane)
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.setStyle(
+                    "-fx-background-color: #ffffff; " +
+                            "-fx-padding: 20px; " +
+                            "-fx-font-family: 'Segoe UI', Helvetica, Arial, sans-serif; " +
+                            "-fx-font-size: 14px;"
+            );
+
+            // Custom riêng phần chữ nội dung bên trong
+            dialogPane.lookup(".content.label").setStyle(
+                    "-fx-text-fill: #2d3748; " +
+                            "-fx-padding: 0 0 15px 0;"
+            );
 
             ButtonType btnYes = new ButtonType("Có", ButtonBar.ButtonData.YES);
             ButtonType btnNo = new ButtonType("Không", ButtonBar.ButtonData.NO);
             alert.getButtonTypes().setAll(btnYes, btnNo);
+
+            // 2. Lấy các nút ra để ép style inline
+            Button yesButton = (Button) dialogPane.lookupButton(btnYes);
+            Button noButton = (Button) dialogPane.lookupButton(btnNo);
+
+            // Style cho nút "Có" (Màu xanh dương, chữ trắng, bo góc)
+            if (yesButton != null) {
+                yesButton.setStyle(
+                        "-fx-background-color: #3b82f6; " +
+                                "-fx-text-fill: white; " +
+                                "-fx-font-weight: bold; " +
+                                "-fx-padding: 8px 22px; " +
+                                "-fx-background-radius: 6px; " +
+                                "-fx-cursor: hand;"
+                );
+                // Hiệu ứng hover giả lập bằng code (vì inline không dùng được :hover)
+                yesButton.setOnMouseEntered(e -> yesButton.setStyle(yesButton.getStyle() + "-fx-background-color: #2563eb;"));
+                yesButton.setOnMouseExited(e -> yesButton.setStyle(yesButton.getStyle() + "-fx-background-color: #3b82f6;"));
+            }
+
+            // Style cho nút "Không" (Màu xám nhẹ, chữ đen nhạt)
+            if (noButton != null) {
+                noButton.setStyle(
+                        "-fx-background-color: #f1f5f9; " +
+                                "-fx-text-fill: #475569; " +
+                                "-fx-font-weight: bold; " +
+                                "-fx-padding: 8px 22px; " +
+                                "-fx-background-radius: 6px; " +
+                                "-fx-cursor: hand;"
+                );
+                noButton.setOnMouseEntered(e -> noButton.setStyle(noButton.getStyle() + "-fx-background-color: #e2e8f0;"));
+                noButton.setOnMouseExited(e -> noButton.setStyle(noButton.getStyle() + "-fx-background-color: #f1f5f9;"));
+            }
 
             Optional<ButtonType> result = alert.showAndWait();
 
@@ -100,7 +150,6 @@ public class MainController implements Initializable {
             }
         });
     }
-
     private void setupShortcuts() {
         if (btnDashboard.getScene() == null) return;
 

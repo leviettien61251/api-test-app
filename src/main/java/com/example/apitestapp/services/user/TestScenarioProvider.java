@@ -16,6 +16,7 @@ public class TestScenarioProvider implements ApiScenarioProvider {
                         .expectedCode("1000")
                         .expectedStatus("SUCCESS")
                         .build(),
+
                 ApiTestScenario.builder()
                         .scenario("Scenario 2")
                         .description("Thiếu fullName")
@@ -31,6 +32,7 @@ public class TestScenarioProvider implements ApiScenarioProvider {
                         .expectedCode("2001")
                         .expectedStatus("FAILURE")
                         .build(),
+
                 ApiTestScenario.builder()
                         .scenario("Scenario 3")
                         .description("fullName rỗng")
