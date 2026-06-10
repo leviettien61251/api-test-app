@@ -52,6 +52,7 @@
                                 <TextField fx:id="txtSearch" styleClass="search-field" HBox.hgrow="ALWAYS"
                                            promptText="Nhập từ khóa..."/>
                                 <Button fx:id="btnFilter" onAction="#handleFilter" styleClass="btn-search" text="🔍"/>
+                                <Button fx:id="btnExport" onAction="#handleExportExcel" styleClass="btn-search" text="📥 Xuất Excel"/>
                             </HBox>
                         </VBox>
                     </children>

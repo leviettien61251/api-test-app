@@ -46,6 +46,9 @@ public class HistoryController implements Initializable, RefreshableView {
     private List<TestRun> allRuns = List.of();
     private Consumer<String> onOpenReport;
 
+    @FXML
+    private Button btnExport;
+
     private static boolean matchDate(TestRun run, LocalDate from, LocalDate to) {
         if (run.getStartedAt() == null) {
             return true;
@@ -344,4 +347,140 @@ public class HistoryController implements Initializable, RefreshableView {
 
         historyTable.setItems(FXCollections.observableArrayList(filtered));
     }
+
+
+
+    @FXML
+    private void handleExportExcel() {
+        // 1. Lấy danh sách đang hiển thị trên bảng (đã được lọc theo quyền và từ khóa)
+        List<TestRun> dataToExport = historyTable.getItems();
+
+        if (dataToExport.isEmpty()) {
+            showAlert("Thông báo", "Không có dữ liệu để xuất!");
+            return;
+        }
+
+        // 2. Mở hộp thoại chọn nơi lưu file
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Lưu file Excel");
+        fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+        fileChooser.setInitialFileName("LichSuKiemThu_" + LocalDate.now() + ".xlsx");
+
+        java.io.File file = fileChooser.showSaveDialog(btnExport.getScene().getWindow());
+
+        if (file != null) {
+            try {
+                exportToExcel(dataToExport, file.getAbsolutePath());
+                showAlert("Thành công", "Đã xuất file thành công tại: " + file.getAbsolutePath());
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Lỗi", "Không thể xuất file: " + e.getMessage());
+            }
+        }
+    }
+
+    // Hàm bổ trợ hiển thị thông báo nhanh
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+
+    private void exportToExcel(List<TestRun> runs, String filePath) throws Exception {
+        try (org.apache.poi.ss.usermodel.Workbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook()) {
+            org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Lịch sử kiểm thử");
+
+            // 1. Tạo Style cho Header (Chữ trắng, nền xanh đậm, in đậm, căn giữa)
+            org.apache.poi.ss.usermodel.CellStyle headerStyle = workbook.createCellStyle();
+            org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setColor(org.apache.poi.ss.usermodel.IndexedColors.WHITE.getIndex());
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(org.apache.poi.ss.usermodel.IndexedColors.CORNFLOWER_BLUE.getIndex());
+            headerStyle.setFillPattern(org.apache.poi.ss.usermodel.FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setAlignment(org.apache.poi.ss.usermodel.HorizontalAlignment.CENTER);
+            headerStyle.setBorderBottom(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+
+            // 2. Tạo Style cho các ô dữ liệu (Kẻ viền)
+            org.apache.poi.ss.usermodel.CellStyle dataStyle = workbook.createCellStyle();
+            dataStyle.setBorderBottom(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+            dataStyle.setBorderLeft(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+            dataStyle.setBorderRight(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+            dataStyle.setBorderTop(org.apache.poi.ss.usermodel.BorderStyle.THIN);
+
+            // 3. Style riêng cho cột PASS (Chữ xanh) và FAIL (Chữ đỏ)
+            org.apache.poi.ss.usermodel.CellStyle passStyle = workbook.createCellStyle();
+            passStyle.cloneStyleFrom(dataStyle);
+            org.apache.poi.ss.usermodel.Font passFont = workbook.createFont();
+            passFont.setColor(org.apache.poi.ss.usermodel.IndexedColors.GREEN.getIndex());
+            passFont.setBold(true);
+            passStyle.setFont(passFont);
+
+            org.apache.poi.ss.usermodel.CellStyle failStyle = workbook.createCellStyle();
+            failStyle.cloneStyleFrom(dataStyle);
+            org.apache.poi.ss.usermodel.Font failFont = workbook.createFont();
+            failFont.setColor(org.apache.poi.ss.usermodel.IndexedColors.RED.getIndex());
+            failFont.setBold(true);
+            failStyle.setFont(failFont);
+
+            // Tạo Header Row
+            String[] columns = {"ID", "Thời gian", "Người chạy", "Máy", "Hệ điều hành", "Chế độ", "Test Suite", "Kết quả", "Trạng thái"};
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < columns.length; i++) {
+                org.apache.poi.ss.usermodel.Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            // Đổ dữ liệu
+            int rowIdx = 1;
+            for (TestRun run : runs) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowIdx++);
+
+                // Hàm helper để tạo cell nhanh kèm style
+                createStyledCell(row, 0, run.getId().substring(0, 8), dataStyle);
+                createStyledCell(row, 1, formatTime(run), dataStyle);
+                createStyledCell(row, 2, run.getUser(), dataStyle);
+                createStyledCell(row, 3, run.getMachine(), dataStyle);
+                createStyledCell(row, 4, run.getOs(), dataStyle);
+                createStyledCell(row, 5, run.getRunMode(), dataStyle);
+                createStyledCell(row, 6, run.getTestSuite(), dataStyle);
+                createStyledCell(row, 7, run.getPassedCases() + " / " + run.getFailedCases(), dataStyle);
+
+                // Cột trạng thái có màu
+                org.apache.poi.ss.usermodel.Cell statusCell = row.createCell(8);
+                boolean isFail = run.getFailedCases() > 0;
+                statusCell.setCellValue(isFail ? "FAIL" : "PASS");
+                statusCell.setCellStyle(isFail ? failStyle : passStyle);
+            }
+
+            // Tự động giãn cột
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
+                // Lấy độ rộng hiện tại (đã vừa khít chữ)
+                int currentWidth = sheet.getColumnWidth(i);
+
+                // Cộng thêm khoảng 1500 đến 2000 đơn vị (tương đương 6-8 ký tự trống)
+                // Đơn vị trong POI là 1/256 độ rộng 1 ký tự
+                sheet.setColumnWidth(i, currentWidth + 2000);
+            }
+
+            try (java.io.FileOutputStream fileOut = new java.io.FileOutputStream(filePath)) {
+                workbook.write(fileOut);
+            }
+        }
+    }
+
+    // Hàm bổ trợ để code ngắn gọn hơn
+    private void createStyledCell(org.apache.poi.ss.usermodel.Row row, int column, String value, org.apache.poi.ss.usermodel.CellStyle style) {
+        org.apache.poi.ss.usermodel.Cell cell = row.createCell(column);
+        cell.setCellValue(value == null ? "-" : value);
+        cell.setCellStyle(style);
+    }
+
+
+
 }
