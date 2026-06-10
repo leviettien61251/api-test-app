@@ -19,9 +19,7 @@ public class ProfileController implements Initializable {
     @FXML
     private Label lblTenHienThiProfile, lblRoleProfile, lblEmailProfile, lblIconRoleProfile, lblIconNgayThamGiaProfile;
     @FXML
-    private Button btnChinhSuaHoSo, btnLuuThayDoi, btnHuy, btnDoiMatKhau;
-    @FXML
-    private TextField txtTenHienThi, txtEmail, txtSoDienThoai, txtMatKhauHienTai, txtMatKhauMoi, txtXacNhanMatKhau;
+    private TextField txtTenHienThi, txtEmail, txtSoDienThoai;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

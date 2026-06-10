@@ -55,6 +55,7 @@ public class SignupScenarioProvider implements ApiScenarioProvider {
                         .expectedStatus("SUCCESS")
                         .build()
                 ,
+
                 new ApiTestScenario(
                         "Scenario 2",
                         "Số điện thoại hợp lệ, đã đăng ký",
@@ -79,6 +80,7 @@ public class SignupScenarioProvider implements ApiScenarioProvider {
                         "3006",
                         "FAILURE"
                 ),
+
                 new ApiTestScenario(
                         "Scenario 3",
                         "Số điện thoại hợp lệ, thiếu password",

@@ -69,6 +69,7 @@
     -fx-font-weight: bold;
     -fx-background-color: #ffffff;
     -fx-background-clip: text;
+
     -fx-text-fill: transparent;
 
 
@@ -178,6 +179,7 @@
     -fx-border-color: #e2e8f0;
 }
 
+
 /* SỬA LỖI CHỮ ĐEN TRÊN NỀN TỐI: Biến ô nhập Body thành Dark Mode chuyên nghiệp */
 #bodyTextArea {
     -fx-background-color: #1e293b;
@@ -188,6 +190,8 @@
     -fx-border-radius: 8px;
     -fx-border-color: #334155;
 }
+
+
 
 /* Combobox cấu hình chạy */
 /* ==========================================================================
@@ -234,6 +238,8 @@
 .combo-box:focused .arrow-button .arrow {
     -fx-background-color: #0284c7;
 }
+
+
 
 
 /* ==========================================================================
@@ -403,3 +409,301 @@
     -fx-background-color: #8e44ad;
     -fx-text-fill: white;
 }
+
+
+
+
+
+
+
+/* ==================== TABLEVIEW TESTCASE PASS FAIL STYLES  ==================== */
+
+/* Hiệu ứng hover cho table rows */
+.table-row-cell {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-transition: all 0.2s ease-in-out;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #e8f4f8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 0);
+}
+
+/* PASS state - Xanh lá hiện đại */
+.table-row-cell:test-pass {
+    -fx-background-color: linear-gradient(to right, #d4edda, #c3e6cb);
+    -fx-text-fill: #155724;
+    -fx-border-color: #b1dfbb;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.table-row-cell:test-pass .text {
+    -fx-fill: #155724;
+    -fx-font-weight: 600;
+}
+
+/* FAIL state - Đỏ hiện đại */
+.table-row-cell:test-fail {
+    -fx-background-color: linear-gradient(to right, #f8d7da, #f5c6cb);
+    -fx-text-fill: #721c24;
+    -fx-border-color: #f1b0b7;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.table-row-cell:test-fail .text {
+    -fx-fill: #721c24;
+    -fx-font-weight: 600;
+}
+
+/* RUNNING state - Xanh dương đang chạy */
+.table-row-cell:test-running {
+    -fx-background-color: linear-gradient(to right, #d1ecf1, #bee5eb);
+    -fx-text-fill: #0c5460;
+    -fx-border-color: #aee1e8;
+    -fx-border-width: 0 0 1px 0;
+    -fx-animation: pulse 1.5s infinite;
+}
+
+.table-row-cell:test-running .text {
+    -fx-fill: #0c5460;
+    -fx-font-style: italic;
+}
+
+/* PENDING state - Xám nhạt */
+.table-row-cell:test-pending {
+    -fx-background-color: #f8f9fa;
+    -fx-text-fill: #6c757d;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 1px 0;
+}
+
+/* ==================== LISTVIEW STYLES ==================== */
+
+/* Container cho ListView */
+.list-view {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 5;
+}
+
+/* ListCell styling */
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 8 12;
+    -fx-font-family: 'Segoe UI', 'System', monospace;
+    -fx-font-size: 13px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: #f0f0f0;
+    -fx-cursor: hand;
+    -fx-transition: all 0.2s ease;
+}
+
+.list-cell:hover {
+    -fx-background-color: #f8f9fa;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 2, 0, 0, 0);
+}
+
+/* SUCCESS state - Xanh đậm đẹp */
+.list-cell:log-success {
+    -fx-text-fill: #059669;
+    -fx-font-weight: 700;
+    -fx-background-color: #ecfdf5;
+    -fx-border-color: #d1fae5;
+}
+
+.list-cell:log-success:hover {
+    -fx-background-color: #d1fae5;
+}
+
+/* ERROR state - Đỏ đậm đẹp */
+.list-cell:log-error {
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: 700;
+    -fx-background-color: #fef2f2;
+    -fx-border-color: #fee2e2;
+}
+
+.list-cell:log-error:hover {
+    -fx-background-color: #fee2e2;
+}
+
+/* ==================== TABLE COLUMN HEADERS ==================== */
+
+.column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+    -fx-background-radius: 8 8 0 0;
+}
+
+.column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.column-header .label {
+    -fx-font-weight: 700;
+    -fx-font-family: 'Segoe UI', 'System';
+    -fx-font-size: 13px;
+    -fx-text-fill: #495057;
+    -fx-padding: 8 0 8 0;
+}
+
+/* ==================== TABLE CELL STYLES ==================== */
+
+.table-cell {
+    -fx-padding: 8 12;
+    -fx-font-family: 'Segoe UI', 'System';
+    -fx-font-size: 13px;
+    -fx-border-color: transparent;
+}
+
+/* CheckBox cell styling */
+.table-row-cell .check-box {
+    -fx-cursor: hand;
+}
+
+.table-row-cell .check-box .box {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+}
+
+/* ==================== SCROLLBAR STYLES ==================== */
+
+.scroll-bar:vertical {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #cbd5e1;
+    -fx-background-radius: 8;
+    -fx-padding: 4;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94a3b8;
+}
+
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* ==================== ANIMATIONS ==================== */
+
+@keyframes pulse {
+    0% {
+        -fx-background-color: linear-gradient(to right, #d1ecf1, #bee5eb);
+    }
+    50% {
+        -fx-background-color: linear-gradient(to right, #aee1e8, #9acfe4);
+    }
+    100% {
+        -fx-background-color: linear-gradient(to right, #d1ecf1, #bee5eb);
+    }
+}
+
+/* ==================== TOOLTIP STYLES ==================== */
+
+.tooltip {
+    -fx-background-color: #1f2937;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 12px;
+    -fx-font-family: 'Segoe UI', 'System';
+    -fx-background-radius: 6;
+    -fx-padding: 8 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+/* ==================== BUTTON STYLES (Optional - cho Run/Stop buttons) ==================== */
+
+.button {
+    -fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+    -fx-background-radius: 6;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 6;
+    -fx-font-weight: 600;
+    -fx-font-family: 'Segoe UI', 'System';
+    -fx-font-size: 13px;
+    -fx-text-fill: #495057;
+    -fx-cursor: hand;
+    -fx-padding: 8 16;
+    -fx-transition: all 0.2s ease;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #e9ecef, #dee2e6);
+    -fx-text-fill: #212529;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 1);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #dee2e6, #ced4da);
+    -fx-translate-y: 1px;
+}
+
+/* Primary button style for Run */
+.button-primary {
+    -fx-background-color: linear-gradient(to bottom, #10b981, #059669);
+    -fx-text-fill: white;
+    -fx-border-color: #059669;
+}
+
+.button-primary:hover {
+    -fx-background-color: linear-gradient(to bottom, #059669, #047857);
+}
+
+/* Danger button style for Stop */
+.button-danger {
+    -fx-background-color: linear-gradient(to bottom, #ef4444, #dc2626);
+    -fx-text-fill: white;
+    -fx-border-color: #dc2626;
+}
+
+.button-danger:hover {
+    -fx-background-color: linear-gradient(to bottom, #dc2626, #b91c1c);
+}
+
+/* ==================== SUMMARY LABEL STYLES ==================== */
+
+.label-summary {
+    -fx-font-family: 'Segoe UI', 'System';
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1f2937;
+    -fx-background-color: #f3f4f6;
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 8;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -209,18 +209,18 @@ public class TestcaseController implements Initializable {
             }
         });
     }
-
     private void updateExecutionLogState(ListCell<String> cell, String message) {
-        String normalizedMessage = message == null ? "" : message.toLowerCase(Locale.ROOT);
-        boolean hasError = normalizedMessage.contains("fail")
-                || normalizedMessage.contains("❌")
-                || normalizedMessage.contains("dừng")
-                || normalizedMessage.contains("không nạp được")
-                || normalizedMessage.contains("không lấy được token")
-                || normalizedMessage.contains("thất bại")
-                || normalizedMessage.contains("lỗi");
-        boolean hasSuccess = !hasError && (normalizedMessage.contains("pass") || normalizedMessage.contains("✅"));
+        String normalizedMessage = message == null ? "" : message;
 
+        // Chỉ bôi màu cho dòng chính của testcase (bắt đầu bằng ✅ hoặc ❌)
+        // và không bôi màu cho các dòng con (có dấu cách ở đầu hoặc chứa "Auth", "Setup", "Sending", v.v.)
+        boolean isMainResultLine = (normalizedMessage.startsWith("✅") || normalizedMessage.startsWith("❌"))
+                && !normalizedMessage.startsWith("  ");
+
+        boolean hasError = isMainResultLine && normalizedMessage.contains("❌");
+        boolean hasSuccess = isMainResultLine && normalizedMessage.contains("✅");
+
+        // Reset styles cho các dòng không phải kết quả chính
         cell.pseudoClassStateChanged(LOG_SUCCESS_STATE, hasSuccess);
         cell.pseudoClassStateChanged(LOG_ERROR_STATE, hasError);
     }
@@ -774,11 +774,9 @@ public class TestcaseController implements Initializable {
             showInfo("Lỗi lưu", "Không ghi được file. Xem log console.");
             return;
         }
-        showInfo("Đã lưu báo cáo",
-                "File:\n" + runStorage.getStorageFile()
-                        + "\nMã run: " + shortId(runId)
-                        + "\nTổng run đã lưu: " + runStorage.count()
-                        + "\n\nMở History / Dashboard / Report để xem.");
+        showInfo("✅ Đã lưu báo cáo",
+                "Mã run: " + shortId(runId) + "\n" +
+                        "📁 Mở History để xem chi tiết");
     }
 
     private String persistLastRun() {

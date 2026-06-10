@@ -48,7 +48,7 @@ public class MainApplication extends Application {
         Parent root = loadRoot("login-view.fxml");
         scene = new Scene(root);
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
-        String CSS_PATH = "/com/example/apitestapp/styles/styles.css";
+        String CSS_PATH = "/com/example/apitestapp/styles/main.css";
         java.net.URL cssUrl = getClass().getResource(CSS_PATH);
         if (cssUrl == null) {
             throw new IllegalStateException("Stylesheet not found: " + CSS_PATH);

@@ -213,8 +213,95 @@ public class HistoryController implements Initializable, RefreshableView {
                     if (run == null) {
                         return;
                     }
-                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                            "Xóa lần chạy " + shortId(run.getId()) + "?", ButtonType.OK, ButtonType.CANCEL);
+
+                    // 1. Dùng AlertType.NONE để xóa sạch icon chấm hỏi mặc định thô kệch
+                    Alert confirm = new Alert(Alert.AlertType.NONE);
+                    confirm.setTitle("Xác nhận xóa");
+                    confirm.setHeaderText(null); // Ẩn hoàn toàn vùng header trùng lặp chữ
+                    confirm.setContentText("Bạn có chắc chắn muốn xóa lần chạy " + shortId(run.getId()) + "?");
+
+                    // 2. Set các nút chức năng
+                    confirm.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+
+                    // 3. Tinh chỉnh tổng thể DialogPane bằng Inline CSS
+                    DialogPane dialogPane = confirm.getDialogPane();
+                    dialogPane.setStyle(
+                            "-fx-background-color: #ffffff; " +
+                                    "-fx-padding: 20px; " +
+                                    "-fx-font-family: 'Segoe UI', system-ui, sans-serif; " +
+                                    "-fx-font-size: 14px;"
+                    );
+
+                    // Định dạng lại nhãn chữ nội dung (Màu xám đậm quyến rũ, tạo khoảng cách dưới)
+                    dialogPane.lookup(".content.label").setStyle(
+                            "-fx-text-fill: #2d3748; " +
+                                    "-fx-padding: 5px 0 18px 0; " +
+                                    "-fx-font-weight: 500;"
+                    );
+
+                    // 4. Lấy nút ra cấu hình giao diện & hiệu ứng rê chuột (Hover)
+                    Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+                    Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+
+                    // Nút OK - Đổi sang màu XANH BIỂN (Primary Action)
+                    if (okButton != null) {
+                        okButton.setText("Xóa"); // Đổi chữ "OK" thành "Xóa" cho rõ nghĩa tiếng Việt
+                        okButton.setStyle(
+                                "-fx-background-color: #3b82f6; " + // Xanh biển hiện đại (Tailwind blue-500)
+                                        "-fx-text-fill: white; " +
+                                        "-fx-font-weight: bold; " +
+                                        "-fx-padding: 8px 22px; " +
+                                        "-fx-background-radius: 6px; " +
+                                        "-fx-cursor: hand;"
+                        );
+                        okButton.setOnMouseEntered(ev -> okButton.setStyle(
+                                "-fx-background-color: #2563eb; " + // Xanh đậm hơn khi hover
+                                        "-fx-text-fill: white; " +
+                                        "-fx-font-weight: bold; " +
+                                        "-fx-padding: 8px 22px; " +
+                                        "-fx-background-radius: 6px; " +
+                                        "-fx-cursor: hand;"
+                        ));
+                        okButton.setOnMouseExited(ev -> okButton.setStyle(
+                                "-fx-background-color: #3b82f6; " + // Trở lại xanh gốc
+                                        "-fx-text-fill: white; " +
+                                        "-fx-font-weight: bold; " +
+                                        "-fx-padding: 8px 22px; " +
+                                        "-fx-background-radius: 6px; " +
+                                        "-fx-cursor: hand;"
+                        ));
+                    }
+
+                    // Nút Cancel - Giữ màu xám sáng thanh lịch
+                    if (cancelButton != null) {
+                        cancelButton.setText("Hủy"); // Đổi "Cancel" thành "Hủy"
+                        cancelButton.setStyle(
+                                "-fx-background-color: #f1f5f9; " + // Xám nhẹ nhạt
+                                        "-fx-text-fill: #475569; " +
+                                        "-fx-font-weight: bold; " +
+                                        "-fx-padding: 8px 22px; " +
+                                        "-fx-background-radius: 6px; " +
+                                        "-fx-cursor: hand;"
+                        );
+                        cancelButton.setOnMouseEntered(ev -> cancelButton.setStyle(
+                                "-fx-background-color: #e2e8f0; " +
+                                        "-fx-text-fill: #475569; " +
+                                        "-fx-font-weight: bold; " +
+                                        "-fx-padding: 8px 22px; " +
+                                        "-fx-background-radius: 6px; " +
+                                        "-fx-cursor: hand;"
+                        ));
+                        cancelButton.setOnMouseExited(ev -> cancelButton.setStyle(
+                                "-fx-background-color: #f1f5f9; " +
+                                        "-fx-text-fill: #475569; " +
+                                        "-fx-font-weight: bold; " +
+                                        "-fx-padding: 8px 22px; " +
+                                        "-fx-background-radius: 6px; " +
+                                        "-fx-cursor: hand;"
+                        ));
+                    }
+
+                    // 5. Xử lý sự kiện bấm nút
                     confirm.showAndWait().ifPresent(bt -> {
                         if (bt == ButtonType.OK) {
                             runStorage.deleteRun(run.getId());

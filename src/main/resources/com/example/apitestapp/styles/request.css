@@ -162,3 +162,59 @@
 
 
 
+
+
+/* Đường kẻ cho TableView */
+.table-view {
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 6;
+}
+
+/* Hiển thị đường kẻ dọc giữa các cột */
+.table-view .column-header,
+.table-view .table-cell {
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 0 1 0 0;
+}
+
+/* Ẩn border cuối cùng của cột cuối (tránh bị trùng) */
+.table-view .column-header:last-child,
+.table-view .table-cell:last-child {
+    -fx-border-width: 0;
+}
+
+/* Đường kẻ ngang giữa các hàng */
+.table-row-cell {
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Style cho header cột */
+.table-view .column-header {
+    -fx-background-color: #f8fafc;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+    -fx-padding: 10 5 10 5;
+}
+
+/* Style cho các ô dữ liệu */
+.table-view .table-cell {
+    -fx-padding: 8 5 8 5;
+    -fx-alignment: CENTER-LEFT;
+}
+
+/* Hover effect cho hàng */
+.table-row-cell:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+/* Selected row */
+.table-row-cell:selected {
+    -fx-background-color: #dbeafe;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: #1e40af;
+}
+
+
