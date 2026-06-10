@@ -8,6 +8,14 @@ module com.example.apitestapp {
     requires com.google.gson;
     requires java.compiler;
 
+
+
+    requires org.apache.poi.poi;
+    requires org.apache.poi.ooxml;
+
+
+
+
     opens com.example.apitestapp to javafx.fxml;
     opens com.example.apitestapp.controllers to javafx.fxml, javafx.base;
     exports com.example.apitestapp;
