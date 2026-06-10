@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ProgressIndicator?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TreeView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
-<StackPane prefHeight="750.0" prefWidth="1300.0" stylesheets="@../styles/testcase.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apitestapp.controllers.TestcaseController">
+<StackPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="750.0" prefWidth="1300.0"
+           stylesheets="@../styles/testcase.css" xmlns="http://javafx.com/javafx/26"
+           fx:controller="com.example.apitestapp.controllers.TestcaseController">
     <children>
         <SplitPane fx:id="testcaseContent" dividerPositions="0.22, 0.76">
             <items>
@@ -28,32 +14,39 @@
                 <!-- ==================== CỘT TRÁI: SIDEBAR NỀN TRẮNG SÁNG ==================== -->
                 <VBox spacing="12.0" styleClass="left-panel">
                     <padding>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
                     </padding>
 
                     <children>
                         <!-- Base URL section -->
                         <VBox spacing="6.0">
-                            <Label styleClass="panel-sub-title" text="Base URL" />
-                            <TextField fx:id="mainBaseUrlField" promptText="http://group3.it4788.sukkaito.id.vn" styleClass="dark-field" />
-                            <Button fx:id="saveRunBtn" maxWidth="Infinity" onAction="#handleSaveRun" styleClass="btn-action-blue" text="Save" />
+                            <Label styleClass="panel-sub-title" text="Base URL"/>
+                            <TextField fx:id="mainBaseUrlField" promptText="http://group3.it4788.sukkaito.id.vn"
+                                       styleClass="dark-field"/>
+                            <Button fx:id="saveRunBtn" maxWidth="Infinity" onAction="#handleSaveRun"
+                                    styleClass="btn-action-blue" text="Save"/>
                         </VBox>
 
-                        <Separator styleClass="dark-separator" />
+                        <Separator styleClass="dark-separator"/>
 
                         <!-- Collections section -->
-                        <Label styleClass="header-text" text="COLLECTIONS" />
+                        <Label styleClass="header-text" text="COLLECTIONS"/>
                         <VBox spacing="8.0">
-                            <Button fx:id="addTestSuiteBtn" maxWidth="Infinity" onAction="#handleAddTestSuite" styleClass="btn-action-green" text="+ Thêm testsuit" />
+                            <Button fx:id="addTestSuiteBtn" maxWidth="Infinity" onAction="#handleAddTestSuite"
+                                    styleClass="btn-action-green" text="+ Thêm testsuit"/>
                             <HBox spacing="8.0">
-                                <Button fx:id="editTestSuiteBtn" maxWidth="Infinity" onAction="#handleEditTestSuite" styleClass="btn-action-slate" text="Sửa" HBox.hgrow="ALWAYS" />
-                                <Button fx:id="deleteTestSuiteBtn" maxWidth="Infinity" onAction="#handleDeleteTestSuite" styleClass="btn-action-red" text="Xóa" HBox.hgrow="ALWAYS" />
+                                <Button fx:id="editTestSuiteBtn" maxWidth="Infinity" onAction="#handleEditTestSuite"
+                                        styleClass="btn-action-slate" text="Sửa" HBox.hgrow="ALWAYS"/>
+                                <Button fx:id="deleteTestSuiteBtn" maxWidth="Infinity" onAction="#handleDeleteTestSuite"
+                                        styleClass="btn-action-red" text="Xóa" HBox.hgrow="ALWAYS"/>
                             </HBox>
-                            <Button fx:id="editCleanupDataBtn" maxWidth="Infinity" onAction="#handleEditCleanupData" styleClass="btn-action-purple" text="Cleanup data" />
+                            <Button fx:id="editCleanupDataBtn" maxWidth="Infinity" onAction="#handleEditCleanupData"
+                                    styleClass="btn-action-purple" text="Cleanup data"/>
                         </VBox>
 
                         <!-- TreeView Collections -->
-                        <TreeView fx:id="testSuiteTree" showRoot="false" styleClass="dark-tree-view" VBox.vgrow="ALWAYS" />
+                        <TreeView fx:id="testSuiteTree" showRoot="false" styleClass="dark-tree-view"
+                                  VBox.vgrow="ALWAYS"/>
                     </children>
                 </VBox>
 
@@ -62,7 +55,7 @@
                     <content>
                         <VBox spacing="20.0" styleClass="workspace-container">
                             <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
                             </padding>
 
                             <children>
@@ -72,45 +65,72 @@
                                         <HBox alignment="CENTER_LEFT" spacing="12.0">
                                             <Label fx:id="requestMethodLabel" styleClass="badge-post" text="POST">
                                                 <font>
-                                                    <Font name="System Bold" size="11.0" />
+                                                    <Font name="System Bold" size="11.0"/>
                                                 </font>
                                             </Label>
-                                            <TextField fx:id="baseUrlField" editable="false" styleClass="readonly-url-field" text="http://group3.it4788.sukkaito.id.vn/api/v1/signup" HBox.hgrow="ALWAYS" />
+                                            <TextField fx:id="baseUrlField" editable="false"
+                                                       styleClass="readonly-url-field"
+                                                       text="http://group3.it4788.sukkaito.id.vn/api/v1/signup"
+                                                       HBox.hgrow="ALWAYS"/>
                                         </HBox>
 
-                                        <Label styleClass="field-label" text="Headers" />
-                                        <TextArea fx:id="headerTextArea" prefHeight="70.0" promptText="Authorization: Bearer token&#10;X-Request-Id: test-001" styleClass="editor-light" wrapText="true" />
+                                        <Label styleClass="field-label" text="Headers"/>
+                                        <TextArea fx:id="headerTextArea" prefHeight="70.0"
+                                                  promptText="Authorization: Bearer token&#10;X-Request-Id: test-001"
+                                                  styleClass="editor-light" wrapText="true"/>
 
-                                        <Label styleClass="field-label" text="Body (JSON)" />
-                                        <TextArea fx:id="bodyTextArea" prefHeight="150.0" styleClass="editor-dark" text="{&#10;  &quot;phonenumber&quot;: &quot;098xxxxxxx&quot;,&#10;  &quot;password&quot;: &quot;Aa@12345&quot;&#10;}" />
+                                        <Label styleClass="field-label" text="Body (JSON)"/>
+                                        <TextArea fx:id="bodyTextArea" prefHeight="150.0" styleClass="editor-dark"
+                                                  text="{&#10;  &quot;phonenumber&quot;: &quot;098xxxxxxx&quot;,&#10;  &quot;password&quot;: &quot;Aa@12345&quot;&#10;}"/>
                                     </children>
                                 </VBox>
 
                                 <!-- Card: Test Suite Runner -->
                                 <VBox spacing="12.0" styleClass="workspace-card">
                                     <children>
-                                        <Label styleClass="workspace-card-title" text="TEST SUITE: Signup API Test Suite" />
+                                        <Label styleClass="workspace-card-title"
+                                               text="TEST SUITE: Signup API Test Suite"/>
 
                                         <!-- Toolbar - Các nút được giãn đều -->
                                         <HBox spacing="0" styleClass="toolbar-container" alignment="CENTER">
-                                            <Button fx:id="runAllBtn" onAction="#handleRunAll" styleClass="btn-run-all" text="▶ Run All" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
-                                            <Button fx:id="runSelectedBtn" onAction="#handleRunSelected" styleClass="btn-run-selected" text="▶ Run Selected" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
-                                            <Button fx:id="stopBtn" onAction="#handleStop" styleClass="btn-stop-execution" text="■ Stop" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
-                                            <Button fx:id="addTestCaseBtn" onAction="#handleAddTestCase" styleClass="btn-add-case" text="+ Thêm testcase" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
-                                            <Button fx:id="editTestCaseBtn" onAction="#handleEditTestCase" styleClass="btn-edit-case" text="Sửa testcase" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
-                                            <Button fx:id="deleteTestCaseBtn" onAction="#handleDeleteTestCase" styleClass="btn-delete-case" text="Xóa testcase" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
-                                            <ComboBox fx:id="stopConditionCombo" promptText="Chế độ dừng" styleClass="workspace-combo" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                                            <Button fx:id="runAllBtn" onAction="#handleRunAll" styleClass="btn-run-all"
+                                                    text="▶ Run All" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                                            <Button fx:id="runSelectedBtn" onAction="#handleRunSelected"
+                                                    styleClass="btn-run-selected" text="▶ Run Selected"
+                                                    HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                                            <Button fx:id="stopBtn" onAction="#handleStop"
+                                                    styleClass="btn-stop-execution" text="■ Stop" HBox.hgrow="ALWAYS"
+                                                    maxWidth="Infinity"/>
+                                            <Button fx:id="addTestCaseBtn" onAction="#handleAddTestCase"
+                                                    styleClass="btn-add-case" text="+ Thêm testcase" HBox.hgrow="ALWAYS"
+                                                    maxWidth="Infinity"/>
+                                            <Button fx:id="editTestCaseBtn" onAction="#handleEditTestCase"
+                                                    styleClass="btn-edit-case" text="Sửa testcase" HBox.hgrow="ALWAYS"
+                                                    maxWidth="Infinity"/>
+                                            <Button fx:id="deleteTestCaseBtn" onAction="#handleDeleteTestCase"
+                                                    styleClass="btn-delete-case" text="Xóa testcase" HBox.hgrow="ALWAYS"
+                                                    maxWidth="Infinity"/>
+                                            <ComboBox fx:id="stopConditionCombo" promptText="Chế độ dừng"
+                                                      styleClass="workspace-combo" HBox.hgrow="ALWAYS"
+                                                      maxWidth="Infinity"/>
                                         </HBox>
 
                                         <!-- Table -->
-                                        <TableView fx:id="testCaseTable" maxHeight="900.0" prefHeight="540.0" styleClass="premium-table">
+                                        <TableView fx:id="testCaseTable" maxHeight="900.0" prefHeight="540.0"
+                                                   styleClass="premium-table">
                                             <columns>
-                                                <TableColumn fx:id="colCheck" prefWidth="45.0" resizable="true" styleClass="table-check-column" text="X" />
-                                                <TableColumn fx:id="colName" prefWidth="200.0" resizable="true" text="Testcase" />
-                                                <TableColumn fx:id="colInput" prefWidth="220.0" resizable="true" text="Input" />
-                                                <TableColumn fx:id="colExpected" prefWidth="150.0" resizable="true" text="Mong đợi" />
-                                                <TableColumn fx:id="colStatus" prefWidth="80.0" resizable="true" text="HTTP" />
-                                                <TableColumn fx:id="colResult" prefWidth="120.0" resizable="true" text="Kết quả" />
+                                                <TableColumn fx:id="colCheck" prefWidth="45.0" resizable="true"
+                                                             styleClass="table-check-column" text="X"/>
+                                                <TableColumn fx:id="colName" prefWidth="200.0" resizable="true"
+                                                             text="Testcase"/>
+                                                <TableColumn fx:id="colInput" prefWidth="220.0" resizable="true"
+                                                             text="Input"/>
+                                                <TableColumn fx:id="colExpected" prefWidth="150.0" resizable="true"
+                                                             text="Mong đợi"/>
+                                                <TableColumn fx:id="colStatus" prefWidth="80.0" resizable="true"
+                                                             text="HTTP"/>
+                                                <TableColumn fx:id="colResult" prefWidth="120.0" resizable="true"
+                                                             text="Kết quả"/>
                                             </columns>
                                         </TableView>
                                     </children>
@@ -123,20 +143,22 @@
                 <!-- ==================== CỘT PHẢI: CONSOLE & TỔNG KẾT ==================== -->
                 <VBox spacing="15.0" styleClass="right-panel">
                     <padding>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
                     </padding>
 
                     <children>
-                        <Label style="-fx-font-weight: bold;" text="📋 KẾT QUẢ THỰC THI" />
-                        <ListView fx:id="resultLogList" styleClass="execution-log-list" VBox.vgrow="ALWAYS" />
-                        <VBox fx:id="summaryBox" spacing="5.0" style="-fx-background-color: #f1f2f6; -fx-padding: 10; -fx-background-radius: 5;">
+                        <Label style="-fx-font-weight: bold;" text="📋 KẾT QUẢ THỰC THI"/>
+                        <ListView fx:id="resultLogList" styleClass="execution-log-list" VBox.vgrow="ALWAYS"/>
+                        <VBox fx:id="summaryBox" spacing="5.0"
+                              style="-fx-background-color: #f1f2f6; -fx-padding: 10; -fx-background-radius: 5;">
                             <children>
-                                <Label style="-fx-font-weight: bold;" text="📊 TỔNG KẾT" />
-                                <Label fx:id="summaryText" text="Chưa có dữ liệu" />
+                                <Label style="-fx-font-weight: bold;" text="📊 TỔNG KẾT"/>
+                                <Label fx:id="summaryText" text="Chưa có dữ liệu"/>
                             </children>
                         </VBox>
 
-                        <Button fx:id="saveReportBtn" maxWidth="Infinity" onAction="#handleSaveReport" styleClass="btn-gradient-indigo" text="💾 Lưu báo cáo" />
+                        <Button fx:id="saveReportBtn" maxWidth="Infinity" onAction="#handleSaveReport"
+                                styleClass="btn-gradient-indigo" text="💾 Lưu báo cáo"/>
                     </children>
                 </VBox>
 
@@ -147,10 +169,12 @@
             <children>
                 <VBox alignment="CENTER" prefWidth="340.0" spacing="16.0" styleClass="running-overlay-card">
                     <children>
-                        <ProgressIndicator prefHeight="56.0" prefWidth="56.0" />
-                        <Label styleClass="running-overlay-title" text="Đang chạy testcase..." />
-                        <Label styleClass="running-overlay-subtitle" text="Vui lòng chờ, cleanup data vẫn sẽ chạy nếu bạn dừng." />
-                        <Button fx:id="overlayStopBtn" onAction="#handleStop" styleClass="btn-stop-execution" text="■ Stop" />
+                        <ProgressIndicator prefHeight="56.0" prefWidth="56.0"/>
+                        <Label styleClass="running-overlay-title" text="Đang chạy testcase..."/>
+                        <Label styleClass="running-overlay-subtitle"
+                               text="Vui lòng chờ, cleanup data vẫn sẽ chạy nếu bạn dừng."/>
+                        <Button fx:id="overlayStopBtn" onAction="#handleStop" styleClass="btn-stop-execution"
+                                text="■ Stop"/>
                     </children>
                 </VBox>
             </children>

@@ -56,29 +56,30 @@
 /* Tiêu đề của Card: chữ to rõ ràng hơn, màu trắng mờ sang trọng */
 .card .card-label {
     -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
-    -fx-font-size: 15px;      /* Tăng từ 13px lên 15px */
-    -fx-font-weight: 700;     /* Đậm hẳn lên */
+    -fx-font-size: 15px; /* Tăng từ 13px lên 15px */
+    -fx-font-weight: 700; /* Đậm hẳn lên */
     -fx-text-fill: rgba(255, 255, 255, 0.85);
 }
 
 /* Số liệu chính: Tăng size lớn hẳn làm điểm nhấn */
 .card .card-value {
     -fx-font-family: 'Segoe UI', 'Inter', sans-serif;
-    -fx-font-size: 42px;      /* Tăng từ 34px lên 42px để cực kỳ nổi bật */
+    -fx-font-size: 42px; /* Tăng từ 34px lên 42px để cực kỳ nổi bật */
     -fx-font-weight: 800;
     -fx-text-fill: #ffffff;
 }
 
 /* Icon mờ đặt ở góc phải dưới - không dùng translate gây lỗi lệch layout nữa */
 .card-icon-text {
-    -fx-font-size: 54px;      /* Tăng size icon cho tương xứng */
-    -fx-opacity: 0.14;        /* Giữ độ mờ vừa phải để không đè chữ */
+    -fx-font-size: 54px; /* Tăng size icon cho tương xứng */
+    -fx-opacity: 0.14; /* Giữ độ mờ vừa phải để không đè chữ */
 }
 
 /* ========== BIẾN THỂ MÀU NỀN CỦA CARD ========== */
 .card-blue {
     -fx-background-color: #2563eb; /* Màu xanh Royal blue hiện đại */
 }
+
 .card-blue:hover {
     -fx-background-color: #1d4ed8;
 }
@@ -86,6 +87,7 @@
 .card-purple {
     -fx-background-color: #a855f7;
 }
+
 .card-purple:hover {
     -fx-background-color: #9333ea;
 }
@@ -93,6 +95,7 @@
 .card-green {
     -fx-background-color: #10b981;
 }
+
 .card-green:hover {
     -fx-background-color: #059669;
 }
@@ -100,6 +103,7 @@
 .card-red {
     -fx-background-color: #ef4444;
 }
+
 .card-red:hover {
     -fx-background-color: #dc2626;
 }
@@ -210,5 +214,5 @@
     -fx-font-size: 20px;
     -fx-font-weight: 500;
     -fx-text-fill: #64748b; /* Màu xám Slate mờ sang trọng */
-    -fx-padding: 0 0 0 4px;  /* Đẩy nhẹ sang phải để thẳng hàng với chữ DASHBOARD */
+    -fx-padding: 0 0 0 4px; /* Đẩy nhẹ sang phải để thẳng hàng với chữ DASHBOARD */
 }

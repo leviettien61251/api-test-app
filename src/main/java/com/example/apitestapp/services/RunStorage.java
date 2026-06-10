@@ -1,28 +1,11 @@
 package com.example.apitestapp.services;
 
-import com.example.apitestapp.models.TestRun;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
+import com.example.apitestapp.models.dto.TestRun;
+import com.example.apitestapp.repository.RunHistoryRepository;
 
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Lưu lịch sử chạy test: bộ nhớ + file JSON (tránh lỗi OneDrive trên thư mục project).
@@ -31,18 +14,13 @@ public class RunStorage {
 
     private static RunStorage instance;
 
-    private final Path storageFile;
-    private final Gson gson;
+    private final RunHistoryRepository repository;
     private final List<TestRun> runs = new ArrayList<>();
 
     private RunStorage() {
-        this.storageFile = resolveStorageFile();
-        this.gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(Instant.class, new InstantAdapter())
-                .create();
-        loadFromDisk();
-        System.out.println("[RunStorage] Đã nạp " + runs.size() + " lần chạy từ: " + storageFile);
+        this.repository = new RunHistoryRepository();
+        runs.addAll(repository.loadRuns());
+        System.out.println("[RunStorage] Đã nạp " + runs.size() + " lần chạy từ: " + repository.getStorageFile());
     }
 
     public static synchronized RunStorage getInstance() {
@@ -52,49 +30,8 @@ public class RunStorage {
         return instance;
     }
 
-    /** Windows: %LOCALAPPDATA%\api-test-app\runs.json — không bị OneDrive khóa file. */
-    private static Path resolveStorageFile() {
-        String localAppData = System.getenv("LOCALAPPDATA");
-        Path base = localAppData != null && !localAppData.isBlank()
-                ? Path.of(localAppData, "api-test-app")
-                : Path.of(System.getProperty("user.home"), ".api-test-app");
-        return base.resolve("runs.json");
-    }
-
-    private void loadFromDisk() {
-        runs.clear();
-        try {
-            Files.createDirectories(storageFile.getParent());
-            if (!Files.exists(storageFile)) {
-                flushToDisk();
-                return;
-            }
-            String raw = Files.readString(storageFile, StandardCharsets.UTF_8).trim();
-            if (raw.isEmpty() || raw.equals("[") || raw.equals("]")) {
-                flushToDisk();
-                return;
-            }
-            Type type = new TypeToken<List<TestRun>>() {
-            }.getType();
-            List<TestRun> loaded = gson.fromJson(raw, type);
-            if (loaded != null) {
-                runs.addAll(loaded);
-            }
-        } catch (Exception e) {
-            System.err.println("[RunStorage] Không đọc được file: " + e.getMessage());
-        }
-    }
-
     private synchronized void flushToDisk() {
-        try {
-            Files.createDirectories(storageFile.getParent());
-            String json = gson.toJson(runs);
-            Files.writeString(storageFile, json, StandardCharsets.UTF_8,
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-        } catch (Exception e) {
-            System.err.println("[RunStorage] Không ghi được file: " + e.getMessage());
-            e.printStackTrace();
-        }
+        repository.saveRuns(runs);
     }
 
     public synchronized List<TestRun> getAllRuns() {
@@ -137,23 +74,11 @@ public class RunStorage {
     }
 
     public Path getStorageFile() {
-        return storageFile.toAbsolutePath();
+        return repository.getStorageFile();
     }
 
     public synchronized int count() {
         return runs.size();
     }
 
-    private static final class InstantAdapter implements JsonSerializer<Instant>, JsonDeserializer<Instant> {
-        @Override
-        public JsonElement serialize(Instant src, Type typeOfSrc, JsonSerializationContext context) {
-            return new JsonPrimitive(src.toString());
-        }
-
-        @Override
-        public Instant deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
-            return Instant.parse(json.getAsString());
-        }
-    }
 }

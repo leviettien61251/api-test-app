@@ -1,4 +1,4 @@
-package com.example.apitestapp.services;
+package com.example.apitestapp.models.dto;
 
 import java.util.List;
 
@@ -36,6 +36,10 @@ public class ApiScenarioDefinition {
         this.cleanupRequests = cleanupRequests == null ? List.of() : List.copyOf(cleanupRequests);
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getCollectionName() {
         return collectionName;
     }
@@ -62,10 +66,6 @@ public class ApiScenarioDefinition {
 
     public List<ApiCleanupRequest> getCleanupRequests() {
         return cleanupRequests;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static class Builder {

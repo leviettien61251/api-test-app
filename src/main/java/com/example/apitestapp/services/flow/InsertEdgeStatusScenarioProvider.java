@@ -1,9 +1,9 @@
 package com.example.apitestapp.services.flow;
 
-import com.example.apitestapp.services.ApiScenarioDefinition;
+import com.example.apitestapp.models.dto.ApiScenarioDefinition;
+import com.example.apitestapp.models.dto.ApiSetupRequest;
+import com.example.apitestapp.models.dto.ApiTestScenario;
 import com.example.apitestapp.services.ApiScenarioProvider;
-import com.example.apitestapp.services.ApiSetupRequest;
-import com.example.apitestapp.services.ApiTestScenario;
 
 import java.util.List;
 
@@ -12,6 +12,36 @@ public class InsertEdgeStatusScenarioProvider implements ApiScenarioProvider {
     private static final String ENDPOINT = "/api/v1/flow/insert-edge-status";
     private static final String EDGE_ID = "Egde Status A04";
     private static final String MISSING_EDGE_ID = "Egde Status Missing Edge";
+
+    private static ApiTestScenario scenario(String name,
+                                            String description,
+                                            String requestBody,
+                                            String expectedCode,
+                                            String expectedStatus,
+                                            boolean seedEdge) {
+        return ApiTestScenario.builder()
+                .scenario(name)
+                .description(description)
+                .setupRequests(seedEdge ? seedEdgeRequests() : List.of())
+                .headers(FlowScenarioSupport.AUTH_HEADERS)
+                .requestBody(requestBody)
+                .expectedCode(expectedCode)
+                .expectedStatus(expectedStatus)
+                .build();
+    }
+
+    private static List<ApiSetupRequest> seedEdgeRequests() {
+        return FlowScenarioSupport.edgeSetup(EDGE_ID);
+    }
+
+    private static String edgeStatusBody(String edgeIdValue, String occupancyRateValue) {
+        return """
+                {
+                  "edge_id": %s,
+                  "occupancy_rate": %s
+                }
+                """.formatted(edgeIdValue, occupancyRateValue);
+    }
 
     @Override
     public ApiScenarioDefinition getDefinition() {
@@ -44,35 +74,5 @@ public class InsertEdgeStatusScenarioProvider implements ApiScenarioProvider {
                 .scenarios(scenarios)
                 .cleanupRequests(FlowScenarioSupport.cleanupRequests("/api/v1/clean/edge-status", "/api/v1/clean/edge"))
                 .build();
-    }
-
-    private static ApiTestScenario scenario(String name,
-                                            String description,
-                                            String requestBody,
-                                            String expectedCode,
-                                            String expectedStatus,
-                                            boolean seedEdge) {
-        return ApiTestScenario.builder()
-                .scenario(name)
-                .description(description)
-                .setupRequests(seedEdge ? seedEdgeRequests() : List.of())
-                .headers(FlowScenarioSupport.AUTH_HEADERS)
-                .requestBody(requestBody)
-                .expectedCode(expectedCode)
-                .expectedStatus(expectedStatus)
-                .build();
-    }
-
-    private static List<ApiSetupRequest> seedEdgeRequests() {
-        return FlowScenarioSupport.edgeSetup(EDGE_ID);
-    }
-
-    private static String edgeStatusBody(String edgeIdValue, String occupancyRateValue) {
-        return """
-                {
-                  "edge_id": %s,
-                  "occupancy_rate": %s
-                }
-                """.formatted(edgeIdValue, occupancyRateValue);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.apitestapp.services;
+package com.example.apitestapp.models.dto;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -44,5 +44,5 @@ public class ApiResponse {
         return String.valueOf(httpCode);
     }
 
-    
+
 }

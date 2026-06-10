@@ -1,12 +1,59 @@
 package com.example.apitestapp.services.map;
 
 
-import com.example.apitestapp.services.*;
+import com.example.apitestapp.models.dto.ApiCleanupRequest;
+import com.example.apitestapp.models.dto.ApiScenarioDefinition;
+import com.example.apitestapp.models.dto.ApiSetupRequest;
+import com.example.apitestapp.models.dto.ApiTestScenario;
+import com.example.apitestapp.services.ApiScenarioProvider;
 
 import java.util.List;
 import java.util.Map;
 
 public class MapTestScenarioProvider implements ApiScenarioProvider {
+
+    private static List<ApiSetupRequest> createDuplicateMapSetupRequests() {
+        return List.of(
+                new ApiSetupRequest(
+                        "Thêm dữ liệu mồi Map trùng buildingCode",
+                        "POST",
+                        "/api/v1/insert-map-test",
+                        createMapRequestBody("B-MAP-DUP", "Building Map Duplicate", "https://example.com/map-dup.jpg", "5.1", "5.1"),
+                        Map.of("Authorization", "Bearer ${token}"),
+                        List.of("1000"),
+                        true
+                )
+        );
+    }
+
+    private static String createMapRequestBody(String buildingCode,
+                                               String buildingName,
+                                               String imageUrl,
+                                               String scaleX,
+                                               String scaleY) {
+        return """
+                {
+                    "buildingCode": %s,
+                    "buildingName": %s,
+                    "imageUrl": %s,
+                    "scaleX": %s,
+                    "scaleY": %s
+                }
+                """.formatted(
+                toJsonString(buildingCode),
+                toJsonString(buildingName),
+                toJsonString(imageUrl),
+                scaleX,
+                scaleY
+        );
+    }
+
+    private static String toJsonString(String value) {
+        if (value == null) {
+            return "null";
+        }
+        return "\"" + value + "\"";
+    }
 
     @Override
     public ApiScenarioDefinition getDefinition() {
@@ -243,7 +290,7 @@ public class MapTestScenarioProvider implements ApiScenarioProvider {
                                 Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
-                        ),new ApiCleanupRequest(
+                        ), new ApiCleanupRequest(
                                 "Clean login test data",
                                 "DELETE",
                                 "/api/v1/clean/login",
@@ -272,48 +319,5 @@ public class MapTestScenarioProvider implements ApiScenarioProvider {
                         )
                 ))
                 .build();
-    }
-
-    private static List<ApiSetupRequest> createDuplicateMapSetupRequests() {
-        return List.of(
-                new ApiSetupRequest(
-                        "Thêm dữ liệu mồi Map trùng buildingCode",
-                        "POST",
-                        "/api/v1/insert-map-test",
-                        createMapRequestBody("B-MAP-DUP", "Building Map Duplicate", "https://example.com/map-dup.jpg", "5.1", "5.1"),
-                        Map.of("Authorization", "Bearer ${token}"),
-                        List.of("1000"),
-                        true
-                )
-        );
-    }
-
-    private static String createMapRequestBody(String buildingCode,
-                                               String buildingName,
-                                               String imageUrl,
-                                               String scaleX,
-                                               String scaleY) {
-        return """
-                {
-                    "buildingCode": %s,
-                    "buildingName": %s,
-                    "imageUrl": %s,
-                    "scaleX": %s,
-                    "scaleY": %s
-                }
-                """.formatted(
-                toJsonString(buildingCode),
-                toJsonString(buildingName),
-                toJsonString(imageUrl),
-                scaleX,
-                scaleY
-        );
-    }
-
-    private static String toJsonString(String value) {
-        if (value == null) {
-            return "null";
-        }
-        return "\"" + value + "\"";
     }
 }

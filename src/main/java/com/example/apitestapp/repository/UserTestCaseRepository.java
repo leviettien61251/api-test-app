@@ -1,22 +1,14 @@
 package com.example.apitestapp.repository;
 
 import com.example.apitestapp.db.ConnectionManager;
-import com.example.apitestapp.models.UserTestCase;
-import com.example.apitestapp.services.ApiCleanupRequest;
-import com.example.apitestapp.services.ApiPayloadAssertion;
-import com.example.apitestapp.services.ApiResponseVariable;
-import com.example.apitestapp.services.ApiSetupRequest;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.example.apitestapp.models.dto.ApiCleanupRequest;
+import com.example.apitestapp.models.dto.ApiPayloadAssertion;
+import com.example.apitestapp.models.dto.ApiResponseVariable;
+import com.example.apitestapp.models.dto.ApiSetupRequest;
+import com.example.apitestapp.models.entity.UserTestCase;
+import com.google.gson.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

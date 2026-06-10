@@ -1,6 +1,6 @@
 package com.example.apitestapp.services;
 
-import com.google.gson.JsonObject;
+import com.example.apitestapp.models.dto.ApiResponse;
 import okhttp3.*;
 
 import java.io.IOException;

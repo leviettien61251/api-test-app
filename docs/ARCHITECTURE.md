@@ -4,17 +4,18 @@
 
 Ung dung theo mo hinh JavaFX desktop:
 
-- `views` (`.fxml`) cho giao dien
-- `controllers` cho event/UI state
-- `services` cho orchestration, test execution, storage
-- `repository` cho PostgreSQL
-- `models` cho object nghiep vu
-- `config` cho session va runtime state
+- FXML views trong `src/main/resources`
+- controllers xu ly UI state va event
+- services orchestration, test execution, JSON parsing va storage
+- repositories truy cap PostgreSQL
+- models bieu dien user, testcase, suite va ket qua run
+- config giu session/runtime state
 
 ## 2. Package layout
 
 ```text
 src/main/java/com/example/apitestapp
+|-- Launcher.java
 |-- MainApplication.java
 |-- MainController.java
 |-- config/
@@ -23,6 +24,11 @@ src/main/java/com/example/apitestapp
 |-- models/
 |-- repository/
 `-- services/
+    |-- auth/
+    |-- flow/
+    |-- map/
+    |-- realapitest/
+    `-- user/
 ```
 
 Resource UI:
@@ -43,13 +49,15 @@ src/main/resources/com/example/apitestapp
 `-- styles/
 ```
 
-## 3. Luong khoi dong va dieu huong
+## 3. Khoi dong va navigation
 
 ```mermaid
 flowchart LR
+    launcher["Launcher"]
     app["MainApplication"]
     login["login-view.fxml / LoginController"]
     main["main-view.fxml / MainController"]
+    config["Default run config"]
     dashboard["Dashboard"]
     testcase["Testcase"]
     request["Request"]
@@ -57,21 +65,26 @@ flowchart LR
     history["History"]
     profile["Profile"]
 
+    launcher --> app
     app --> login
     login --> main
     main --> dashboard
-    main --> testcase
+    main --> config
+    config --> testcase
     main --> request
     main --> report
     main --> history
     main --> profile
 ```
 
-`MainController` co 3 vai tro ky thuat quan trong:
+`MainController`:
 
-- cache cac view da nap trong `viewCache`
-- noi callback mo report tu `Dashboard` va `History`
-- dang ky phim tat va dialog xac nhan thoat
+- cache view trong `viewCache`
+- goi `RefreshableView.refresh()` khi mo lai view
+- wire callback `openReportForRun` cho Dashboard va History
+- dang ky phim tat
+- hien confirm dialog khi dong app
+- reset session/config khi logout
 
 ## 4. Luong chay testcase
 
@@ -98,54 +111,87 @@ flowchart LR
     ui --> storage
 ```
 
-Trinh tu nghiep vu:
+Trinh tu chinh:
 
-1. chon scenario hoac user suite
-2. nap `ApiTestScenario` / `UserTestCase`
-3. build `TestCaseRowModel`
-4. khi run:
-   - resolve URL
-   - replace path params
-   - them query params
-   - chay setup requests
-   - capture response variables
-   - auth setup neu can
-   - goi request chinh
-   - so sanh status code
-   - so sanh payload/full response
-   - cleanup
-5. luu `TestRun` + `TestResult`
+1. User chon scenario code hoac user suite/case.
+2. Controller tao `TestCaseRowModel`.
+3. Khi run, controller resolve base URL va endpoint.
+4. Path params duoc replace vao URL.
+5. Query params duoc append vao URL.
+6. Headers duoc apply vao request.
+7. Setup requests duoc chay truoc request chinh.
+8. Response variables duoc capture theo `jsonPath`.
+9. Auth setup mac dinh co the duoc kich hoat neu can runtime token.
+10. Request chinh goi qua `ApiTestService`.
+11. Status, payload assertions va expected body duoc danh gia.
+12. Cleanup requests duoc chay.
+13. `TestRun` va `TestResult` duoc luu vao `RunStorage`.
 
-## 5. Model chinh
+## 5. Request builder flow
 
-### Runtime / session
+```mermaid
+flowchart LR
+    req["RequestController"]
+    config["AppRunConfig"]
+    okhttp["OkHttp"]
+    backend["Backend API"]
+    tests["Simple assert parser"]
+
+    req --> config
+    req --> okhttp
+    okhttp --> backend
+    backend --> req
+    req --> tests
+```
+
+Request builder:
+
+- resolve URL tuyet doi hoac relative
+- parse query string vao bang params va dong bo nguoc lai URL
+- add custom headers
+- set `Authorization` cho Basic/Bearer
+- gui raw body hoac multipart form-data
+- format JSON response o muc text
+- parse assert script don gian
+
+## 6. Model chinh
+
+### Config/session
 
 - `AppSession`
 - `AppRunConfig`
 - `SelectedRunContext`
 
-### Ket qua run
-
-- `TestRun`
-- `TestResult`
-- `RunStorage`
-
-### Testcase
+### Test execution
 
 - `ApiScenarioDefinition`
 - `ApiTestScenario`
 - `ApiSetupRequest`
 - `ApiCleanupRequest`
+- `ApiResponseVariable`
 - `ApiPayloadAssertion`
-- `TestCaseRowModel`
+- `ApiPayloadAssertionEvaluator`
+- `ApiResponse`
+- `ApiTestService`
+
+### User-defined tests
+
 - `UserTestSuite`
 - `UserTestCase`
+- `UserTestSuiteService`
+- `UserTestCaseService`
 
-## 6. Persistence
+### Result storage
+
+- `TestRun`
+- `TestResult`
+- `RunStorage`
+
+## 7. Persistence
 
 ### PostgreSQL
 
-Repository hien co:
+Repository:
 
 - `UserRepository`
 - `RoleRepository`
@@ -153,33 +199,31 @@ Repository hien co:
 - `UserTestSuiteRepository`
 - `UserTestCaseRepository`
 
-`UserTestCaseRepository` hien da doc/ghi duoc cac field nang cao nhu:
+Bang chinh:
 
-- `query_params`
-- `path_params`
-- `payload_assertions`
-- `expected_response_body`
+- `roles`
+- `users`
+- `client_machines`
+- `user_test_suites`
+- `user_test_cases`
 
 ### File JSON local
 
-`RunStorage` luu lich su run vao `%LOCALAPPDATA%\\api-test-app\\runs.json`.
+`RunStorage` ghi lich su run vao:
 
-Ly do:
+```text
+%LOCALAPPDATA%\api-test-app\runs.json
+```
 
-- khong buoc phai luu run vao database
-- giam rui ro xung dot file trong workspace
+Fallback:
 
-## 7. Scenario architecture
+```text
+%USERPROFILE%\.api-test-app\runs.json
+```
 
-`ApiScenarioRegistry` tao danh sach provider co san theo code. Nhom provider dang thay ro:
+## 8. Scenario architecture
 
-- `auth`
-- `user`
-- `map`
-- `flow`
-- `real API`
-
-Moi provider tra ve `ApiScenarioDefinition` gom:
+`ApiScenarioProvider` tra ve `ApiScenarioDefinition`:
 
 - `collectionName`
 - `moduleName`
@@ -189,10 +233,18 @@ Moi provider tra ve `ApiScenarioDefinition` gom:
 - `scenarios`
 - `cleanupRequests`
 
-## 8. Diem ky thuat dang mo
+`ApiScenarioRegistry` tap hop provider tu cac package:
 
-- ten module/collection chua dong nhat
-- `RequestController` chua su dung auth UI trong HTTP request
-- `Collections` va `Environments` chua noi vao luong chinh
-- `database.sql` chua du dieu kien de xem la migration sach
-- `TestcaseController` rat lon, blast radius cao khi sua
+- `services.auth`
+- `services.user`
+- `services.map`
+- `services.flow`
+- `services.realapitest`
+
+## 9. Diem ky thuat can can than
+
+- `TestcaseController` gom nhieu workflow trong mot class, blast radius cao.
+- `database.sql` chua phai migration sach.
+- Ten collection/module/apiLabel chua dong nhat giua provider.
+- `Request` form-data chua co file upload.
+- `Profile`, `Collections`, `Environments` chua phai module nghiep vu hoan chinh.

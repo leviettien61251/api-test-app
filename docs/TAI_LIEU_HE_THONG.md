@@ -1,20 +1,21 @@
 # Tai lieu he thong
 
-## 1. Muc tieu he thong
+## 1. Muc tieu
 
-`API Test App` la ung dung desktop JavaFX phuc vu tester trong viec:
+`API Test App` la ung dung desktop JavaFX cho tester:
 
-- dang nhap va giu session lam viec
-- nap testcase API tu code hoac tu database
-- chay testcase hang loat hoac chon loc
+- dang nhap va khoi tao session lam viec
+- cau hinh base URL truoc khi chay test
+- nap testcase co san hoac testcase do user tao
+- chay testcase, setup, cleanup, assertion
 - debug endpoint bang request thu cong
-- luu, xem, loc va xoa lich su thuc thi
+- xem dashboard, report va lich su run
 
-He thong nay la mot test client cho backend, khong phai backend service.
+He thong la API test client, khong phai API backend.
 
 ## 2. Pham vi chuc nang
 
-### Co trong code hien tai
+### Dang hoat dong trong luong chinh
 
 - `Login`
 - `Default run config`
@@ -27,44 +28,40 @@ He thong nay la mot test client cho backend, khong phai backend service.
 - CRUD `user_test_suite`
 - CRUD `user_test_case`
 
-### Co mat trong repo nhung chua tham gia luong chinh day du
+### Ton tai trong repo nhung chua noi vao navigation chinh
 
 - `Collections`
 - `Environments`
 
-Chi tiet o [MA_TRAN_MAN_HINH.md](/D:/code/api-test-app/docs/MA_TRAN_MAN_HINH.md).
-
-## 3. Nguoi dung va he thong ngoai
+## 3. Actor va he thong ngoai
 
 ### Actor chinh
 
-- `Tester`
+- `Tester`: su dung app de chay test, tao testcase va xem ket qua.
 
 ### He thong ngoai
 
-- `Backend API`: dich vu duoc test
-- `PostgreSQL`: luu user, role, may client, user test suite, user test case
-- `RunStorage JSON`: luu local lich su run
+- `Backend API`: dich vu duoc goi khi run testcase hoac gui request thu cong.
+- `PostgreSQL`: luu user, role, client machine, user test suite, user test case.
+- `RunStorage JSON`: file local luu lich su run.
 
-Use case muc cao nam tai [USECASE_TONG_QUAT.md](/D:/code/api-test-app/docs/USECASE_TONG_QUAT.md).
+## 4. Module chinh
 
-## 4. Thanh phan chinh
+### 4.1 Khoi dong va dieu huong
 
-### 4.1 Khoi tao va dieu huong
+- `MainApplication`: khoi tao JavaFX, AtlantaFX theme, login view va main view.
+- `MainController`: dieu huong, cache view, refresh view, mo report theo run ID, phan hoi logout va xac nhan thoat app.
 
-- `MainApplication`: khoi tao JavaFX, stylesheet, login view
-- `MainController`: dieu huong giua cac man hinh chinh, cache view, dang ky phim tat va dialog xac nhan thoat
-
-Main menu hien tai noi den:
+Navigation chinh:
 
 - `Dashboard`
 - `Testcase`
 - `Request`
 - `Report`
 - `History`
-- `Profile`
+- `Profile` qua user menu
 
-Phim tat da duoc cai trong `MainController`:
+Phim tat:
 
 - `Ctrl + D`: Dashboard
 - `Ctrl + T`: Testcase
@@ -74,87 +71,81 @@ Phim tat da duoc cai trong `MainController`:
 
 ### 4.2 Login va session
 
-- `LoginController` tim user qua `UserRepository`
-- session runtime duoc giu trong `AppSession`
-- thong tin may client duoc luu qua `ClientMachineRepository` ngay sau khi vao main view
+- `LoginController` nhan username/email va password.
+- `UserRepository.findUserByEmailAndPassword` xac thuc voi PostgreSQL.
+- `AppSession` giu current user va username.
+- Sau login, `MainController` luu thong tin client machine qua `ClientMachineRepository`.
 
-Luu y:
+Code hien khong the hien authorization rieng cho admin/tester.
 
-- role trong UI hien la gia tri chon tren combobox
-- docs khong nen coi do la co che phan quyen hoan chinh, vi code chua the hien logic authorization tach biet
+### 4.3 Default run config
 
-### 4.3 Testcase runner
+Dialog sau login cho phep cau hinh:
 
-`TestcaseController` la module trung tam cua app. Chuc nang hien tai gom:
+- `Base URL`
+- `Alert mode`: `Stop on fail` hoac `Continue`
+
+Runner khong con la input trong dialog. `AppRunConfig.getRunner()` lay username trong session, fallback ve user he dieu
+hanh.
+
+### 4.4 Testcase runner
+
+`TestcaseController` la module nghiep vu lon nhat:
 
 - nap scenario co san tu `ApiScenarioRegistry`
-- nap `user test suite` va `user test case` tu database
-- chay `Run All` / `Run Selected`
-- dung qua trinh chay
-- save base URL
-- CRUD suite/testcase cho user
-- quan ly setup/cleanup hooks
-- validate payload qua `ApiPayloadAssertionEvaluator`
+- nap suite/case do user tao tu PostgreSQL
+- tao, sua, soft delete suite va case
+- cap nhat cleanup requests cua suite
+- chay `Run All` va `Run Selected`
+- dung qua trinh run
+- replace path params, append query params, apply headers
+- chay setup request, capture response variables
+- tu dong setup auth khi body/header can `${token}` hoac `${authorizationHeader}`
+- goi request chinh qua `ApiTestService`
+- so sanh status code, payload assertions va expected response body
+- chay cleanup request
+- luu `TestRun` vao `RunStorage`
 
-Nguon testcase hien tai gom 2 nhom:
+### 4.5 Scenario co san
 
-1. `Scenario code san`
-2. `User testcase` luu trong PostgreSQL
+`ApiScenarioRegistry` dang ky 30 provider:
 
-### 4.4 Nhom scenario co san
+- `Auth`: signup, login, change password, get user info
+- `User`: set user info, set avatar, provider cu `Collections 2/User2 Module2`
+- `Map`: insert map/node/step, area, heatmap, path, edges, nodes, floor, meta, ward
+- `Flow`: insert obstacle, density, bottleneck, heatmap, edge, edge status, edge density va cac API get
+- `Real API`: `GET /map/nodes`
 
-`ApiScenarioRegistry` dang ky cac provider thuoc cac nhom:
+Mot so label/module trong code chua dong nhat; tai lieu ghi nhan trang thai that thay vi chuan hoa ten.
 
-- `Auth`
-- `User`
-- `Map`
-- `Flow`
-- `Real API`
+### 4.6 Request builder
 
-Ngoai ra repo con mot so ten module cu/chua chuan hoa, vi du `Collections 2`, `User2 Module2`. Docs can ghi nhan do day la trang thai that cua code, khong nen lam dep bang cach bo qua.
+`RequestController` ho tro:
 
-### 4.5 Request builder
+- method `GET`, `POST`, `PUT`, `DELETE`, `PATCH`
+- URL tuyet doi hoac endpoint tuong doi theo `AppRunConfig.baseUrl`
+- params table dong bo voi query string tren URL
+- request headers table
+- raw body `JSON`, `Text`, `XML`
+- multipart form-data
+- auth UI `No Auth`, `Basic Auth`, `Bearer Token`
+- xem status, response time, response body va response headers
+- test script don gian voi `assert status == 200`, `duration < 500`, `body contains "..."`
 
-`RequestController` cho phep:
+Gioi han: form-data chi gui text fields, chua co upload file; test script la bo parse don gian, khong phai
+JavaScript/Postman sandbox.
 
-- chon method `GET`, `POST`, `PUT`, `DELETE`, `PATCH`
-- nhap URL tuyet doi hoac endpoint tuong doi
-- gui raw body `JSON`, `Text`, `XML`
-- xem status, response time, body va headers
+### 4.7 Dashboard, report, history
 
-Trang thai hien tai:
+- `DashboardController`: tong so testcase da chay, so run, pass/fail, run gan day.
+- `ReportController`: thong tin run, tong testcase, pass/fail, pie chart, bar chart response time, bang chi tiet.
+- `HistoryController`: loc theo ngay, loc theo status, tim keyword, mo report, xoa run.
 
-- UI chon `No Auth`, `Basic Auth`, `Bearer Token` da co
-- nhung logic HTTP call hien tai moi chi set `Accept: */*`
-- thong tin auth tu UI chua duoc ap vao request
-
-### 4.6 Dashboard, report, history
-
-- `DashboardController`
-  - tong so testcase da chay
-  - tong so run
-  - tong pass/fail
-  - danh sach run gan day
-
-- `ReportController`
-  - thong tin run
-  - tong testcase, pass, fail
-  - pie chart pass/fail
-  - bar chart response time
-  - bang ket qua chi tiet
-
-- `HistoryController`
-  - loc theo ngay
-  - loc theo status
-  - tim theo keyword
-  - mo report
-  - xoa run
-
-## 5. Du lieu va persistence
+## 5. Persistence
 
 ### 5.1 PostgreSQL
 
-Schema hien tai su dung it nhat cac bang:
+Bang chinh:
 
 - `roles`
 - `users`
@@ -162,11 +153,11 @@ Schema hien tai su dung it nhat cac bang:
 - `user_test_suites`
 - `user_test_cases`
 
-File tham khao: [database.sql](/D:/code/api-test-app/src/main/resources/db/database.sql)
+`database.sql` la file tham khao. Cac migration bo sung nam trong `src/main/resources/db/migrations`.
 
-### 5.2 Cac truong quan trong cua `user_test_cases`
+### 5.2 User testcase
 
-Theo schema va model/repository hien tai, user testcase ho tro:
+`user_test_cases` ho tro:
 
 - `request_headers`
 - `query_params`
@@ -178,77 +169,29 @@ Theo schema va model/repository hien tai, user testcase ho tro:
 - `expected_response_body`
 - `expected_status_code`
 
-Dieu nay co nghia app khong chi test status code, ma con co the:
+`query_params` cho phep nhieu value cho mot key trong model/service.
 
-- thay the path params vao endpoint
-- so sanh payload theo `jsonPath`
-- so sanh toan bo response JSON
+### 5.3 RunStorage
 
-### 5.3 Run storage local
-
-`RunStorage` luu lich su run vao:
+`RunStorage` luu local:
 
 ```text
 %LOCALAPPDATA%\api-test-app\runs.json
 ```
 
-Muc dich:
+Neu `LOCALAPPDATA` khong co:
 
-- tach lich su run khoi workspace
-- tranh xung dot khoa file tren Windows/OneDrive
-- cho `Dashboard`, `Report`, `History` doc lai du lieu nhanh
+```text
+%USERPROFILE%\.api-test-app\runs.json
+```
 
-## 6. Runtime config
+File nay la nguon du lieu cho Dashboard, Report va History.
 
-### 6.1 Cau hinh database
+## 6. Gioi han hien tai
 
-`ConnectionManager` doc cau hinh theo thu tu:
-
-1. Java system property
-2. Environment variable
-3. Gia tri mac dinh trong code
-
-Mac dinh:
-
-- URL: `jdbc:postgresql://localhost:5432/api_test_app`
-- User: `postgres`
-- Password: `12345`
-
-### 6.2 Cau hinh run
-
-`AppRunConfig` quan ly:
-
-- `baseUrl`
-- `alertMode`
-- `runner`
-- `configuredAt`
-
-Gia tri mac dinh dang quan trong nhat:
-
-- `DEFAULT_BASE_URL = http://group3.it4788.sukkaito.id.vn/api`
-- `DEFAULT_ALERT_MODE = Stop on fail`
-
-Luu y:
-
-- hang `DEFAULT_RUN_MODE` van con trong code
-- nhung luong chon `run mode` da bi loai bo khoi dialog cau hinh
-- khi luu ket qua run, app phan biet `Run All` va `Run Selected` o cap ket qua thuc thi, khong phai o dialog config
-
-## 7. Gioi han ky thuat can ghi nhan
-
-- `database.sql` chua sach, khong phai migration tuyen tinh
-- ten collection/module trong scenario provider chua dong nhat
-- auth UI trong `Request` chua duoc noi voi HTTP headers thuc te
-- `Collections` va `Environments` chua noi vao navigation chinh
-- `Profile` hien nghien ve hien thi thong tin hon la module chinh sua profile day du
-
-## 8. Khi nao can cap nhat docs tiep
-
-Can cap nhat docs neu co thay doi trong:
-
-- schema PostgreSQL
-- danh sach scenario provider
-- co che auth/request builder
-- format `runs.json`
-- workflow tao/sua user testcase
-- navigation chinh cua `MainController`
+- `database.sql` chua phai migration/deployment script sach.
+- Seed SQL trong `database.sql` co phan can sua thu tu va cu phap truoc khi chay truc tiep.
+- `Collections` va `Environments` moi o muc UI/resource, chua thanh workflow chinh.
+- `Profile` chu yeu hien thi thong tin user, chua phai module sua profile day du.
+- `Request` chua ho tro file upload trong form-data.
+- `TestcaseController` rat lon, nen can can than khi sua vi blast radius cao.

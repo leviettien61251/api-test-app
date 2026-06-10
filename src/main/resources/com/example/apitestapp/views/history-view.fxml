@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="800.0" prefWidth="1150.0" spacing="20.0" styleClass="content-area"
       stylesheets="@../styles/history.css" xmlns="http://javafx.com/javafx/17"
       fx:controller="com.example.apitestapp.controllers.HistoryController">
@@ -50,7 +49,8 @@
                         <VBox spacing="6.0" styleClass="filter-field" GridPane.columnIndex="3">
                             <Label styleClass="filter-label" text="TÌM KIẾM"/>
                             <HBox spacing="8.0" styleClass="search-box" alignment="CENTER_LEFT" maxWidth="300.0">
-                                <TextField fx:id="txtSearch" styleClass="search-field" HBox.hgrow="ALWAYS" promptText="Nhập từ khóa..."/>
+                                <TextField fx:id="txtSearch" styleClass="search-field" HBox.hgrow="ALWAYS"
+                                           promptText="Nhập từ khóa..."/>
                                 <Button fx:id="btnFilter" onAction="#handleFilter" styleClass="btn-search" text="🔍"/>
                             </HBox>
                         </VBox>
@@ -61,16 +61,21 @@
                     <columns>
                         <TableColumn fx:id="colId" styleClass="table-col-id" prefWidth="100.0" text="Mã Run"/>
                         <TableColumn fx:id="colTime" styleClass="table-col-time" prefWidth="150.0" text="Thời Gian"/>
-                        <TableColumn fx:id="colRunner" styleClass="table-col-runner" prefWidth="110.0" text="Người Chạy"/>
-                        <TableColumn fx:id="colMachine" styleClass="table-col-machine" prefWidth="150.0" text="Máy Chạy"/>
+                        <TableColumn fx:id="colRunner" styleClass="table-col-runner" prefWidth="110.0"
+                                     text="Người Chạy"/>
+                        <TableColumn fx:id="colMachine" styleClass="table-col-machine" prefWidth="150.0"
+                                     text="Máy Chạy"/>
                         <TableColumn fx:id="colOs" styleClass="table-col-os" prefWidth="120.0" text="Hệ Điều Hành"/>
                         <TableColumn fx:id="colMode" styleClass="table-col-mode" prefWidth="110.0" text="Chế Độ"/>
 
-                        <TableColumn fx:id="colTestSuite" styleClass="table-col-testsuite" prefWidth="140.0" text="Test Suite"/>
+                        <TableColumn fx:id="colTestSuite" styleClass="table-col-testsuite" prefWidth="140.0"
+                                     text="Test Suite"/>
 
-                        <TableColumn fx:id="colResult" styleClass="table-col-result" prefWidth="100.0" text="PASS/FAIL"/>
+                        <TableColumn fx:id="colResult" styleClass="table-col-result" prefWidth="100.0"
+                                     text="PASS/FAIL"/>
                         <TableColumn fx:id="colStatus" styleClass="table-col-status" prefWidth="90.0" text="Kết Quả"/>
-                        <TableColumn fx:id="colDetails" styleClass="table-col-action" prefWidth="100.0" text="Chi Tiết"/>
+                        <TableColumn fx:id="colDetails" styleClass="table-col-action" prefWidth="100.0"
+                                     text="Chi Tiết"/>
                         <TableColumn fx:id="colDelete" styleClass="table-col-action" prefWidth="70.0" text="Xóa"/>
                     </columns>
                     <columnResizePolicy>

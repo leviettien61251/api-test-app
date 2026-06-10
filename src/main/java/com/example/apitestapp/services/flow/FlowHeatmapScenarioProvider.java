@@ -1,9 +1,9 @@
 package com.example.apitestapp.services.flow;
 
-import com.example.apitestapp.services.ApiScenarioDefinition;
+import com.example.apitestapp.models.dto.ApiScenarioDefinition;
+import com.example.apitestapp.models.dto.ApiSetupRequest;
+import com.example.apitestapp.models.dto.ApiTestScenario;
 import com.example.apitestapp.services.ApiScenarioProvider;
-import com.example.apitestapp.services.ApiSetupRequest;
-import com.example.apitestapp.services.ApiTestScenario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,71 @@ public class FlowHeatmapScenarioProvider implements ApiScenarioProvider {
 
     private static final String ENDPOINT = "/api/v1/flow/insert-heatmap-data";
     private static final String ROUTE_ID = "R_HEATMAP";
+
+    private static String heatmapBody(String routeId,
+                                      String x,
+                                      String y,
+                                      String densityValue,
+                                      String statusMessage,
+                                      String radius) {
+        return """
+                {
+                  "route_id": "%s",
+                  "x": %s,
+                  "y": %s,
+                  "density_value": %s,
+                  "status_message": %s,
+                  "radius": %s
+                }
+                """.formatted(routeId, x, y, densityValue, statusMessage, radius);
+    }
+
+    private static List<ApiSetupRequest> createHeatmapSetupRequests() {
+        List<ApiSetupRequest> setupRequests = new ArrayList<>();
+        setupRequests.add(new ApiSetupRequest(
+                "Clean heatmap data before testcase",
+                "DELETE",
+                "/api/v1/clean/heatmap-data",
+                "",
+                FlowScenarioSupport.AUTH_HEADERS,
+                List.of("1000", "200", "204", "201"),
+                true
+        ));
+        setupRequests.add(new ApiSetupRequest(
+                "Clean route data before testcase",
+                "DELETE",
+                "/api/v1/clean/route",
+                "",
+                FlowScenarioSupport.AUTH_HEADERS,
+                List.of("1000", "200", "204", "201"),
+                true
+        ));
+        setupRequests.addAll(FlowScenarioSupport.routeSetup(ROUTE_ID));
+        return setupRequests;
+    }
+
+    private static List<ApiSetupRequest> createMultipleHeatmapSetupRequests() {
+        List<ApiSetupRequest> setupRequests = new ArrayList<>(createHeatmapSetupRequests());
+        setupRequests.add(new ApiSetupRequest(
+                "Insert first heatmap point for same route",
+                "POST",
+                ENDPOINT,
+                heatmapBody(ROUTE_ID, "0", "0", "0.5", "\"M\"", "1.0"),
+                FlowScenarioSupport.AUTH_HEADERS,
+                List.of("1000", "200", "201"),
+                true
+        ));
+        setupRequests.add(new ApiSetupRequest(
+                "Insert second heatmap point for same route",
+                "POST",
+                ENDPOINT,
+                heatmapBody(ROUTE_ID, "1", "1", "0.5", "\"M\"", "1.0"),
+                FlowScenarioSupport.AUTH_HEADERS,
+                List.of("1000", "200", "201"),
+                true
+        ));
+        return setupRequests;
+    }
 
     @Override
     public ApiScenarioDefinition getDefinition() {
@@ -80,70 +145,5 @@ public class FlowHeatmapScenarioProvider implements ApiScenarioProvider {
                 .scenarios(scenarios)
                 .cleanupRequests(FlowScenarioSupport.cleanupRequests("/api/v1/clean/heatmap-data"))
                 .build();
-    }
-
-    private static String heatmapBody(String routeId,
-                                      String x,
-                                      String y,
-                                      String densityValue,
-                                      String statusMessage,
-                                      String radius) {
-        return """
-                {
-                  "route_id": "%s",
-                  "x": %s,
-                  "y": %s,
-                  "density_value": %s,
-                  "status_message": %s,
-                  "radius": %s
-                }
-                """.formatted(routeId, x, y, densityValue, statusMessage, radius);
-    }
-
-    private static List<ApiSetupRequest> createHeatmapSetupRequests() {
-        List<ApiSetupRequest> setupRequests = new ArrayList<>();
-        setupRequests.add(new ApiSetupRequest(
-                "Clean heatmap data before testcase",
-                "DELETE",
-                "/api/v1/clean/heatmap-data",
-                "",
-                FlowScenarioSupport.AUTH_HEADERS,
-                List.of("1000", "200", "204", "201"),
-                true
-        ));
-        setupRequests.add(new ApiSetupRequest(
-                "Clean route data before testcase",
-                "DELETE",
-                "/api/v1/clean/route",
-                "",
-                FlowScenarioSupport.AUTH_HEADERS,
-                List.of("1000", "200", "204", "201"),
-                true
-        ));
-        setupRequests.addAll(FlowScenarioSupport.routeSetup(ROUTE_ID));
-        return setupRequests;
-    }
-
-    private static List<ApiSetupRequest> createMultipleHeatmapSetupRequests() {
-        List<ApiSetupRequest> setupRequests = new ArrayList<>(createHeatmapSetupRequests());
-        setupRequests.add(new ApiSetupRequest(
-                "Insert first heatmap point for same route",
-                "POST",
-                ENDPOINT,
-                heatmapBody(ROUTE_ID, "0", "0", "0.5", "\"M\"", "1.0"),
-                FlowScenarioSupport.AUTH_HEADERS,
-                List.of("1000", "200", "201"),
-                true
-        ));
-        setupRequests.add(new ApiSetupRequest(
-                "Insert second heatmap point for same route",
-                "POST",
-                ENDPOINT,
-                heatmapBody(ROUTE_ID, "1", "1", "0.5", "\"M\"", "1.0"),
-                FlowScenarioSupport.AUTH_HEADERS,
-                List.of("1000", "200", "201"),
-                true
-        ));
-        return setupRequests;
     }
 }

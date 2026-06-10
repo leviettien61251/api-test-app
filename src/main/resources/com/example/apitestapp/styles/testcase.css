@@ -1,6 +1,7 @@
 .split-pane {
     -fx-background-color: #f1f5f9;
 }
+
 .split-pane .split-pane-divider {
     -fx-background-color: #e2e8f0;
     -fx-padding: 0 2px;
@@ -38,6 +39,7 @@
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
+
 .scroll-pane .viewport {
     -fx-background-color: transparent;
 }
@@ -87,6 +89,7 @@
     -fx-border-color: #cbd5e1;
     -fx-padding: 9px 12px;
 }
+
 .left-panel .text-field:focused {
     -fx-background-color: #ffffff;
     -fx-border-color: #3a86ff; /* Focus màu xanh dương từ web */
@@ -102,6 +105,7 @@
     -fx-background-color: transparent;
     -fx-padding: 5px 0;
 }
+
 .tree-cell {
     -fx-background-color: transparent;
     -fx-text-fill: #475569; /* Chữ mặc định màu tối rõ ràng */
@@ -118,7 +122,7 @@
 /* BỎ HOVER NỀN TRẮNG NHẠT: Giữ chữ bình thường khi di chuột */
 .tree-cell:filled:hover {
     -fx-background-color: transparent; /* Hoàn toàn trong suốt, không bị bọc nền xám nhạt */
-    -fx-text-fill: #0f172a;            /* Chữ đậm lên một chút để nhận biết */
+    -fx-text-fill: #0f172a; /* Chữ đậm lên một chút để nhận biết */
 }
 
 /* Khi dòng (item) trong cây được chọn: Đổi sang Gradient Xanh biển - Xanh lá */
@@ -180,7 +184,7 @@
 #bodyTextArea {
     -fx-background-color: #1e293b;
     -fx-control-inner-background: #1e293b; /* Nền sẫm hẳn */
-    -fx-text-fill: #38bdf8;                /* Chữ màu xanh neon cực dễ nhìn */
+    -fx-text-fill: #38bdf8; /* Chữ màu xanh neon cực dễ nhìn */
     -fx-font-family: "Consolas", monospace;
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
@@ -281,27 +285,33 @@
     -fx-border-radius: 12px;
     -fx-background-radius: 12px;
 }
+
 .table-view .column-header-background {
     -fx-background-color: #f8fafc;
     -fx-background-radius: 12px 12px 0 0;
 }
+
 .table-view .column-header {
     -fx-background-color: transparent;
     -fx-border-color: transparent transparent #e2e8f0 transparent;
     -fx-size: 40px;
 }
+
 .table-view .column-header .label {
     -fx-text-fill: #64748b;
     -fx-font-weight: bold;
     -fx-font-size: 12px;
 }
+
 .table-row-cell {
     -fx-background-color: #ffffff;
     -fx-border-color: transparent transparent #f1f5f9 transparent;
 }
+
 .table-row-cell:filled:hover {
     -fx-background-color: #f8fafc;
 }
+
 .table-view .table-cell {
     -fx-text-fill: #334155;
     -fx-padding: 10px 12px;
@@ -316,6 +326,7 @@
     -fx-border-color: transparent transparent transparent #e2e8f0;
     -fx-padding: 20px;
 }
+
 .right-panel .label {
     -fx-text-fill: #0f172a;
     -fx-font-size: 13px;
@@ -329,6 +340,7 @@
     -fx-background-radius: 8px;
     -fx-padding: 6px;
 }
+
 .list-cell {
     -fx-background-color: transparent;
     -fx-text-fill: #475569;
@@ -356,8 +368,9 @@
     -fx-font-size: 12.5px;
     -fx-cursor: hand;
 }
+
 .button:hover {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 8, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.12), 8, 0, 0, 2);
 }
 
 /* Các nút nhóm xanh dương (Save, Run Selected, v.v) */

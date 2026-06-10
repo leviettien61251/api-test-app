@@ -6,9 +6,9 @@ import com.example.apitestapp.config.SelectedRunContext;
 import com.example.apitestapp.controllers.DashboardController;
 import com.example.apitestapp.controllers.HistoryController;
 import com.example.apitestapp.controllers.RefreshableView;
-import com.example.apitestapp.models.ClientMachine;
-import com.example.apitestapp.models.User;
-import com.example.apitestapp.repository.ClientMachineRepository;
+import com.example.apitestapp.models.entity.ClientMachine;
+import com.example.apitestapp.models.entity.User;
+import com.example.apitestapp.services.ClientMachineService;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -34,11 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
-import javafx.scene.control.ListCell;
-import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import javafx.geometry.Insets;
 
 public class MainController implements Initializable {
     private final Map<String, Node> viewCache = new HashMap<>();
@@ -525,7 +520,7 @@ public class MainController implements Initializable {
     }
 
     private void getClientMachineInfo() throws Exception {
-        ClientMachineRepository clientMachineRepository = new ClientMachineRepository();
+        ClientMachineService clientMachineService = new ClientMachineService();
         ClientMachine cm;
 
         User user = AppSession.getInstance().getCurrentUser();
@@ -545,6 +540,6 @@ public class MainController implements Initializable {
                 .ipAddress(ipAddress)
                 .build();
 
-        clientMachineRepository.save(cm);
+        clientMachineService.save(cm);
     }
 }

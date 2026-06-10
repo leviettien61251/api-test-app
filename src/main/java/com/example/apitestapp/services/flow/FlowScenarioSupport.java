@@ -1,7 +1,7 @@
 package com.example.apitestapp.services.flow;
 
-import com.example.apitestapp.services.ApiCleanupRequest;
-import com.example.apitestapp.services.ApiSetupRequest;
+import com.example.apitestapp.models.dto.ApiCleanupRequest;
+import com.example.apitestapp.models.dto.ApiSetupRequest;
 
 import java.util.ArrayList;
 import java.util.List;

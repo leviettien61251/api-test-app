@@ -3,7 +3,7 @@
 ## 1. Yeu cau
 
 - JDK 21
-- Maven 3.9+ hoac dung `mvnw.cmd`
+- Maven 3.9+ hoac Maven wrapper `mvnw.cmd`
 - PostgreSQL
 - Windows la moi truong duoc code nham toi ro nhat
 
@@ -13,16 +13,13 @@
 .\mvnw.cmd clean test
 ```
 
-Neu can package ma bo qua test:
+Package bo qua test:
 
 ```powershell
 .\mvnw.cmd clean package -DskipTests
 ```
 
-Luu y:
-
-- lan dau dung `mvnw.cmd` co the can tai Maven wrapper distribution
-- neu may bi chan network/no sandbox network, wrapper co the fail truoc khi vao den compile
+Lan dau dung wrapper co the can network de tai Maven distribution va dependencies.
 
 ## 3. Chay ung dung
 
@@ -30,15 +27,33 @@ Luu y:
 .\mvnw.cmd javafx:run
 ```
 
+Main class cau hinh trong `pom.xml`:
+
+```text
+com.example.apitestapp/com.example.apitestapp.MainApplication
+```
+
 ## 4. Cau hinh database
 
-App doc config DB tu `ConnectionManager`:
+`ConnectionManager` doc theo thu tu:
 
-- `-Dapp.db.url=...`
-- `-Dapp.db.user=...`
-- `-Dapp.db.password=...`
+1. Java system property
+2. Environment variable
+3. Gia tri mac dinh trong code
 
-Hoac environment variables:
+Mac dinh:
+
+- `jdbc:postgresql://localhost:5432/api_test_app`
+- `postgres`
+- `12345`
+
+System properties:
+
+- `app.db.url`
+- `app.db.user`
+- `app.db.password`
+
+Environment variables:
 
 - `APP_DB_URL`
 - `APP_DB_USER`
@@ -52,96 +67,111 @@ Vi du:
 
 ## 5. Khoi tao schema
 
-File schema tham khao:
+File tham khao:
 
-- [database.sql](/D:/code/api-test-app/src/main/resources/db/database.sql)
+- `src/main/resources/db/database.sql`
 
-Canh bao:
+Migration bo sung:
 
-- file nay dang tron `insert`, `select`, `drop`, `create`, `index`
-- khong nen copy-chay nguyen file ma khong kiem tra thu tu
+- `src/main/resources/db/migrations/20260602_add_user_test_case_path_params.sql`
+- `src/main/resources/db/migrations/20260602_add_user_test_case_response_assertions.sql`
 
-Thu tu khuyen nghi khi setup moi:
+Canh bao: `database.sql` dang tron insert, select, drop, create va index. Khong nen chay nguyen file ma khong sua truoc.
 
-1. Tao database `api_test_app`
-2. Chay `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`
-3. Chay khoi `DROP TABLE`
-4. Chay khoi `CREATE TABLE`
-5. Chay khoi `CREATE INDEX`
-6. Sau do moi xem xet phan `INSERT`
+Thu tu setup moi khuyen nghi:
 
-## 6. Du lieu mau va rui ro
+1. Tao database `api_test_app`.
+2. Chay `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`.
+3. Chay khoi `DROP TABLE` neu can reset.
+4. Chay khoi `CREATE TABLE`.
+5. Chay khoi `CREATE INDEX`.
+6. Chay migration trong thu muc `migrations` neu schema dang cu.
+7. Them seed role/user hop le.
 
-Trong `database.sql` dang co:
+## 6. Du lieu seed
 
-- seed role `admin`, `tester`
-- seed user mau
-- mot so cau `SELECT` tham khao
-- mot cau `insert into client_machines ... values (?, ?, ...)` khong phai SQL script seed hop le de chay truc tiep
+`database.sql` co seed role va user mau, nhung phan dau file hien co dau hieu khong phai SQL seed sach:
 
-Tai lieu van hanh phai xem day la script tham khao pha tron, khong phai script deployment chuan.
+- co cau insert users bi tach boi dau `;` som
+- co cau `insert into client_machines ... values (?, ?, ...)` chi phu hop prepared statement, khong phai script chay
+  truc tiep
+- co cac cau `SELECT` debug
 
-## 7. Sau khi mo app
+Nen tach rieng file seed hop le neu can deployment on dinh.
 
-Ngay sau login thanh cong, app se mo dialog `Default run config` de nhap:
+## 7. Sau khi login
+
+App tu dong:
+
+- khoi tao `AppSession`
+- luu client machine vao PostgreSQL
+- mo Dashboard
+- hien dialog `Default run config`
+
+Dialog cho nhap:
 
 - `Base URL`
 - `Alert mode`
-- `Runner`
-- machine name va OS se hien thi de tham khao
 
-Mac dinh quan trong:
+Mac dinh:
 
 - `Base URL`: `http://group3.it4788.sukkaito.id.vn/api`
 - `Alert mode`: `Stop on fail`
 
-## 8. Storage cua ket qua test
+## 8. Storage run
 
-Ket qua run luu local tai:
+RunStorage ghi:
 
 ```text
 %LOCALAPPDATA%\api-test-app\runs.json
 ```
 
-Neu file nay con ton tai, run cu se hien lai trong:
+Fallback khi khong co `LOCALAPPDATA`:
 
-- `Dashboard`
-- `Report`
-- `History`
+```text
+%USERPROFILE%\.api-test-app\runs.json
+```
+
+Neu file bi loi format JSON, app se log loi doc file va tiep tuc voi danh sach trong memory.
 
 ## 9. Van hanh hang ngay
 
-1. Dang nhap
-2. Kiem tra `Base URL`
-3. Chon scenario hoac user test suite
-4. Chay `Run All` hoac `Run Selected`
-5. Xem report / history
+1. Dam bao PostgreSQL va backend API dang chay.
+2. Chay app.
+3. Dang nhap.
+4. Kiem tra `Base URL`.
+5. Chon scenario hoac user suite.
+6. Chay `Run All` hoac `Run Selected`.
+7. Xem Dashboard, Report, History.
 
 ## 10. Su co thuong gap
 
 ### Khong ket noi duoc database
 
-- kiem tra PostgreSQL dang chay
-- kiem tra bien `app.db.*` hoac `APP_DB_*`
-- kiem tra bang `users`, `roles`, `user_test_suites`, `user_test_cases`
+- Kiem tra PostgreSQL dang chay.
+- Kiem tra `app.db.*` hoac `APP_DB_*`.
+- Kiem tra schema co cac bang `users`, `roles`, `client_machines`, `user_test_suites`, `user_test_cases`.
 
 ### Login that bai
 
-- `LoginController` dang tim user theo `email` va `password`
-- kiem tra du lieu seed trong bang `users`
+- `LoginController` tim user theo email va password.
+- Kiem tra user seed trong bang `users`.
+- Kiem tra password trong DB hien la plain text theo code hien tai.
 
-### Request/testcase loi ket noi backend
+### Testcase loi ket noi backend
 
-- kiem tra `Base URL`
-- kiem tra backend dang chay
-- kiem tra endpoint trong scenario hoac user testcase
+- Kiem tra `Base URL`.
+- Kiem tra endpoint trong scenario/user case.
+- Kiem tra backend tra dung status/body mong doi.
 
-### Request auth khong dung nhu mong doi
+### Request auth khong nhu mong doi
 
-- UI auth o man hinh `Request` hien chua tham gia vao request headers thuc te
-- neu can auth khi debug, phai sua code hoac dung endpoint/public case phu hop
+- Kiem tra auth type dang chon.
+- Basic Auth/Bearer Token duoc set vao `Authorization`.
+- Neu custom header cung la `Authorization`, gia tri auth UI se ghi de.
 
 ### Khong thay lich su cu
 
-- kiem tra file `%LOCALAPPDATA%\api-test-app\runs.json`
-- kiem tra quyen ghi file
+- Kiem tra file `%LOCALAPPDATA%\api-test-app\runs.json`.
+- Kiem tra fallback `%USERPROFILE%\.api-test-app\runs.json`.
+- Kiem tra quyen ghi file.

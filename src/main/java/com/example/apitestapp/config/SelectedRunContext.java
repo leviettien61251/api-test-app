@@ -10,12 +10,12 @@ public final class SelectedRunContext {
     private SelectedRunContext() {
     }
 
-    public static void setSelectedRunId(String runId) {
-        selectedRunId = runId;
-    }
-
     public static String getSelectedRunId() {
         return selectedRunId;
+    }
+
+    public static void setSelectedRunId(String runId) {
+        selectedRunId = runId;
     }
 
     public static void clear() {

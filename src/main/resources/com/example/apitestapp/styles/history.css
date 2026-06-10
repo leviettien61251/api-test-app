@@ -55,10 +55,10 @@
     -fx-border-width: 1;
     -fx-border-radius: 6;
     -fx-background-radius: 6;
-    -fx-padding: 8 12;            /* Cân đối lại padding dọc cho thoáng */
+    -fx-padding: 8 12; /* Cân đối lại padding dọc cho thoáng */
     -fx-font-size: 13px;
     -fx-text-fill: #334155;
-    -fx-pref-height: 36px;        /* Cố định chiều cao đồng bộ với nút sấm sét */
+    -fx-pref-height: 36px; /* Cố định chiều cao đồng bộ với nút sấm sét */
 }
 
 /* Hiệu ứng khi click chọn vào ô nhập liệu */
@@ -71,6 +71,7 @@
 .filter-date-picker > .arrow-button, .filter-combo-box > .arrow-button {
     -fx-background-color: transparent;
 }
+
 .filter-date-picker > .arrow-button > .cell, .filter-combo-box > .arrow {
     -fx-background-color: #64748b;
 }
@@ -80,21 +81,21 @@
     -fx-background-color: linear-gradient(to right, #10b981, #3b82f6);
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-font-size: 18px;          /* Tăng size sấm sét to rõ ràng, không lo lọt thỏm */
+    -fx-font-size: 18px; /* Tăng size sấm sét to rõ ràng, không lo lọt thỏm */
 
-    -fx-padding: 0;               /* Xóa padding để ép kích thước vuông tuyệt đối */
-    -fx-pref-width: 36px;         /* Chiều rộng bằng chiều cao tạo khối vuông */
-    -fx-pref-height: 36px;        /* Chiều cao ăn khớp hoàn hảo với ô TextField */
+    -fx-padding: 0; /* Xóa padding để ép kích thước vuông tuyệt đối */
+    -fx-pref-width: 36px; /* Chiều rộng bằng chiều cao tạo khối vuông */
+    -fx-pref-height: 36px; /* Chiều cao ăn khớp hoàn hảo với ô TextField */
 
     -fx-background-radius: 6;
     -fx-cursor: hand;
-    -fx-alignment: center;        /* Đưa biểu tượng sấm sét vào giữa tâm nút */
+    -fx-alignment: center; /* Đưa biểu tượng sấm sét vào giữa tâm nút */
 }
 
 /* Hiệu ứng hover cho nút bấm sinh động */
 .btn-search:hover {
     -fx-background-color: linear-gradient(to right, #10b981, #3b82f6);
-    -fx-scale-x: 1.05;            /* Phóng to nhẹ 5% khi rê chuột tạo hiệu ứng mượt */
+    -fx-scale-x: 1.05; /* Phóng to nhẹ 5% khi rê chuột tạo hiệu ứng mượt */
     -fx-scale-y: 1.05;
 }
 
@@ -147,6 +148,7 @@
 .history-table .table-row-cell:selected {
     -fx-background-color: #e0f2fe;
 }
+
 .history-table .table-row-cell:selected .label {
     -fx-text-fill: #0369a1;
 }
@@ -163,6 +165,7 @@
 .history-table .placeholder .label {
     -fx-text-fill: #94a3b8;
 }
+
 .history-table .corner {
     -fx-background-color: transparent;
 }

@@ -1,11 +1,70 @@
 package com.example.apitestapp.services.map;
 
-import com.example.apitestapp.services.*;
+import com.example.apitestapp.models.dto.*;
+import com.example.apitestapp.services.ApiScenarioProvider;
 
 import java.util.List;
 import java.util.Map;
 
 public class WardTestScenarioProvider implements ApiScenarioProvider {
+
+    private static List<ApiSetupRequest> createStepSetupRequests(String suffix) {
+        return List.of(
+                new ApiSetupRequest(
+                        "Thêm dữ liệu mẫu Map",
+                        "POST",
+                        "/api/v1/insert-map-test",
+                        """
+                                {
+                                    "buildingCode": "B-WARD-%s",
+                                    "buildingName": "Building Step %s",
+                                    "imageUrl": "https://example.com/step-test.jpg",
+                                    "scaleX": 10,
+                                    "scaleY": 10
+                                }
+                                """.formatted(suffix, suffix),
+                        Map.of("Authorization", "Bearer ${token}"),
+                        List.of("1000", "200", "201"),
+                        true,
+                        List.of(new ApiResponseVariable("mapId", "data.0.id"))
+                ),
+                new ApiSetupRequest(
+                        "Thêm dữ liệu mẫu Node bắt đầu",
+                        "POST",
+                        "/api/v1/insert-node-test",
+                        """
+                                {
+                                    "mapId": ${mapId},
+                                    "xCoordinate": 1,
+                                    "yCoordinate": 3,
+                                    "type": "abc",
+                                    "isPassable": true
+                                }
+                                """,
+                        Map.of("Authorization", "Bearer ${token}"),
+                        List.of("1000"),
+                        true,
+                        List.of(new ApiResponseVariable("map_node_id", "data.id"))
+                )
+        );
+    }
+
+    private static String createWardRequestBody(String name, String status) {
+        return """
+                {
+                   "map_node_id": ${map_node_id},
+                   "name": %s,
+                   "ward_status": %s
+                }
+                """.formatted(toJsonString(name), toJsonString(status));
+    }
+
+    private static String toJsonString(String value) {
+        if (value == null) {
+            return "null";
+        }
+        return "\"" + value + "\"";
+    }
 
     @Override
     public ApiScenarioDefinition getDefinition() {
@@ -162,7 +221,7 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                                 Map.of("Authorization", "Bearer ${token}"),
                                 List.of("1000", "200", "204", "201"),
                                 true
-                        ),new ApiCleanupRequest(
+                        ), new ApiCleanupRequest(
                                 "Clean login test data",
                                 "DELETE",
                                 "/api/v1/clean/login",
@@ -191,63 +250,5 @@ public class WardTestScenarioProvider implements ApiScenarioProvider {
                         )
                 ))
                 .build();
-    }
-
-    private static List<ApiSetupRequest> createStepSetupRequests(String suffix) {
-        return List.of(
-                new ApiSetupRequest(
-                        "Thêm dữ liệu mẫu Map",
-                        "POST",
-                        "/api/v1/insert-map-test",
-                        """
-                                {
-                                    "buildingCode": "B-WARD-%s",
-                                    "buildingName": "Building Step %s",
-                                    "imageUrl": "https://example.com/step-test.jpg",
-                                    "scaleX": 10,
-                                    "scaleY": 10
-                                }
-                                """.formatted(suffix, suffix),
-                        Map.of("Authorization", "Bearer ${token}"),
-                        List.of("1000", "200", "201"),
-                        true,
-                        List.of(new ApiResponseVariable("mapId", "data.0.id"))
-                ),
-                new ApiSetupRequest(
-                        "Thêm dữ liệu mẫu Node bắt đầu",
-                        "POST",
-                        "/api/v1/insert-node-test",
-                        """
-                                {
-                                    "mapId": ${mapId},
-                                    "xCoordinate": 1,
-                                    "yCoordinate": 3,
-                                    "type": "abc",
-                                    "isPassable": true
-                                }
-                                """,
-                        Map.of("Authorization", "Bearer ${token}"),
-                        List.of("1000"),
-                        true,
-                        List.of(new ApiResponseVariable("map_node_id", "data.id"))
-                )
-        );
-    }
-
-    private static String createWardRequestBody(String name, String status) {
-        return """
-                {
-                   "map_node_id": ${map_node_id},
-                   "name": %s,
-                   "ward_status": %s
-                }
-                """.formatted(toJsonString(name), toJsonString(status));
-    }
-
-    private static String toJsonString(String value) {
-        if (value == null) {
-            return "null";
-        }
-        return "\"" + value + "\"";
     }
 }
