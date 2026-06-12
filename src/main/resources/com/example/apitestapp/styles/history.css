@@ -169,3 +169,41 @@
 .history-table .corner {
     -fx-background-color: transparent;
 }
+
+
+
+
+
+
+
+/* NÚT XUẤT EXCEL - MÀU XANH LÁ EXCEL 🟢 */
+.btn-export {
+    -fx-background-color: linear-gradient(to right, #10b981, #3b82f6); /* Màu xanh đặc trưng của Microsoft Excel */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+
+    -fx-padding: 8 16; /* Padding rộng sang hai bên cho nút trông dài và cân đối */
+    -fx-pref-height: 36px; /* Chiều cao khớp với ô tìm kiếm và nút sấm sét */
+
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+    -fx-spacing: 8; /* Khoảng cách giữa icon và chữ */
+
+
+}
+
+/* Hiệu ứng khi di chuột qua nút xuất Excel */
+.btn-export:hover {
+    -fx-background-color: linear-gradient(to right, #10b981, #3b82f6); /* Màu xanh đặc trưng của Microsoft Excel */
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-effect: dropshadow(three-pass-box, rgba(21, 138, 67, 0.3), 10, 0, 0, 2);
+}
+
+/* Hiệu ứng khi nhấn nút */
+.btn-export:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}

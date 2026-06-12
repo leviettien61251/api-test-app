@@ -1,6 +1,7 @@
 package com.example.apitestapp.controllers;
 
 import com.example.apitestapp.config.AppRunConfig;
+import com.google.gson.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -10,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import okhttp3.*;
@@ -18,11 +18,17 @@ import okhttp3.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RequestController implements Initializable {
 
     private final OkHttpClient client = new OkHttpClient();
+    // Kho lưu trữ biến dùng cho scripts (giống Environment Variables của Postman)
+    private final Map<String, String> variables = new HashMap<>();
 
     @FXML private ComboBox<String> methodComboBox;
     @FXML private TextField urlField;
@@ -41,7 +47,6 @@ public class RequestController implements Initializable {
     @FXML private TextArea testScriptTextArea;
     @FXML private VBox testsResultContainer;
 
-    // --- Cấu hình cho giao diện Form-Data ---
     @FXML private VBox formDataContainer;
     @FXML private TableView<DataRowModel> formDataTableView;
     @FXML private TableColumn<DataRowModel, String> formKeyCol;
@@ -50,12 +55,10 @@ public class RequestController implements Initializable {
     @FXML private Button addFormRowBtn;
     @FXML private Button deleteFormRowBtn;
 
-    // TableView hiển thị danh sách Response Header nhận về
     @FXML private TableView<HeaderModel> headersTableView;
     @FXML private TableColumn<HeaderModel, String> headerKeyCol;
     @FXML private TableColumn<HeaderModel, String> headerValueCol;
 
-    // Cấu hình TableView động cho Params đầu vào
     @FXML private TableView<DataRowModel> paramsTableView;
     @FXML private TableColumn<DataRowModel, String> paramKeyCol;
     @FXML private TableColumn<DataRowModel, String> paramValueCol;
@@ -63,7 +66,6 @@ public class RequestController implements Initializable {
     @FXML private Button addParamBtn;
     @FXML private Button deleteParamBtn;
 
-    // Cấu hình TableView động cho Request Headers đầu vào
     @FXML private TableView<DataRowModel> requestHeadersTableView;
     @FXML private TableColumn<DataRowModel, String> reqHeaderKeyCol;
     @FXML private TableColumn<DataRowModel, String> reqHeaderValueCol;
@@ -78,10 +80,9 @@ public class RequestController implements Initializable {
     private boolean isUpdatingUrlFromTable = false;
     private boolean isUpdatingTableFromUrl = false;
 
-    // Node lưu giữ thông tin Auth tạm thời
-    private TextField authUserField = new TextField();
-    private PasswordField authPasswordField = new PasswordField();
-    private TextField authTokenField = new TextField();
+    private final TextField authUserField = new TextField();
+    private final PasswordField authPasswordField = new PasswordField();
+    private final TextField authTokenField = new TextField();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -91,7 +92,6 @@ public class RequestController implements Initializable {
         initAuthTab();
         initBodyTab();
         initResponseTable();
-
         sendButton.setOnAction(e -> handleSendRequest());
     }
 
@@ -100,289 +100,153 @@ public class RequestController implements Initializable {
         methodComboBox.setValue("GET");
         urlField.setText("http://group3.it4788.sukkaito.id.vn/api/map/nodes?floor_id=1");
 
-        // Cài đặt sẵn đoạn script mẫu để sinh viên dễ test thử nghiệm
+        preRequestScriptTextArea.setText(
+                "// Ví dụ: set(\"token\", \"12345\");\n" +
+                        "// Sau đó dùng {{token}} ở URL, Headers hoặc Body\n" +
+                        "set(\"my_param\", \"1\");"
+        );
         testScriptTextArea.setText(
                 "// Cú pháp kiểm thử mẫu:\n" +
                         "assert status == 200 : \"Kiểm tra mã trạng thái HTTP 200\";\n" +
-                        "assert body contains \"1000\" : \"Kiểm tra mã phản hồi hệ thống 1000\";"
+                        "assert body contains \"1000\" : \"Kiểm tra mã phản hồi hệ thống 1000\";\n" +
+                        "// setFromResponse(\"new_id\", \"data.0.id\");"
         );
     }
 
-    private void initResponseTable() {
-        headerKeyCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getKey()));
-        headerValueCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getValue()));
+    // ========== LOGIC XỬ LÝ SCRIPT & BIẾN SỐ ==========
+
+    private String replaceVariables(String text) {
+        if (text == null || text.isEmpty() || variables.isEmpty()) return text;
+        String result = text;
+        for (Map.Entry<String, String> entry : variables.entrySet()) {
+            String placeholder = "{{" + entry.getKey() + "}}";
+            if (result.contains(placeholder)) {
+                result = result.replace(placeholder, entry.getValue());
+            }
+        }
+        return result;
     }
 
-    private void initDynamicTables() {
-        // ========== CẤU HÌNH BẢNG PARAMS ==========
-        paramsTableView.setItems(paramDataList);
-        paramsTableView.setEditable(true);
-        paramsTableView.setPlaceholder(new Label("Nhấn '+ Add Param' để thêm tham số"));
+    private void runPreRequestScript() {
+        String script = preRequestScriptTextArea.getText();
+        if (script == null || script.isBlank()) return;
 
-        // Thêm hàng trống mặc định để hiển thị khung nhập
-        if (paramDataList.isEmpty()) {
-            paramDataList.add(new DataRowModel("", "", ""));
-        }
+        String[] lines = script.split("\n");
+        for (String line : lines) {
+            line = line.trim();
+            if (line.startsWith("//") || line.isEmpty()) continue;
 
-        setupEditableColumnWithPlaceholder(paramKeyCol, "key", "Nhập key...");
-        setupEditableColumnWithPlaceholder(paramValueCol, "value", "Nhập value...");
-        setupEditableColumnWithPlaceholder(paramDescCol, "description", "Mô tả (không bắt buộc)");
-
-        addParamBtn.setOnAction(e -> {
-            paramDataList.add(new DataRowModel("", "", ""));
-            paramsTableView.scrollTo(paramDataList.size() - 1);
-        });
-
-        deleteParamBtn.setOnAction(e -> {
-            DataRowModel selected = paramsTableView.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                paramDataList.remove(selected);
-                // Luôn giữ ít nhất 1 hàng trống
-                if (paramDataList.isEmpty()) {
-                    paramDataList.add(new DataRowModel("", "", ""));
-                }
-            }
-        });
-
-        // ========== CẤU HÌNH BẢNG REQUEST HEADERS ==========
-        requestHeadersTableView.setItems(requestHeaderDataList);
-        requestHeadersTableView.setEditable(true);
-        requestHeadersTableView.setPlaceholder(new Label("Nhấn '+ Add Header' để thêm header"));
-
-        if (requestHeaderDataList.isEmpty()) {
-            requestHeaderDataList.add(new DataRowModel("", "", ""));
-        }
-
-        setupEditableColumnWithPlaceholder(reqHeaderKeyCol, "key", "Header name...");
-        setupEditableColumnWithPlaceholder(reqHeaderValueCol, "value", "Header value...");
-        setupEditableColumnWithPlaceholder(reqHeaderDescCol, "description", "Mô tả...");
-
-        addHeaderBtn.setOnAction(e -> requestHeaderDataList.add(new DataRowModel("", "", "")));
-        deleteHeaderBtn.setOnAction(e -> {
-            DataRowModel selected = requestHeadersTableView.getSelectionModel().getSelectedItem();
-            if (selected != null) requestHeaderDataList.remove(selected);
-            if (requestHeaderDataList.isEmpty()) {
-                requestHeaderDataList.add(new DataRowModel("", "", ""));
-            }
-        });
-
-        // ========== CẤU HÌNH BẢNG FORM-DATA ==========
-        formDataTableView.setItems(formDataList);
-        formDataTableView.setEditable(true);
-        formDataTableView.setPlaceholder(new Label("Nhấn '+ Add Form Data' để thêm field"));
-
-        if (formDataList.isEmpty()) {
-            formDataList.add(new DataRowModel("", "", ""));
-        }
-
-        setupEditableColumnWithPlaceholder(formKeyCol, "key", "Field name...");
-        setupEditableColumnWithPlaceholder(formValueCol, "value", "Field value...");
-        setupEditableColumnWithPlaceholder(formDescCol, "description", "Mô tả...");
-
-        addFormRowBtn.setOnAction(e -> formDataList.add(new DataRowModel("", "", "")));
-        deleteFormRowBtn.setOnAction(e -> {
-            DataRowModel selected = formDataTableView.getSelectionModel().getSelectedItem();
-            if (selected != null) formDataList.remove(selected);
-            if (formDataList.isEmpty()) {
-                formDataList.add(new DataRowModel("", "", ""));
-            }
-        });
-    }
-
-    /**
-     * Cấu hình TableColumn với Placeholder và khả năng edit trực quan
-     */
-    private void setupEditableColumnWithPlaceholder(TableColumn<DataRowModel, String> column, String field, String placeholder) {
-        column.setCellFactory(col -> new TableCell<DataRowModel, String>() {
-            private TextField textField;
-
-            @Override
-            public void startEdit() {
-                if (!isEmpty()) {
-                    super.startEdit();
-                    createTextField();
-                    setText(null);
-                    setGraphic(textField);
-                    if (textField != null) {
-                        textField.requestFocus();
-                        textField.selectAll();
+            if (line.startsWith("set(")) {
+                try {
+                    Pattern p = Pattern.compile("set\\s*\\(\\s*\"([^\"]+)\"\\s*,\\s*\"([^\"]+)\"\\s*\\)");
+                    Matcher m = p.matcher(line);
+                    if (m.find()) {
+                        variables.put(m.group(1), m.group(2));
                     }
-                }
+                } catch (Exception ignored) {}
             }
-
-            @Override
-            public void cancelEdit() {
-                super.cancelEdit();
-                setText(getItemDisplay());
-                setGraphic(null);
-            }
-
-            @Override
-            public void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty) {
-                    setText(null);
-                    setGraphic(null);
-                } else if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(textField);
-                } else {
-                    setText(getItemDisplay());
-                    setGraphic(null);
-                }
-            }
-
-            private void createTextField() {
-                textField = new TextField(getString());
-                textField.setPromptText(placeholder);
-                textField.setStyle("-fx-prompt-text-fill: #999999;");
-                textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-
-                textField.setOnAction(e -> {
-                    String newValue = textField.getText();
-                    commitEdit(newValue);
-                });
-
-                textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-                    if (!newVal) {
-                        String newValue = textField.getText();
-                        commitEdit(newValue);
-                    }
-                });
-            }
-
-            private String getString() {
-                return getItem() == null ? "" : getItem();
-            }
-
-            private String getItemDisplay() {
-                String item = getItem();
-                if (item == null || item.isEmpty()) {
-                    return placeholder;
-                }
-                return item;
-            }
-        });
-
-        column.setCellValueFactory(data -> {
-            if ("key".equals(field)) return data.getValue().keyProperty();
-            if ("value".equals(field)) return data.getValue().valueProperty();
-            return data.getValue().descriptionProperty();
-        });
-
-        column.setOnEditCommit(event -> {
-            DataRowModel row = event.getRowValue();
-            String newValue = event.getNewValue() != null ? event.getNewValue() : "";
-
-            if ("key".equals(field)) {
-                row.setKey(newValue);
-                // Khi key thay đổi ở Params, cập nhật URL
-                if (column.getTableView() == paramsTableView) {
-                    syncTableToUrl();
-                }
-            }
-            if ("value".equals(field)) {
-                row.setValue(newValue);
-                if (column.getTableView() == paramsTableView) {
-                    syncTableToUrl();
-                }
-            }
-            if ("description".equals(field)) row.setDescription(newValue);
-
-            column.getTableView().refresh();
-        });
-    }
-
-    private void initUrlSyncLogic() {
-        // Tự động phân tích URL điền xuống bảng Params
-        urlField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isUpdatingUrlFromTable) return;
-            isUpdatingTableFromUrl = true;
-            parseUrlToTable(newValue);
-            isUpdatingTableFromUrl = false;
-        });
-
-        // Kích hoạt phân tích ngay từ URL mặc định ban đầu
-        parseUrlToTable(urlField.getText());
-    }
-
-    private void parseUrlToTable(String urlStr) {
-        paramDataList.clear();
-
-        if (urlStr == null || !urlStr.contains("?")) {
-            // Nếu không có params, thêm 1 hàng trống
-            paramDataList.add(new DataRowModel("", "", ""));
-            return;
         }
+    }
 
+    private void runTestScripts(int statusCode, long duration, String responseBody) {
+        Platform.runLater(() -> {
+            String scriptText = testScriptTextArea.getText();
+            JsonElement root = null;
+            try {
+                root = JsonParser.parseString(responseBody);
+            } catch (Exception ignored) {}
+
+            if (scriptText == null || scriptText.trim().isEmpty() || scriptText.contains("// Viết các hàm")) {
+                renderTestResult(statusCode >= 200 && statusCode < 300, "Mặc định: HTTP Status " + statusCode);
+                return;
+            }
+
+            String[] lines = scriptText.split("\n");
+            for (String line : lines) {
+                line = line.trim();
+                if (line.startsWith("//") || line.isEmpty()) continue;
+
+                if (line.startsWith("assert")) {
+                    handleAssert(line, statusCode, duration, responseBody);
+                } else if (line.startsWith("setFromResponse(")) {
+                    handleSetFromResponse(line, root);
+                }
+            }
+        });
+    }
+
+    private void handleAssert(String line, int statusCode, long duration, String responseBody) {
         try {
-            String queryString = urlStr.substring(urlStr.indexOf("?") + 1);
-            String[] pairs = queryString.split("&");
-            boolean hasParams = false;
+            boolean pass = false;
+            String conditionText = line.substring(6, line.contains(":") ? line.indexOf(":") : line.length()).trim();
+            String desc = line.contains(":") ? line.substring(line.indexOf(":") + 1).replace("\"", "").replace(";", "").trim() : conditionText;
 
-            for (String pair : pairs) {
-                String[] kv = pair.split("=", 2);
-                String key = kv.length > 0 ? kv[0] : "";
-                String value = kv.length > 1 ? kv[1] : "";
-                if (!key.isEmpty()) {
-                    paramDataList.add(new DataRowModel(key, value, ""));
-                    hasParams = true;
+            if (conditionText.contains("status == 200")) {
+                pass = (statusCode == 200);
+            } else if (conditionText.contains("duration <")) {
+                int threshold = Integer.parseInt(conditionText.replaceAll("[^0-9]", ""));
+                pass = (duration < threshold);
+            } else if (conditionText.contains("body contains")) {
+                String target = conditionText.substring(conditionText.indexOf("\"") + 1, conditionText.lastIndexOf("\""));
+                pass = responseBody.contains(target);
+            }
+            renderTestResult(pass, desc);
+        } catch (Exception ex) {
+            renderTestResult(false, "Lỗi cú pháp Script: " + line);
+        }
+    }
+
+    private void handleSetFromResponse(String line, JsonElement root) {
+        try {
+            Pattern p = Pattern.compile("setFromResponse\\s*\\(\\s*\"([^\"]+)\"\\s*,\\s*\"([^\"]+)\"\\s*\\)");
+            Matcher m = p.matcher(line);
+            if (m.find() && root != null) {
+                String varName = m.group(1);
+                String jsonPath = m.group(2);
+                String value = findValueByPath(root, jsonPath);
+                if (value != null) {
+                    variables.put(varName, value);
+                    renderTestResult(true, "[VAR] " + varName + " = " + value);
+                } else {
+                    renderTestResult(false, "Không tìm thấy đường dẫn JSON: " + jsonPath);
                 }
             }
-
-            // Nếu không có params nào, thêm 1 hàng trống
-            if (!hasParams) {
-                paramDataList.add(new DataRowModel("", "", ""));
-            }
-        } catch (Exception ignored) {
-            paramDataList.add(new DataRowModel("", "", ""));
+        } catch (Exception ex) {
+            renderTestResult(false, "Lỗi trích xuất: " + ex.getMessage());
         }
     }
 
-    private void syncTableToUrl() {
-        if (isUpdatingTableFromUrl) return;
-        isUpdatingUrlFromTable = true;
-
-        String currentUrl = urlField.getText();
-        if (currentUrl == null) currentUrl = "";
-
-        // Xóa phần query cũ nếu có
-        if (currentUrl.contains("?")) {
-            currentUrl = currentUrl.substring(0, currentUrl.indexOf("?"));
-        }
-
-        // Xây dựng query string từ các row có key không rỗng
-        StringBuilder queryBuilder = new StringBuilder();
-        for (DataRowModel row : paramDataList) {
-            if (row.getKey() != null && !row.getKey().trim().isEmpty()) {
-                if (queryBuilder.length() > 0) queryBuilder.append("&");
-                String value = row.getValue() != null ? row.getValue().trim() : "";
-                queryBuilder.append(row.getKey().trim()).append("=").append(value);
+    private String findValueByPath(JsonElement root, String path) {
+        try {
+            JsonElement current = root;
+            for (String part : path.split("\\.")) {
+                if (current.isJsonObject()) {
+                    current = current.getAsJsonObject().get(part);
+                } else if (current.isJsonArray()) {
+                    current = current.getAsJsonArray().get(Integer.parseInt(part));
+                } else return null;
+                if (current == null || current.isJsonNull()) return null;
             }
-        }
-
-        if (queryBuilder.length() > 0) {
-            urlField.setText(currentUrl + "?" + queryBuilder.toString());
-        } else {
-            urlField.setText(currentUrl);
-        }
-
-        isUpdatingUrlFromTable = false;
+            return current.isJsonPrimitive() ? current.getAsString() : current.toString();
+        } catch (Exception e) { return null; }
     }
+
+    // ========== XỬ LÝ GỬI REQUEST ==========
 
     private void handleSendRequest() {
-        String requestUrl = resolveRequestUrl();
-        if (requestUrl.isEmpty()) {
+        runPreRequestScript();
+
+        String rawUrl = urlField.getText();
+        String processedUrl = replaceVariables(rawUrl);
+        String finalUrl = resolveRequestUrl(processedUrl);
+
+        if (finalUrl.isEmpty()) {
             statusLabel.setText("URL trống!");
             return;
         }
 
         String method = methodComboBox.getValue();
-        String bodyText = bodyTextArea.getText();
+        String bodyText = replaceVariables(bodyTextArea.getText());
         MediaType mediaType = MediaType.parse(resolveMediaType());
 
         sendButton.setDisable(true);
@@ -395,49 +259,44 @@ public class RequestController implements Initializable {
         Task<Response> task = new Task<>() {
             @Override
             protected Response call() throws Exception {
-                Request.Builder builder = new Request.Builder().url(requestUrl);
+                Request.Builder builder = new Request.Builder().url(finalUrl);
 
-                // Nạp tất cả các custom header từ bảng dữ liệu đầu vào của Tab Headers
                 for (DataRowModel headerRow : requestHeaderDataList) {
-                    if (headerRow.getKey() != null && !headerRow.getKey().trim().isEmpty()) {
-                        builder.addHeader(headerRow.getKey().trim(),
-                                headerRow.getValue() != null ? headerRow.getValue().trim() : "");
+                    String k = replaceVariables(headerRow.getKey());
+                    String v = replaceVariables(headerRow.getValue());
+                    if (k != null && !k.trim().isEmpty()) {
+                        builder.addHeader(k.trim(), v != null ? v.trim() : "");
                     }
                 }
 
-                // Xử lý chèn tự động Auth tùy thuộc loại chọn lựa
                 String authType = authTypeComboBox.getValue();
                 if ("Basic Auth".equals(authType)) {
-                    String credentials = authUserField.getText() + ":" + authPasswordField.getText();
+                    String user = replaceVariables(authUserField.getText());
+                    String pass = replaceVariables(authPasswordField.getText());
+                    String credentials = user + ":" + pass;
                     String base64 = Base64.getEncoder().encodeToString(credentials.getBytes());
                     builder.header("Authorization", "Basic " + base64);
                 } else if ("Bearer Token".equals(authType)) {
-                    builder.header("Authorization", "Bearer " + authTokenField.getText().trim());
+                    builder.header("Authorization", "Bearer " + replaceVariables(authTokenField.getText().trim()));
                 }
 
-                // XỬ LÝ BODY CHUYỂN ĐỔI LINH HOẠT GIỮA RAW VÀ FORM-DATA
                 if (!method.equals("GET") && !method.equals("DELETE")) {
                     RequestBody requestBody;
-
                     if (formDataBtn.isSelected()) {
-                        // Cấu hình Multipart Form-Data
-                        MultipartBody.Builder multipartBuilder = new MultipartBody.Builder()
-                                .setType(MultipartBody.FORM);
-
+                        MultipartBody.Builder multipartBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
                         boolean hasData = false;
                         for (DataRowModel row : formDataList) {
-                            if (row.getKey() != null && !row.getKey().trim().isEmpty()) {
-                                String value = row.getValue() != null ? row.getValue().trim() : "";
-                                multipartBuilder.addFormDataPart(row.getKey().trim(), value);
+                            String k = replaceVariables(row.getKey());
+                            String v = replaceVariables(row.getValue());
+                            if (k != null && !k.trim().isEmpty()) {
+                                multipartBuilder.addFormDataPart(k.trim(), v != null ? v.trim() : "");
                                 hasData = true;
                             }
                         }
-
                         requestBody = hasData ? multipartBuilder.build() : RequestBody.create("", null);
                     } else {
                         requestBody = RequestBody.create(bodyText, mediaType);
                     }
-
                     builder.method(method, requestBody);
                 } else {
                     builder.method(method, null);
@@ -452,19 +311,13 @@ public class RequestController implements Initializable {
             long duration = System.currentTimeMillis() - startTime;
             timeLabel.setText("Time: " + duration + "ms");
             updateStatus(response.code(), response.message());
-
             try {
                 String respBody = response.body() != null ? response.body().string() : "";
                 responseBodyTextArea.setText(formatJson(respBody));
-
                 headersTableView.getItems().clear();
-                response.headers().forEach(pair -> {
-                    headersTableView.getItems().add(new HeaderModel(pair.getFirst(), pair.getSecond()));
-                });
+                response.headers().forEach(pair -> headersTableView.getItems().add(new HeaderModel(pair.getFirst(), pair.getSecond())));
 
-                // Kích hoạt trình thông dịch chạy Script kiểm thử tự động
                 runTestScripts(response.code(), duration, respBody);
-
             } catch (IOException ex) {
                 responseBodyTextArea.setText("Lỗi: " + ex.getMessage());
             } finally {
@@ -476,223 +329,51 @@ public class RequestController implements Initializable {
         task.setOnFailed(e -> {
             sendButton.setDisable(false);
             statusLabel.setText("Lỗi kết nối");
-            statusLabel.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
-            responseBodyTextArea.setText(task.getException().getMessage());
+            responseBodyTextArea.setText(task.getException() != null ? task.getException().getMessage() : "Không rõ nguyên nhân");
         });
 
         new Thread(task).start();
     }
 
-    private void runTestScripts(int statusCode, long duration, String responseBody) {
-        Platform.runLater(() -> {
-            String scriptText = testScriptTextArea.getText();
-            if (scriptText == null || scriptText.trim().isEmpty() || scriptText.contains("// Viết các hàm")) {
-                String method = methodComboBox.getValue();
-                boolean pass = false;
-                String message = "";
-
-                switch (method) {
-                    case "GET":
-                        pass = (statusCode == 200);
-                        message = "GET thành công (200 OK)";
-                        break;
-                    case "POST":
-                        pass = (statusCode == 201);
-                        message = "POST thành công (201 Created)";
-                        break;
-                    case "PUT":
-                    case "PATCH":
-                        pass = (statusCode == 200 || statusCode == 204);
-                        message = "PUT/PATCH thành công (200/204)";
-                        break;
-                    case "DELETE":
-                        pass = (statusCode == 204);
-                        message = "DELETE thành công (204 No Content)";
-                        break;
-                    default:
-                        pass = (statusCode >= 200 && statusCode < 300);
-                        message = "Mặc định: HTTP Status trả về thành công (2xx)";
-                }
-
-                renderTestResult(pass, message);
-                return;
-            }
-
-            // Phân tích cú pháp Script đơn giản dòng lệnh assert từ người dùng nhập
-            String[] lines = scriptText.split("\n");
-            for (String line : lines) {
-                line = line.trim();
-                if (line.startsWith("assert")) {
-                    try {
-                        boolean pass = false;
-                        String conditionText = line.substring(6, line.contains(":") ? line.indexOf(":") : line.length()).trim();
-                        String desc = line.contains(":") ? line.substring(line.indexOf(":") + 1).replace("\"", "").replace(";", "").trim() : conditionText;
-
-                        if (conditionText.contains("status == 200")) {
-                            String method = methodComboBox.getValue();
-
-                            if ("POST".equals(method)) {
-                                if (statusCode == 201 || statusCode == 200) {
-                                    pass = true;
-                                    desc = statusCode == 201 ? "POST thành công, tạo mới resource (201 Created)" :
-                                            "POST thành công (200 OK)";
-                                } else if (statusCode == 202) {
-                                    pass = true;
-                                    desc = "POST được chấp nhận, xử lý bất đồng bộ (202 Accepted)";
-                                } else if (statusCode == 204) {
-                                    pass = true;
-                                    desc = "POST thành công, không trả về nội dung (204 No Content)";
-                                } else {
-                                    pass = false;
-                                    desc = "POST thất bại (không phải 200/201/202/204)";
-                                }
-                            }
-                            else if ("DELETE".equals(method)) {
-                                if (statusCode == 204 || statusCode == 200 || statusCode == 202) {
-                                    pass = true;
-                                    desc = statusCode == 204 ? "DELETE thành công (204 No Content)" :
-                                            statusCode == 200 ? "DELETE thành công (200 OK)" :
-                                            "DELETE được chấp nhận, xóa bất đồng bộ (202 Accepted)";
-                                } else {
-                                    pass = false;
-                                    desc = "DELETE thất bại (không phải 200/202/204)";
-                                }
-                            }
-                            else if ("PUT".equals(method) || "PATCH".equals(method)) {
-                                if (statusCode == 200 || statusCode == 202 || statusCode == 204) {
-                                    pass = true;
-                                    desc = "PUT/PATCH thành công: " +
-                                            (statusCode == 200 ? "200 OK (có dữ liệu trả về)" :
-                                                    statusCode == 202 ? "202 Accepted (bất đồng bộ)" :
-                                                    "204 No Content (không trả về dữ liệu)");
-                                } else {
-                                    pass = false;
-                                    desc = "PUT/PATCH thất bại (không phải 200/202/204)";
-                                }
-                            }
-                            else if ("GET".equals(method)) {
-                                if (statusCode == 200 || statusCode == 206) {
-                                    pass = true;
-                                    desc = statusCode == 200 ? "GET thành công (200 OK)" : "GET partial content (206)";
-                                } else {
-                                    pass = false;
-                                    desc = "GET thất bại (không phải 200/206)";
-                                }
-                            }
-                            else {
-                                if (statusCode == 200 || statusCode == 202 || statusCode == 204) {
-                                    pass = true;
-                                    desc = "Thành công (" + statusCode + ")";
-                                } else {
-                                    pass = false;
-                                    desc = "Thất bại (không phải 2xx thành công)";
-                                }
-                            }
-                        }
-                        else if (conditionText.contains("duration < 500")) {
-                            pass = (duration < 500);
-                        } else if (conditionText.contains("body contains")) {
-                            String target = conditionText.substring(conditionText.indexOf("\"") + 1, conditionText.lastIndexOf("\""));
-                            pass = responseBody.contains(target);
-                        }
-                        renderTestResult(pass, desc);
-                    } catch (Exception ex) {
-                        renderTestResult(false, "Lỗi cú pháp Script: " + line);
-                    }
-                }
-            }
-        });
-    }
+    // ========== CÁC HÀM TIỆN ÍCH UI ==========
 
     private void renderTestResult(boolean isPassed, String message) {
         HBox box = new HBox();
         box.setAlignment(Pos.CENTER_LEFT);
         box.setPrefHeight(35.0);
         box.setSpacing(5.0);
+        box.setStyle(isPassed ?
+                "-fx-background-color: #f3faf5; -fx-background-radius: 5; -fx-padding: 0 10 0 10; -fx-border-color: #e6f4ea; -fx-border-radius: 5;" :
+                "-fx-background-color: #fce8e6; -fx-background-radius: 5; -fx-padding: 0 10 0 10; -fx-border-color: #fad2cf; -fx-border-radius: 5;");
 
-        Label statusSymbol = new Label(isPassed ? "[PASS] " : "[FAIL] ");
-        Label statusDesc = new Label(message);
+        Label symbol = new Label(isPassed ? "[PASS] " : "[FAIL] ");
+        symbol.setStyle("-fx-text-fill: " + (isPassed ? "#1e8e3e" : "#d93025") + "; -fx-font-weight: bold;");
+        Label desc = new Label(message);
+        desc.setStyle("-fx-text-fill: " + (isPassed ? "#1e8e3e" : "#d93025") + ";");
 
-        if (isPassed) {
-            box.setStyle("-fx-background-color: #f3faf5; -fx-background-radius: 5; -fx-padding: 0 10 0 10; -fx-border-color: #e6f4ea; -fx-border-radius: 5;");
-            statusSymbol.setStyle("-fx-text-fill: #1e8e3e; -fx-font-weight: bold;");
-            statusDesc.setStyle("-fx-text-fill: #1e8e3e;");
-        } else {
-            box.setStyle("-fx-background-color: #fce8e6; -fx-background-radius: 5; -fx-padding: 0 10 0 10; -fx-border-color: #fad2cf; -fx-border-radius: 5;");
-            statusSymbol.setStyle("-fx-text-fill: #d93025; -fx-font-weight: bold;");
-            statusDesc.setStyle("-fx-text-fill: #d93025;");
-        }
-
-        box.getChildren().addAll(statusSymbol, statusDesc);
+        box.getChildren().addAll(symbol, desc);
         testsResultContainer.getChildren().add(box);
     }
 
     private void updateStatus(int code, String message) {
         statusLabel.setText(code + " " + message);
-        if (code >= 200 && code < 300) {
-            statusLabel.setStyle("-fx-text-fill: #16a34a; -fx-font-weight: bold;");
-        } else {
-            statusLabel.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
-        }
+        statusLabel.setStyle("-fx-text-fill: " + (code >= 200 && code < 300 ? "#16a34a" : "#dc2626") + "; -fx-font-weight: bold;");
     }
 
     private String formatJson(String json) {
         if (json == null || json.isBlank()) return "";
-        String trimmed = json.trim();
-        if (!(trimmed.startsWith("{") || trimmed.startsWith("["))) return json;
-
-        StringBuilder formatted = new StringBuilder();
-        int indent = 0;
-        boolean inString = false;
-        boolean escaped = false;
-
-        for (int i = 0; i < trimmed.length(); i++) {
-            char current = trimmed.charAt(i);
-            if (escaped) { formatted.append(current); escaped = false; continue; }
-            if (current == '\\') { formatted.append(current); escaped = true; continue; }
-            if (current == '"') { formatted.append(current); inString = !inString; continue; }
-            if (inString) { formatted.append(current); continue; }
-
-            switch (current) {
-                case '{', '[' -> {
-                    formatted.append(current).append('\n');
-                    indent++;
-                    appendIndent(formatted, indent);
-                }
-                case '}', ']' -> {
-                    formatted.append('\n');
-                    indent = Math.max(0, indent - 1);
-                    appendIndent(formatted, indent);
-                    formatted.append(current);
-                }
-                case ',' -> {
-                    formatted.append(current).append('\n');
-                    appendIndent(formatted, indent);
-                }
-                case ':' -> formatted.append(": ");
-                default -> {
-                    if (!Character.isWhitespace(current)) formatted.append(current);
-                }
-            }
-        }
-        return formatted.toString();
+        try {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            return gson.toJson(JsonParser.parseString(json));
+        } catch (Exception e) { return json; }
     }
 
-    private void appendIndent(StringBuilder builder, int indent) {
-        builder.append("  ".repeat(Math.max(0, indent)));
-    }
-
-    private String resolveRequestUrl() {
-        String enteredUrl = urlField.getText();
-        if (enteredUrl == null || enteredUrl.trim().isEmpty()) return "";
-        String trimmedUrl = enteredUrl.trim();
-        if (trimmedUrl.startsWith("http://") || trimmedUrl.startsWith("https://")) return trimmedUrl;
-
-        String configuredBaseUrl = AppRunConfig.getBaseUrl();
-        String baseUrl = AppRunConfig.normalizeBaseUrl(configuredBaseUrl == null || configuredBaseUrl.isBlank()
-                ? AppRunConfig.DEFAULT_BASE_URL
-                : configuredBaseUrl);
-        return trimmedUrl.startsWith("/") ? baseUrl + trimmedUrl : baseUrl + "/" + trimmedUrl;
+    private String resolveRequestUrl(String url) {
+        if (url == null || url.trim().isEmpty()) return "";
+        String trimmed = url.trim();
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
+        String baseUrl = AppRunConfig.normalizeBaseUrl(AppRunConfig.getBaseUrl());
+        return trimmed.startsWith("/") ? baseUrl + trimmed : baseUrl + "/" + trimmed;
     }
 
     private String resolveMediaType() {
@@ -706,7 +387,6 @@ public class RequestController implements Initializable {
         authTypeComboBox.getItems().addAll("No Auth", "Basic Auth", "Bearer Token");
         authTypeComboBox.setValue("No Auth");
         authTypeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> updateAuthUI(newVal));
-
         authUserField.setPromptText("Username");
         authPasswordField.setPromptText("Password");
         authTokenField.setPromptText("Bearer Token String");
@@ -715,82 +395,165 @@ public class RequestController implements Initializable {
     private void updateAuthUI(String authType) {
         authConfigContainer.getChildren().clear();
         if ("Basic Auth".equals(authType)) {
-            Label userLabel = new Label("Username");
-            userLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #555;");
-            Label passLabel = new Label("Password");
-            passLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #555;");
-            authConfigContainer.getChildren().addAll(userLabel, authUserField, passLabel, authPasswordField);
+            authConfigContainer.getChildren().addAll(new Label("Username"), authUserField, new Label("Password"), authPasswordField);
         } else if ("Bearer Token".equals(authType)) {
-            Label tokenLabel = new Label("Token");
-            tokenLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #555;");
-            authConfigContainer.getChildren().addAll(tokenLabel, authTokenField);
+            authConfigContainer.getChildren().addAll(new Label("Token"), authTokenField);
         }
     }
 
     private void initBodyTab() {
-        ToggleGroup bodyGroup = new ToggleGroup();
-        rawBtn.setToggleGroup(bodyGroup);
-        formDataBtn.setToggleGroup(bodyGroup);
+        ToggleGroup group = new ToggleGroup();
+        rawBtn.setToggleGroup(group);
+        formDataBtn.setToggleGroup(group);
         rawBtn.setSelected(true);
         rawTypeComboBox.getItems().addAll("JSON", "Text", "XML");
         rawTypeComboBox.setValue("JSON");
+        rawBtn.setOnAction(e -> toggleBodyMode(true));
+        formDataBtn.setOnAction(e -> toggleBodyMode(false));
+    }
 
-        // LOGIC CHUYỂN ĐỔI ẨN/HIỆN ĐỘNG GIỮA RAW VÀ FORM-DATA
-        rawBtn.setOnAction(e -> {
-            bodyTextArea.setVisible(true);
-            bodyTextArea.setManaged(true);
-            rawTypeComboBox.setVisible(true);
-            rawTypeComboBox.setManaged(true);
+    private void toggleBodyMode(boolean isRaw) {
+        bodyTextArea.setVisible(isRaw); bodyTextArea.setManaged(isRaw);
+        rawTypeComboBox.setVisible(isRaw); rawTypeComboBox.setManaged(isRaw);
+        formDataContainer.setVisible(!isRaw); formDataContainer.setManaged(!isRaw);
+    }
 
-            formDataContainer.setVisible(false);
-            formDataContainer.setManaged(false);
+    private void initResponseTable() {
+        headerKeyCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getKey()));
+        headerValueCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getValue()));
+    }
+
+    private void initDynamicTables() {
+        // --- Params Table ---
+        paramsTableView.setItems(paramDataList);
+        paramsTableView.setEditable(true);
+        if (paramDataList.isEmpty()) paramDataList.add(new DataRowModel("", "", ""));
+        setupEditableColumnWithPlaceholder(paramKeyCol, "key", "Key");
+        setupEditableColumnWithPlaceholder(paramValueCol, "value", "Value");
+        setupEditableColumnWithPlaceholder(paramDescCol, "description", "Mô tả");
+        addParamBtn.setOnAction(e -> paramDataList.add(new DataRowModel("", "", "")));
+        deleteParamBtn.setOnAction(e -> {
+            DataRowModel s = paramsTableView.getSelectionModel().getSelectedItem();
+            if (s != null) paramDataList.remove(s);
+            if (paramDataList.isEmpty()) paramDataList.add(new DataRowModel("", "", ""));
+            syncTableToUrl();
         });
 
-        formDataBtn.setOnAction(e -> {
-            bodyTextArea.setVisible(false);
-            bodyTextArea.setManaged(false);
-            rawTypeComboBox.setVisible(false);
-            rawTypeComboBox.setManaged(false);
+        // --- Headers Table ---
+        requestHeadersTableView.setItems(requestHeaderDataList);
+        requestHeadersTableView.setEditable(true);
+        if (requestHeaderDataList.isEmpty()) requestHeaderDataList.add(new DataRowModel("", "", ""));
+        setupEditableColumnWithPlaceholder(reqHeaderKeyCol, "key", "Header");
+        setupEditableColumnWithPlaceholder(reqHeaderValueCol, "value", "Value");
+        setupEditableColumnWithPlaceholder(reqHeaderDescCol, "description", "Mô tả");
+        addHeaderBtn.setOnAction(e -> requestHeaderDataList.add(new DataRowModel("", "", "")));
+        deleteHeaderBtn.setOnAction(e -> {
+            DataRowModel s = requestHeadersTableView.getSelectionModel().getSelectedItem();
+            if (s != null) requestHeaderDataList.remove(s);
+            if (requestHeaderDataList.isEmpty()) requestHeaderDataList.add(new DataRowModel("", "", ""));
+        });
 
-            formDataContainer.setVisible(true);
-            formDataContainer.setManaged(true);
+        // --- Form-Data Table ---
+        formDataTableView.setItems(formDataList);
+        formDataTableView.setEditable(true);
+        if (formDataList.isEmpty()) formDataList.add(new DataRowModel("", "", ""));
+        setupEditableColumnWithPlaceholder(formKeyCol, "key", "Field");
+        setupEditableColumnWithPlaceholder(formValueCol, "value", "Value");
+        setupEditableColumnWithPlaceholder(formDescCol, "description", "Mô tả");
+        addFormRowBtn.setOnAction(e -> formDataList.add(new DataRowModel("", "", "")));
+        deleteFormRowBtn.setOnAction(e -> {
+            DataRowModel s = formDataTableView.getSelectionModel().getSelectedItem();
+            if (s != null) formDataList.remove(s);
+            if (formDataList.isEmpty()) formDataList.add(new DataRowModel("", "", ""));
         });
     }
 
-    // ========== MODEL CLASS ==========
+    private void setupEditableColumnWithPlaceholder(TableColumn<DataRowModel, String> column, String field, String placeholder) {
+        column.setCellFactory(col -> new TableCell<>() {
+            private TextField textField;
+            @Override public void startEdit() {
+                super.startEdit();
+                if (textField == null) {
+                    textField = new TextField(getItem());
+                    textField.setOnAction(e -> commitEdit(textField.getText()));
+                    textField.focusedProperty().addListener((o, ov, nv) -> { if (!nv) commitEdit(textField.getText()); });
+                }
+                textField.setText(getItem());
+                setText(null); setGraphic(textField); textField.requestFocus();
+            }
+            @Override public void cancelEdit() { super.cancelEdit(); setText(getItem()); setGraphic(null); }
+            @Override protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) { setText(null); setGraphic(null); }
+                else {
+                    setText(item == null || item.isEmpty() ? placeholder : item);
+                    setStyle(item == null || item.isEmpty() ? "-fx-text-fill: gray; -fx-font-style: italic;" : "-fx-text-fill: black; -fx-font-style: normal;");
+                    setGraphic(null);
+                }
+            }
+        });
+        column.setCellValueFactory(data -> "key".equals(field) ? data.getValue().keyProperty() : "value".equals(field) ? data.getValue().valueProperty() : data.getValue().descriptionProperty());
+        column.setOnEditCommit(event -> {
+            DataRowModel row = event.getRowValue();
+            String val = event.getNewValue();
+            if ("key".equals(field)) {
+                row.setKey(val);
+                if (column.getTableView() == paramsTableView) syncTableToUrl();
+            }
+            else if ("value".equals(field)) {
+                row.setValue(val);
+                if (column.getTableView() == paramsTableView) syncTableToUrl();
+            }
+            else row.setDescription(val);
+        });
+    }
+
+    private void initUrlSyncLogic() {
+        urlField.textProperty().addListener((o, ov, nv) -> {
+            if (!isUpdatingUrlFromTable) { isUpdatingTableFromUrl = true; parseUrlToTable(nv); isUpdatingTableFromUrl = false; }
+        });
+        parseUrlToTable(urlField.getText());
+    }
+
+    private void parseUrlToTable(String urlStr) {
+        paramDataList.clear();
+        if (urlStr == null || !urlStr.contains("?")) { paramDataList.add(new DataRowModel("", "", "")); return; }
+        String query = urlStr.substring(urlStr.indexOf("?") + 1);
+        for (String pair : query.split("&")) {
+            String[] kv = pair.split("=", 2);
+            if (kv.length > 0 && !kv[0].isEmpty()) paramDataList.add(new DataRowModel(kv[0], kv.length > 1 ? kv[1] : "", ""));
+        }
+        if (paramDataList.isEmpty()) paramDataList.add(new DataRowModel("", "", ""));
+    }
+
+    private void syncTableToUrl() {
+        if (isUpdatingTableFromUrl) return;
+        isUpdatingUrlFromTable = true;
+        String url = urlField.getText();
+        if (url == null) url = "";
+        if (url.contains("?")) url = url.substring(0, url.indexOf("?"));
+        StringBuilder sb = new StringBuilder();
+        for (DataRowModel r : paramDataList) {
+            if (r.getKey() != null && !r.getKey().isEmpty()) {
+                if (sb.length() > 0) sb.append("&");
+                sb.append(r.getKey()).append("=").append(r.getValue());
+            }
+        }
+        urlField.setText(sb.length() > 0 ? url + "?" + sb.toString() : url);
+        isUpdatingUrlFromTable = false;
+    }
 
     public static class DataRowModel {
-        private final SimpleStringProperty key;
-        private final SimpleStringProperty value;
-        private final SimpleStringProperty description;
-
-        public DataRowModel(String key, String value, String description) {
-            this.key = new SimpleStringProperty(key == null ? "" : key);
-            this.value = new SimpleStringProperty(value == null ? "" : value);
-            this.description = new SimpleStringProperty(description == null ? "" : description);
-        }
-
-        public String getKey() { return key.get(); }
-        public void setKey(String v) { this.key.set(v == null ? "" : v); }
-        public SimpleStringProperty keyProperty() { return key; }
-
-        public String getValue() { return value.get(); }
-        public void setValue(String v) { this.value.set(v == null ? "" : v); }
-        public SimpleStringProperty valueProperty() { return value; }
-
-        public String getDescription() { return description.get(); }
-        public void setDescription(String v) { this.description.set(v == null ? "" : v); }
-        public SimpleStringProperty descriptionProperty() { return description; }
+        private final SimpleStringProperty key, value, description;
+        public DataRowModel(String k, String v, String d) { this.key = new SimpleStringProperty(k); this.value = new SimpleStringProperty(v); this.description = new SimpleStringProperty(d); }
+        public String getKey() { return key.get(); } public void setKey(String v) { key.set(v); } public SimpleStringProperty keyProperty() { return key; }
+        public String getValue() { return value.get(); } public void setValue(String v) { value.set(v); } public SimpleStringProperty valueProperty() { return value; }
+        public String getDescription() { return description.get(); } public void setDescription(String v) { description.set(v); } public SimpleStringProperty descriptionProperty() { return description; }
     }
 
     public static class HeaderModel {
-        private final String key;
-        private final String value;
-        public HeaderModel(String key, String value) {
-            this.key = key == null ? "" : key;
-            this.value = value == null ? "" : value;
-        }
-        public String getKey() { return key; }
-        public String getValue() { return value; }
+        private final String key, value;
+        public HeaderModel(String k, String v) { this.key = k; this.value = v; }
+        public String getKey() { return key; } public String getValue() { return value; }
     }
 }
