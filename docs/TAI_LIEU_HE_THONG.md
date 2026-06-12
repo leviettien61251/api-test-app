@@ -1,21 +1,21 @@
-# Tai lieu he thong
+# Tài liệu hệ thống
 
-## 1. Muc tieu
+## 1. Mục tiêu
 
-`API Test App` la ung dung desktop JavaFX cho tester:
+`API Test App` là ứng dụng desktop JavaFX dành cho tester:
 
-- dang nhap va khoi tao session lam viec
-- cau hinh base URL truoc khi chay test
-- nap testcase co san hoac testcase do user tao
-- chay testcase, setup, cleanup, assertion
-- debug endpoint bang request thu cong
-- xem dashboard, report va lich su run
+- đăng nhập và khởi tạo session làm việc
+- cấu hình base URL trước khi chạy test
+- nạp testcase có sẵn hoặc testcase do user tạo
+- chạy testcase, setup, cleanup, assertion
+- debug endpoint bằng request thủ công
+- xem dashboard, report và lịch sử chạy
 
-He thong la API test client, khong phai API backend.
+Hệ thống là API test client, không phải API backend.
 
-## 2. Pham vi chuc nang
+## 2. Phạm vi chức năng
 
-### Dang hoat dong trong luong chinh
+### Đang hoạt động trong luồng chính
 
 - `Login`
 - `Default run config`
@@ -28,31 +28,31 @@ He thong la API test client, khong phai API backend.
 - CRUD `user_test_suite`
 - CRUD `user_test_case`
 
-### Ton tai trong repo nhung chua noi vao navigation chinh
+### Tồn tại trong repo nhưng chưa nối vào điều hướng chính
 
 - `Collections`
 - `Environments`
 
-## 3. Actor va he thong ngoai
+## 3. Actor và hệ thống ngoài
 
-### Actor chinh
+### Actor chính
 
-- `Tester`: su dung app de chay test, tao testcase va xem ket qua.
+- `Tester`: sử dụng ứng dụng để chạy test, tạo testcase và xem kết quả.
 
-### He thong ngoai
+### Hệ thống ngoài
 
-- `Backend API`: dich vu duoc goi khi run testcase hoac gui request thu cong.
-- `PostgreSQL`: luu user, role, client machine, user test suite, user test case.
-- `RunStorage JSON`: file local luu lich su run.
+- `Backend API`: dịch vụ được gọi khi chạy testcase hoặc gửi request thủ công.
+- `PostgreSQL`: lưu user, role, client machine, user test suite, user test case.
+- `RunStorage JSON`: file cục bộ lưu lịch sử chạy.
 
-## 4. Module chinh
+## 4. Module chính
 
-### 4.1 Khoi dong va dieu huong
+### 4.1 Khởi động và điều hướng
 
-- `MainApplication`: khoi tao JavaFX, AtlantaFX theme, login view va main view.
-- `MainController`: dieu huong, cache view, refresh view, mo report theo run ID, phan hoi logout va xac nhan thoat app.
+- `MainApplication`: khởi tạo JavaFX, AtlantaFX theme, login view và main view.
+- `MainController`: điều hướng, cache view, refresh view, mở report theo run ID, xử lý logout và xác nhận thoát ứng dụng.
 
-Navigation chinh:
+Điều hướng chính:
 
 - `Dashboard`
 - `Testcase`
@@ -61,7 +61,7 @@ Navigation chinh:
 - `History`
 - `Profile` qua user menu
 
-Phim tat:
+Phím tắt:
 
 - `Ctrl + D`: Dashboard
 - `Ctrl + T`: Testcase
@@ -69,83 +69,82 @@ Phim tat:
 - `Ctrl + E`: Report
 - `Ctrl + H`: History
 
-### 4.2 Login va session
+### 4.2 Đăng nhập và session
 
-- `LoginController` nhan username/email va password.
-- `UserRepository.findUserByEmailAndPassword` xac thuc voi PostgreSQL.
-- `AppSession` giu current user va username.
-- Sau login, `MainController` luu thong tin client machine qua `ClientMachineRepository`.
+- `LoginController` nhận username/email và password.
+- `UserRepository.findUserByEmailAndPassword` xác thực với PostgreSQL.
+- `AppSession` giữ current user và username.
+- Sau khi đăng nhập, `MainController` lưu thông tin client machine qua `ClientMachineRepository`.
 
-Code hien khong the hien authorization rieng cho admin/tester.
+Code hiện không thể hiện cơ chế phân quyền riêng cho admin/tester.
 
 ### 4.3 Default run config
 
-Dialog sau login cho phep cau hinh:
+Hộp thoại sau khi đăng nhập cho phép cấu hình:
 
 - `Base URL`
-- `Alert mode`: `Stop on fail` hoac `Continue`
+- `Alert mode`: `Stop on fail` hoặc `Continue`
 
-Runner khong con la input trong dialog. `AppRunConfig.getRunner()` lay username trong session, fallback ve user he dieu
-hanh.
+Runner không còn là input trong hộp thoại. `AppRunConfig.getRunner()` lấy username trong session, dự phòng bằng user hệ điều hành.
 
 ### 4.4 Testcase runner
 
-`TestcaseController` la module nghiep vu lon nhat:
+`TestcaseController` là module nghiệp vụ lớn nhất:
 
-- nap scenario co san tu `ApiScenarioRegistry`
-- nap suite/case do user tao tu PostgreSQL
-- tao, sua, soft delete suite va case
-- cap nhat cleanup requests cua suite
-- chay `Run All` va `Run Selected`
-- dung qua trinh run
+- nạp scenario có sẵn từ `ApiScenarioRegistry`
+- nạp suite/case do user tạo từ PostgreSQL
+- tạo, sửa, soft delete suite và case
+- cập nhật cleanup requests của suite
+- chạy `Run All` và `Run Selected`
+- dừng quá trình chạy
 - replace path params, append query params, apply headers
-- chay setup request, capture response variables
-- tu dong setup auth khi body/header can `${token}` hoac `${authorizationHeader}`
-- goi request chinh qua `ApiTestService`
-- so sanh status code, payload assertions va expected response body
-- chay cleanup request
-- luu `TestRun` vao `RunStorage`
+- chạy setup request, trích xuất response variables
+- tự động setup auth khi body/header cần `${token}` hoặc `${authorizationHeader}`
+- gọi request chính qua `ApiTestService`
+- so sánh status code, payload assertions và expected response body
+- chạy cleanup request
+- lưu `TestRun` vào `RunStorage`
 
-### 4.5 Scenario co san
+### 4.5 Scenario có sẵn
 
-`ApiScenarioRegistry` dang ky 30 provider:
+`ApiScenarioRegistry` đăng ký 30 provider:
 
 - `Auth`: signup, login, change password, get user info
-- `User`: set user info, set avatar, provider cu `Collections 2/User2 Module2`
+- `User`: set user info, set avatar, provider cũ `Collections 2/User2 Module2`
 - `Map`: insert map/node/step, area, heatmap, path, edges, nodes, floor, meta, ward
-- `Flow`: insert obstacle, density, bottleneck, heatmap, edge, edge status, edge density va cac API get
+- `Flow`: insert obstacle, density, bottleneck, heatmap, edge, edge status, edge density và các API get
 - `Real API`: `GET /map/nodes`
 
-Mot so label/module trong code chua dong nhat; tai lieu ghi nhan trang thai that thay vi chuan hoa ten.
+Một số label/module trong code chưa đồng nhất; tài liệu ghi nhận trạng thái thực tế thay vì chuẩn hóa tên.
 
 ### 4.6 Request builder
 
-`RequestController` ho tro:
+`RequestController` hỗ trợ:
 
 - method `GET`, `POST`, `PUT`, `DELETE`, `PATCH`
-- URL tuyet doi hoac endpoint tuong doi theo `AppRunConfig.baseUrl`
-- params table dong bo voi query string tren URL
+- URL tuyệt đối hoặc endpoint tương đối theo `AppRunConfig.baseUrl`
+- bảng params đồng bộ với query string trên URL
 - request headers table
 - raw body `JSON`, `Text`, `XML`
 - multipart form-data
 - auth UI `No Auth`, `Basic Auth`, `Bearer Token`
-- xem status, response time, response body va response headers
-- test script don gian voi `assert status == 200`, `duration < 500`, `body contains "..."`
+- xem status, response time, response body và response headers
+- test script đơn giản với `assert status == 200`, `duration < 500`, `body contains "..."`
 
-Gioi han: form-data chi gui text fields, chua co upload file; test script la bo parse don gian, khong phai
+Giới hạn: form-data chỉ gửi text fields, chưa có chức năng tải file lên; test script là bộ phân tích đơn giản, không phải
 JavaScript/Postman sandbox.
 
 ### 4.7 Dashboard, report, history
 
-- `DashboardController`: tong so testcase da chay, so run, pass/fail, run gan day.
-- `ReportController`: thong tin run, tong testcase, pass/fail, pie chart, bar chart response time, bang chi tiet.
-- `HistoryController`: loc theo ngay, loc theo status, tim keyword, mo report, xoa run.
+- `DashboardController`: tổng số testcase đã chạy, số run, pass/fail, run gần đây.
+- `ReportController`: thông tin run, tổng số testcase, pass/fail, pie chart, bar chart response time, bảng chi tiết.
+- `HistoryController`: lọc theo ngày, lọc theo status, tìm keyword, mở report, xóa run.
 
 ## 5. Persistence
 
 ### 5.1 PostgreSQL
 
-Bang chinh:
+Bảng chính:
 
 - `roles`
 - `users`
@@ -153,11 +152,11 @@ Bang chinh:
 - `user_test_suites`
 - `user_test_cases`
 
-`database.sql` la file tham khao. Cac migration bo sung nam trong `src/main/resources/db/migrations`.
+`setup.sql` là script khởi tạo cơ sở dữ liệu mới. `database.sql` là file tham khảo cũ; các migration bổ sung nằm trong `src/main/resources/db/migrations`.
 
 ### 5.2 User testcase
 
-`user_test_cases` ho tro:
+`user_test_cases` hỗ trợ:
 
 - `request_headers`
 - `query_params`
@@ -169,29 +168,28 @@ Bang chinh:
 - `expected_response_body`
 - `expected_status_code`
 
-`query_params` cho phep nhieu value cho mot key trong model/service.
+`query_params` cho phép nhiều value cho một key trong model/service.
 
 ### 5.3 RunStorage
 
-`RunStorage` luu local:
+`RunStorage` lưu cục bộ:
 
 ```text
 %LOCALAPPDATA%\api-test-app\runs.json
 ```
 
-Neu `LOCALAPPDATA` khong co:
+Nếu không có `LOCALAPPDATA`:
 
 ```text
 %USERPROFILE%\.api-test-app\runs.json
 ```
 
-File nay la nguon du lieu cho Dashboard, Report va History.
+File này là nguồn dữ liệu cho Dashboard, Report và History.
 
-## 6. Gioi han hien tai
+## 6. Giới hạn hiện tại
 
-- `database.sql` chua phai migration/deployment script sach.
-- Seed SQL trong `database.sql` co phan can sua thu tu va cu phap truoc khi chay truc tiep.
-- `Collections` va `Environments` moi o muc UI/resource, chua thanh workflow chinh.
-- `Profile` chu yeu hien thi thong tin user, chua phai module sua profile day du.
-- `Request` chua ho tro file upload trong form-data.
-- `TestcaseController` rat lon, nen can can than khi sua vi blast radius cao.
+- Dùng `setup.sql` cho cơ sở dữ liệu mới; không dùng `database.sql` cũ để triển khai.
+- `Collections` và `Environments` mới ở mức UI/resource, chưa thành workflow chính.
+- `Profile` chủ yếu hiển thị thông tin user, chưa phải module sửa profile đầy đủ.
+- `Request` chưa hỗ trợ tải file lên trong form-data.
+- `TestcaseController` rất lớn, nên cần cẩn thận khi sửa vì blast radius cao.

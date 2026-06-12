@@ -1,15 +1,15 @@
-# Kien truc
+# Kiến trúc
 
-## 1. Tong the
+## 1. Tổng thể
 
-Ung dung theo mo hinh JavaFX desktop:
+Ứng dụng theo mô hình JavaFX desktop:
 
 - FXML views trong `src/main/resources`
-- controllers xu ly UI state va event
-- services orchestration, test execution, JSON parsing va storage
-- repositories truy cap PostgreSQL
-- models bieu dien user, testcase, suite va ket qua run
-- config giu session/runtime state
+- controllers xử lý trạng thái UI và sự kiện
+- services điều phối, thực thi kiểm thử, phân tích JSON và lưu trữ
+- repositories truy cập PostgreSQL
+- models biểu diễn người dùng, testcase, suite và kết quả chạy
+- config giữ trạng thái session/runtime
 
 ## 2. Package layout
 
@@ -49,7 +49,7 @@ src/main/resources/com/example/apitestapp
 `-- styles/
 ```
 
-## 3. Khoi dong va navigation
+## 3. Khởi động và điều hướng
 
 ```mermaid
 flowchart LR
@@ -80,13 +80,13 @@ flowchart LR
 `MainController`:
 
 - cache view trong `viewCache`
-- goi `RefreshableView.refresh()` khi mo lai view
-- wire callback `openReportForRun` cho Dashboard va History
-- dang ky phim tat
-- hien confirm dialog khi dong app
-- reset session/config khi logout
+- gọi `RefreshableView.refresh()` khi mở lại view
+- kết nối callback `openReportForRun` cho Dashboard và History
+- đăng ký phím tắt
+- hiển thị hộp thoại xác nhận khi đóng ứng dụng
+- reset session/config khi đăng xuất
 
-## 4. Luong chay testcase
+## 4. Luồng chạy testcase
 
 ```mermaid
 flowchart LR
@@ -111,21 +111,21 @@ flowchart LR
     ui --> storage
 ```
 
-Trinh tu chinh:
+Trình tự chính:
 
-1. User chon scenario code hoac user suite/case.
-2. Controller tao `TestCaseRowModel`.
-3. Khi run, controller resolve base URL va endpoint.
-4. Path params duoc replace vao URL.
-5. Query params duoc append vao URL.
-6. Headers duoc apply vao request.
-7. Setup requests duoc chay truoc request chinh.
-8. Response variables duoc capture theo `jsonPath`.
-9. Auth setup mac dinh co the duoc kich hoat neu can runtime token.
-10. Request chinh goi qua `ApiTestService`.
-11. Status, payload assertions va expected body duoc danh gia.
-12. Cleanup requests duoc chay.
-13. `TestRun` va `TestResult` duoc luu vao `RunStorage`.
+1. Người dùng chọn scenario có sẵn hoặc user suite/case.
+2. Controller tạo `TestCaseRowModel`.
+3. Khi chạy, controller ghép base URL và endpoint.
+4. Path params được thay thế vào URL.
+5. Query params được nối vào URL.
+6. Headers được áp dụng vào request.
+7. Setup requests được chạy trước request chính.
+8. Response variables được trích xuất theo `jsonPath`.
+9. Auth setup mặc định có thể được kích hoạt nếu cần runtime token.
+10. Request chính được gọi qua `ApiTestService`.
+11. Status, payload assertions và expected body được đánh giá.
+12. Cleanup requests được chạy.
+13. `TestRun` và `TestResult` được lưu vào `RunStorage`.
 
 ## 5. Request builder flow
 
@@ -146,15 +146,15 @@ flowchart LR
 
 Request builder:
 
-- resolve URL tuyet doi hoac relative
-- parse query string vao bang params va dong bo nguoc lai URL
+- xử lý URL tuyệt đối hoặc tương đối
+- phân tích query string vào bảng params và đồng bộ ngược lại URL
 - add custom headers
 - set `Authorization` cho Basic/Bearer
-- gui raw body hoac multipart form-data
-- format JSON response o muc text
-- parse assert script don gian
+- gửi raw body hoặc multipart form-data
+- định dạng JSON response ở mức văn bản
+- phân tích assert script đơn giản
 
-## 6. Model chinh
+## 6. Model chính
 
 ### Config/session
 
@@ -199,7 +199,7 @@ Repository:
 - `UserTestSuiteRepository`
 - `UserTestCaseRepository`
 
-Bang chinh:
+Bảng chính:
 
 - `roles`
 - `users`
@@ -209,13 +209,13 @@ Bang chinh:
 
 ### File JSON local
 
-`RunStorage` ghi lich su run vao:
+`RunStorage` ghi lịch sử chạy vào:
 
 ```text
 %LOCALAPPDATA%\api-test-app\runs.json
 ```
 
-Fallback:
+Đường dẫn dự phòng:
 
 ```text
 %USERPROFILE%\.api-test-app\runs.json
@@ -223,7 +223,7 @@ Fallback:
 
 ## 8. Scenario architecture
 
-`ApiScenarioProvider` tra ve `ApiScenarioDefinition`:
+`ApiScenarioProvider` trả về `ApiScenarioDefinition`:
 
 - `collectionName`
 - `moduleName`
@@ -233,7 +233,7 @@ Fallback:
 - `scenarios`
 - `cleanupRequests`
 
-`ApiScenarioRegistry` tap hop provider tu cac package:
+`ApiScenarioRegistry` tập hợp provider từ các package:
 
 - `services.auth`
 - `services.user`
@@ -241,10 +241,10 @@ Fallback:
 - `services.flow`
 - `services.realapitest`
 
-## 9. Diem ky thuat can can than
+## 9. Điểm kỹ thuật cần cẩn thận
 
-- `TestcaseController` gom nhieu workflow trong mot class, blast radius cao.
-- `database.sql` chua phai migration sach.
-- Ten collection/module/apiLabel chua dong nhat giua provider.
-- `Request` form-data chua co file upload.
-- `Profile`, `Collections`, `Environments` chua phai module nghiep vu hoan chinh.
+- `TestcaseController` gom nhiều workflow trong một class, blast radius cao.
+- `setup.sql` là script khởi tạo cơ sở dữ liệu mới; `database.sql` chỉ được giữ làm tài liệu tham khảo cũ.
+- Tên collection/module/apiLabel chưa đồng nhất giữa các provider.
+- `Request` form-data chưa có chức năng tải file lên.
+- `Profile`, `Collections`, `Environments` chưa phải module nghiệp vụ hoàn chỉnh.
