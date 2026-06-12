@@ -48,11 +48,11 @@
 
                         <VBox spacing="6.0" styleClass="filter-field" GridPane.columnIndex="3">
                             <Label styleClass="filter-label" text="TÌM KIẾM"/>
-                            <HBox spacing="8.0" styleClass="search-box" alignment="CENTER_LEFT" maxWidth="300.0">
+                            <HBox spacing="8.0" styleClass="search-box" alignment="CENTER_LEFT" maxWidth="500.0">
                                 <TextField fx:id="txtSearch" styleClass="search-field" HBox.hgrow="ALWAYS"
                                            promptText="Nhập từ khóa..."/>
                                 <Button fx:id="btnFilter" onAction="#handleFilter" styleClass="btn-search" text="🔍"/>
-                                <Button fx:id="btnExport" onAction="#handleExportExcel" styleClass="btn-search" text="📥 Xuất Excel"/>
+                                <Button fx:id="btnExport" onAction="#handleExportExcel" styleClass="btn-export" text="📥 Xuất Excel"/>
                             </HBox>
                         </VBox>
                     </children>
