@@ -1,94 +1,94 @@
-# Ma tran man hinh
+# Ma trận màn hình
 
-Tai lieu nay liet ke cac man hinh trong repo va trang thai ket noi voi navigation chinh.
+Tài liệu này liệt kê các màn hình trong repo và trạng thái kết nối với điều hướng chính.
 
-## 1. Man hinh trong luong chinh
+## 1. Màn hình trong luồng chính
 
-| Man hinh   | FXML                        | Controller            | Cach mo                                      | Trang thai         |
+| Màn hình   | FXML                        | Controller            | Cách mở                                       | Trạng thái         |
 |------------|-----------------------------|-----------------------|----------------------------------------------|--------------------|
-| Login      | `login-view.fxml`           | `LoginController`     | app start                                    | hoat dong          |
-| Main shell | `main-view.fxml`            | `MainController`      | sau login                                    | hoat dong          |
-| Dashboard  | `views/dashboard-view.fxml` | `DashboardController` | menu, `Ctrl + D`                             | hoat dong          |
-| Testcase   | `views/testcase-view.fxml`  | `TestcaseController`  | menu, `Ctrl + T`, sau khi luu default config | hoat dong          |
-| Request    | `views/request-view.fxml`   | `RequestController`   | menu, `Ctrl + R`                             | hoat dong          |
-| Report     | `views/report-view.fxml`    | `ReportController`    | menu, `Ctrl + E`, Dashboard/History          | hoat dong          |
-| History    | `views/history-view.fxml`   | `HistoryController`   | menu, `Ctrl + H`                             | hoat dong          |
-| Profile    | `views/profile-view.fxml`   | `ProfileController`   | user menu                                    | hoat dong mot phan |
+| Login      | `login-view.fxml`           | `LoginController`     | khởi động ứng dụng                            | hoạt động          |
+| Main shell | `main-view.fxml`            | `MainController`      | sau khi đăng nhập                             | hoạt động          |
+| Dashboard  | `views/dashboard-view.fxml` | `DashboardController` | menu, `Ctrl + D`                              | hoạt động          |
+| Testcase   | `views/testcase-view.fxml`  | `TestcaseController`  | menu, `Ctrl + T`, sau khi lưu default config | hoạt động          |
+| Request    | `views/request-view.fxml`   | `RequestController`   | menu, `Ctrl + R`                              | hoạt động          |
+| Report     | `views/report-view.fxml`    | `ReportController`    | menu, `Ctrl + E`, Dashboard/History           | hoạt động          |
+| History    | `views/history-view.fxml`   | `HistoryController`   | menu, `Ctrl + H`                              | hoạt động          |
+| Profile    | `views/profile-view.fxml`   | `ProfileController`   | user menu                                     | hoạt động một phần |
 
-## 2. Man hinh ton tai nhung chua noi vao navigation chinh
+## 2. Màn hình tồn tại nhưng chưa nối vào điều hướng chính
 
-| Man hinh     | FXML                           | Controller               | Trang thai                             |
+| Màn hình     | FXML                           | Controller               | Trạng thái                             |
 |--------------|--------------------------------|--------------------------|----------------------------------------|
-| Collections  | `views/collections-view.fxml`  | `CollectionsController`  | scaffold / chua co menu chinh          |
-| Environments | `views/environments-view.fxml` | `EnvironmentsController` | scaffold / chua noi voi `AppRunConfig` |
+| Collections  | `views/collections-view.fxml`  | `CollectionsController`  | scaffold / chưa có menu chính          |
+| Environments | `views/environments-view.fxml` | `EnvironmentsController` | scaffold / chưa nối với `AppRunConfig` |
 
-## 3. Nhan xet tung man hinh
+## 3. Nhận xét từng màn hình
 
 ### Login
 
-- nhap email/password
-- co nut hien/an password
-- xac thuc qua `UserRepository`
-- login thanh cong se khoi tao `AppSession` va mo main shell
+- nhập email/password
+- có nút hiện/ẩn password
+- xác thực qua `UserRepository`
+- đăng nhập thành công sẽ khởi tạo `AppSession` và mở main shell
 
 ### Main shell
 
 - cache view theo FXML path
-- goi `refresh()` neu controller implement `RefreshableView`
-- noi callback mo report tu Dashboard/History
-- luu thong tin client machine sau login
-- hien dialog default run config
+- gọi `refresh()` nếu controller triển khai `RefreshableView`
+- nối callback mở report từ Dashboard/History
+- lưu thông tin client machine sau khi đăng nhập
+- hiển thị hộp thoại default run config
 
 ### Dashboard
 
-- tong hop KPI tu `RunStorage`
-- hien run gan day
-- double-click run de mo report
+- tổng hợp KPI từ `RunStorage`
+- hiển thị các lần chạy gần đây
+- nhấp đúp vào run để mở report
 
 ### Testcase
 
-- nap scenario co san va user suite/case
+- nạp scenario có sẵn và user suite/case
 - CRUD user suite/case
 - run all, run selected, stop
 - setup, cleanup, path params, query params, headers, assertions
-- luu run vao `RunStorage`
+- lưu run vào `RunStorage`
 
 ### Request
 
-- debug endpoint thu cong
+- debug endpoint thủ công
 - method, URL, params, headers
-- raw body va multipart form-data
-- Basic Auth va Bearer Token duoc ap vao header `Authorization`
-- hien response body/headers/time va ket qua test script don gian
+- raw body và multipart form-data
+- Basic Auth và Bearer Token được áp dụng vào header `Authorization`
+- hiển thị response body/headers/time và kết quả test script đơn giản
 
 ### Report
 
-- xem mot run da chon trong `SelectedRunContext`
-- hien summary, charts va bang chi tiet
-- co the mo tu menu, Dashboard hoac History
+- xem một run đã chọn trong `SelectedRunContext`
+- hiển thị summary, charts và bảng chi tiết
+- có thể mở từ menu, Dashboard hoặc History
 
 ### History
 
-- loc theo ngay, status va keyword
-- mo report
-- xoa run khoi `RunStorage`
+- lọc theo ngày, status và keyword
+- mở report
+- xóa run khỏi `RunStorage`
 
 ### Profile
 
-- hien thong tin user hien tai
-- chua phai module sua profile day du
+- hiển thị thông tin user hiện tại
+- chưa phải module sửa profile đầy đủ
 
 ### Collections
 
-- resource UI/controller co trong repo
-- chua co workflow ro trong navigation chinh
+- resource UI/controller có trong repo
+- chưa có workflow rõ ràng trong điều hướng chính
 
 ### Environments
 
-- resource UI/controller co trong repo
-- chua noi vao cau hinh runtime base URL cua app
+- resource UI/controller có trong repo
+- chưa nối vào cấu hình runtime base URL của ứng dụng
 
-## 4. Luong dieu huong
+## 4. Luồng điều hướng
 
 ```mermaid
 flowchart LR

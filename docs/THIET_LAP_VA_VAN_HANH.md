@@ -1,47 +1,47 @@
-# Thiet lap va van hanh
+# Thiết lập và vận hành
 
-## 1. Yeu cau
+## 1. Yêu cầu
 
 - JDK 21
-- Maven 3.9+ hoac Maven wrapper `mvnw.cmd`
+- Maven 3.9+ hoặc Maven wrapper `mvnw.cmd`
 - PostgreSQL
-- Windows la moi truong duoc code nham toi ro nhat
+- Windows là môi trường được hỗ trợ rõ nhất
 
-## 2. Build va test
+## 2. Build và test
 
 ```powershell
 .\mvnw.cmd clean test
 ```
 
-Package bo qua test:
+Đóng gói và bỏ qua test:
 
 ```powershell
 .\mvnw.cmd clean package -DskipTests
 ```
 
-Lan dau dung wrapper co the can network de tai Maven distribution va dependencies.
+Lần đầu dùng wrapper có thể cần mạng để tải Maven distribution và dependencies.
 
-## 3. Chay ung dung
+## 3. Chạy ứng dụng
 
 ```powershell
 .\mvnw.cmd javafx:run
 ```
 
-Main class cau hinh trong `pom.xml`:
+Main class được cấu hình trong `pom.xml`:
 
 ```text
 com.example.apitestapp/com.example.apitestapp.MainApplication
 ```
 
-## 4. Cau hinh database
+## 4. Cấu hình database
 
-`ConnectionManager` doc theo thu tu:
+`ConnectionManager` đọc theo thứ tự:
 
 1. Java system property
 2. Environment variable
-3. Gia tri mac dinh trong code
+3. Giá trị mặc định trong code
 
-Mac dinh:
+Mặc định:
 
 - `jdbc:postgresql://localhost:5432/api_test_app`
 - `postgres`
@@ -59,61 +59,51 @@ Environment variables:
 - `APP_DB_USER`
 - `APP_DB_PASSWORD`
 
-Vi du:
+Ví dụ:
 
 ```powershell
 .\mvnw.cmd "-Dapp.db.url=jdbc:postgresql://localhost:5432/api_test_app" "-Dapp.db.user=postgres" "-Dapp.db.password=12345" javafx:run
 ```
 
-## 5. Khoi tao schema
+## 5. Khởi tạo schema
 
-File tham khao:
+Script khởi tạo cơ sở dữ liệu mới:
 
-- `src/main/resources/db/database.sql`
+- `src/main/resources/db/setup.sql`
 
-Migration bo sung:
+Migration bổ sung:
 
 - `src/main/resources/db/migrations/20260602_add_user_test_case_path_params.sql`
 - `src/main/resources/db/migrations/20260602_add_user_test_case_response_assertions.sql`
 
-Canh bao: `database.sql` dang tron insert, select, drop, create va index. Khong nen chay nguyen file ma khong sua truoc.
+Thứ tự thiết lập mới khuyến nghị:
 
-Thu tu setup moi khuyen nghi:
+1. Tạo database `api_test_app`.
+2. Chạy toàn bộ `src/main/resources/db/setup.sql`.
+3. Đăng nhập bằng tài khoản khởi tạo trong `docs/DATABASE_SETUP.md`.
+4. Chỉ chạy migration trong thư mục `migrations` khi nâng cấp schema cũ.
 
-1. Tao database `api_test_app`.
-2. Chay `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`.
-3. Chay khoi `DROP TABLE` neu can reset.
-4. Chay khoi `CREATE TABLE`.
-5. Chay khoi `CREATE INDEX`.
-6. Chay migration trong thu muc `migrations` neu schema dang cu.
-7. Them seed role/user hop le.
+Hướng dẫn chi tiết bằng pgAdmin và `psql`: `docs/DATABASE_SETUP.md`.
 
-## 6. Du lieu seed
+## 6. Dữ liệu seed
 
-`database.sql` co seed role va user mau, nhung phan dau file hien co dau hieu khong phai SQL seed sach:
+`setup.sql` seed một role admin, một role tester và tài khoản cục bộ ban đầu. Thông tin đăng nhập và cách đổi mật khẩu nằm trong `docs/DATABASE_SETUP.md`.
 
-- co cau insert users bi tach boi dau `;` som
-- co cau `insert into client_machines ... values (?, ?, ...)` chi phu hop prepared statement, khong phai script chay
-  truc tiep
-- co cac cau `SELECT` debug
+## 7. Sau khi đăng nhập
 
-Nen tach rieng file seed hop le neu can deployment on dinh.
+Ứng dụng tự động:
 
-## 7. Sau khi login
+- khởi tạo `AppSession`
+- lưu client machine vào PostgreSQL
+- mở Dashboard
+- hiển thị hộp thoại `Default run config`
 
-App tu dong:
-
-- khoi tao `AppSession`
-- luu client machine vao PostgreSQL
-- mo Dashboard
-- hien dialog `Default run config`
-
-Dialog cho nhap:
+Hộp thoại cho nhập:
 
 - `Base URL`
 - `Alert mode`
 
-Mac dinh:
+Mặc định:
 
 - `Base URL`: `http://group3.it4788.sukkaito.id.vn/api`
 - `Alert mode`: `Stop on fail`
@@ -126,52 +116,52 @@ RunStorage ghi:
 %LOCALAPPDATA%\api-test-app\runs.json
 ```
 
-Fallback khi khong co `LOCALAPPDATA`:
+Đường dẫn dự phòng khi không có `LOCALAPPDATA`:
 
 ```text
 %USERPROFILE%\.api-test-app\runs.json
 ```
 
-Neu file bi loi format JSON, app se log loi doc file va tiep tuc voi danh sach trong memory.
+Nếu file sai định dạng JSON, ứng dụng sẽ ghi log lỗi đọc file và tiếp tục với danh sách trong bộ nhớ.
 
-## 9. Van hanh hang ngay
+## 9. Vận hành hằng ngày
 
-1. Dam bao PostgreSQL va backend API dang chay.
-2. Chay app.
-3. Dang nhap.
-4. Kiem tra `Base URL`.
-5. Chon scenario hoac user suite.
-6. Chay `Run All` hoac `Run Selected`.
+1. Đảm bảo PostgreSQL và backend API đang chạy.
+2. Chạy ứng dụng.
+3. Đăng nhập.
+4. Kiểm tra `Base URL`.
+5. Chọn scenario hoặc user suite.
+6. Chạy `Run All` hoặc `Run Selected`.
 7. Xem Dashboard, Report, History.
 
-## 10. Su co thuong gap
+## 10. Sự cố thường gặp
 
-### Khong ket noi duoc database
+### Không kết nối được database
 
-- Kiem tra PostgreSQL dang chay.
-- Kiem tra `app.db.*` hoac `APP_DB_*`.
-- Kiem tra schema co cac bang `users`, `roles`, `client_machines`, `user_test_suites`, `user_test_cases`.
+- Kiểm tra PostgreSQL đang chạy.
+- Kiểm tra `app.db.*` hoặc `APP_DB_*`.
+- Kiểm tra schema có các bảng `users`, `roles`, `client_machines`, `user_test_suites`, `user_test_cases`.
 
-### Login that bai
+### Đăng nhập thất bại
 
-- `LoginController` tim user theo email va password.
-- Kiem tra user seed trong bang `users`.
-- Kiem tra password trong DB hien la plain text theo code hien tai.
+- `LoginController` tìm user theo email và password.
+- Kiểm tra user seed trong bảng `users`.
+- Kiểm tra password trong DB hiện là văn bản thuần theo code hiện tại.
 
-### Testcase loi ket noi backend
+### Testcase lỗi kết nối backend
 
-- Kiem tra `Base URL`.
-- Kiem tra endpoint trong scenario/user case.
-- Kiem tra backend tra dung status/body mong doi.
+- Kiểm tra `Base URL`.
+- Kiểm tra endpoint trong scenario/user case.
+- Kiểm tra backend trả đúng status/body mong đợi.
 
-### Request auth khong nhu mong doi
+### Request auth không như mong đợi
 
-- Kiem tra auth type dang chon.
-- Basic Auth/Bearer Token duoc set vao `Authorization`.
-- Neu custom header cung la `Authorization`, gia tri auth UI se ghi de.
+- Kiểm tra auth type đang chọn.
+- Basic Auth/Bearer Token được đặt vào `Authorization`.
+- Nếu custom header cũng là `Authorization`, giá trị auth UI sẽ ghi đè.
 
-### Khong thay lich su cu
+### Không thấy lịch sử cũ
 
-- Kiem tra file `%LOCALAPPDATA%\api-test-app\runs.json`.
-- Kiem tra fallback `%USERPROFILE%\.api-test-app\runs.json`.
-- Kiem tra quyen ghi file.
+- Kiểm tra file `%LOCALAPPDATA%\api-test-app\runs.json`.
+- Kiểm tra đường dẫn dự phòng `%USERPROFILE%\.api-test-app\runs.json`.
+- Kiểm tra quyền ghi file.

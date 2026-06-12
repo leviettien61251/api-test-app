@@ -1,25 +1,25 @@
-# Huong dan su dung
+# Hướng dẫn sử dụng
 
-## 1. Dang nhap
+## 1. Đăng nhập
 
-1. Mo app.
-2. Nhap email/username.
-3. Nhap password.
-4. Bam login.
+1. Mở ứng dụng.
+2. Nhập email/username.
+3. Nhập password.
+4. Bấm đăng nhập.
 
-Sau khi login thanh cong, app mo main shell va hien dialog `Default run config`.
+Sau khi đăng nhập thành công, ứng dụng mở main shell và hiển thị hộp thoại `Default run config`.
 
-## 2. Cau hinh run mac dinh
+## 2. Cấu hình chạy mặc định
 
-Dialog gom:
+Hộp thoại gồm:
 
-- `Base URL`: URL backend duoc test.
-- `Alert mode`: `Stop on fail` hoac `Continue`.
-- `Machine` va `OS`: thong tin hien thi, khong phai input.
+- `Base URL`: URL backend được kiểm thử.
+- `Alert mode`: `Stop on fail` hoặc `Continue`.
+- `Machine` và `OS`: thông tin hiển thị, không phải dữ liệu nhập.
 
-Khi bam OK, app luu vao `AppRunConfig`, reload `Testcase`/`Request` cache va chuyen sang man hinh `Testcase`.
+Khi bấm OK, ứng dụng lưu vào `AppRunConfig`, tải lại cache `Testcase`/`Request` và chuyển sang màn hình `Testcase`.
 
-## 3. Dieu huong nhanh
+## 3. Điều hướng nhanh
 
 - `Ctrl + D`: Dashboard
 - `Ctrl + T`: Testcase
@@ -27,39 +27,39 @@ Khi bam OK, app luu vao `AppRunConfig`, reload `Testcase`/`Request` cache va chu
 - `Ctrl + E`: Report
 - `Ctrl + H`: History
 
-Profile va Logout nam trong user menu.
+Profile và Logout nằm trong user menu.
 
-## 4. Man hinh Testcase
+## 4. Màn hình Testcase
 
-### 4.1 Nap testcase
+### 4.1 Nạp testcase
 
-Nguon testcase:
+Nguồn testcase:
 
-- scenario co san trong `ApiScenarioRegistry`
-- `User Test Suites` va `User Test Cases` trong PostgreSQL
+- scenario có sẵn trong `ApiScenarioRegistry`
+- `User Test Suites` và `User Test Cases` trong PostgreSQL
 
-Khi chon API/suite, app hien method, endpoint, request data va bang testcase.
+Khi chọn API/suite, ứng dụng hiển thị method, endpoint, request data và bảng testcase.
 
-### 4.2 Tao user suite
+### 4.2 Tạo user suite
 
-Nhap cac truong chinh:
+Nhập các trường chính:
 
 - name
 - method
 - endpoint
 - description
-- cleanup requests JSON array neu can
+- cleanup requests JSON array nếu cần
 
-Suite duoc gan owner theo user dang login va luu vao `user_test_suites`.
+Suite được gán owner theo user đang đăng nhập và lưu vào `user_test_suites`.
 
-### 4.3 Tao user testcase
+### 4.3 Tạo user testcase
 
-User testcase co the khai bao:
+User testcase có thể khai báo:
 
 - name, description
 - method, endpoint
 - headers
-- query params va path params
+- query params và path params
 - request body
 - setup requests
 - cleanup requests
@@ -67,120 +67,120 @@ User testcase co the khai bao:
 - expected response body
 - expected status code
 
-Body JSON va expected response body se duoc validate cu phap. Token runtime dang dang `${variable}` duoc chap nhan trong
-qua trinh validate.
+Body JSON và expected response body sẽ được kiểm tra cú pháp. Token runtime dạng `${variable}` được chấp nhận trong
+quá trình kiểm tra.
 
-### 4.4 Chay testcase
+### 4.4 Chạy testcase
 
-Nut chinh:
+Nút chính:
 
 - `Run All`
 - `Run Selected`
 - `Stop`
 
-Khi run, app thuc hien:
+Khi chạy, ứng dụng thực hiện:
 
-1. resolve endpoint voi `Base URL`
-2. thay path params vao URL
-3. them query params
-4. them headers
-5. chay setup requests
-6. capture response variables
-7. chay auth setup neu phat hien `${token}` hoac `${authorizationHeader}`
-8. goi request chinh
-9. so sanh expected status code
-10. so sanh payload assertions
-11. so sanh expected response body neu co
-12. chay cleanup requests
-13. luu run vao `RunStorage`
+1. ghép endpoint với `Base URL`
+2. thay path params vào URL
+3. thêm query params
+4. thêm headers
+5. chạy setup requests
+6. trích xuất response variables
+7. chạy auth setup nếu phát hiện `${token}` hoặc `${authorizationHeader}`
+8. gọi request chính
+9. so sánh expected status code
+10. so sánh payload assertions
+11. so sánh expected response body nếu có
+12. chạy cleanup requests
+13. lưu run vào `RunStorage`
 
-`Stop on fail` dung tiep cac testcase sau khi gap fail. `Continue` tiep tuc chay.
+`Stop on fail` dừng các testcase tiếp theo sau khi gặp lỗi. `Continue` tiếp tục chạy.
 
-## 5. Man hinh Request
+## 5. Màn hình Request
 
-Dung de debug endpoint thu cong.
+Dùng để debug endpoint thủ công.
 
-### 5.1 URL va params
+### 5.1 URL và params
 
-- Nhap URL tuyet doi: `https://example.com/api/users`.
-- Nhap endpoint tuong doi: `/users` hoac `users`, app ghep voi `AppRunConfig.baseUrl`.
-- Query string tren URL duoc parse vao bang Params.
-- Sua bang Params se dong bo lai URL.
+- Nhập URL tuyệt đối: `https://example.com/api/users`.
+- Nhập endpoint tương đối: `/users` hoặc `users`, ứng dụng ghép với `AppRunConfig.baseUrl`.
+- Query string trên URL được phân tích vào bảng Params.
+- Sửa bảng Params sẽ đồng bộ lại URL.
 
-### 5.2 Headers va auth
+### 5.2 Headers và auth
 
-- Them custom header trong tab Headers.
-- Chon `Basic Auth` de gui `Authorization: Basic ...`.
-- Chon `Bearer Token` de gui `Authorization: Bearer ...`.
-- Neu custom header va auth cung set `Authorization`, auth header se ghi de bang `builder.header`.
+- Thêm custom header trong tab Headers.
+- Chọn `Basic Auth` để gửi `Authorization: Basic ...`.
+- Chọn `Bearer Token` để gửi `Authorization: Bearer ...`.
+- Nếu custom header và auth cùng đặt `Authorization`, auth header sẽ ghi đè bằng `builder.header`.
 
 ### 5.3 Body
 
-- Raw body ho tro `JSON`, `Text`, `XML`.
-- Form-data gui multipart text fields.
-- `GET` va `DELETE` khong gui body trong luong Request hien tai.
+- Raw body hỗ trợ `JSON`, `Text`, `XML`.
+- Form-data gửi multipart text fields.
+- `GET` và `DELETE` không gửi body trong luồng Request hiện tại.
 
-### 5.4 Response va tests
+### 5.4 Response và tests
 
-Sau khi gui request, app hien:
+Sau khi gửi request, ứng dụng hiển thị:
 
 - HTTP status
 - response time
 - response body
 - response headers
 
-Tab Tests ho tro assert don gian:
+Tab Tests hỗ trợ assert đơn giản:
 
 ```text
-assert status == 200 : "Kiem tra status";
-assert duration < 500 : "Kiem tra thoi gian";
-assert body contains "1000" : "Kiem tra noi dung";
+assert status == 200 : "Kiểm tra status";
+assert duration < 500 : "Kiểm tra thời gian";
+assert body contains "1000" : "Kiểm tra nội dung";
 ```
 
 ## 6. Dashboard
 
-Dashboard hien:
+Dashboard hiển thị:
 
-- tong testcase da chay
-- tong so run
-- tong pass/fail
-- danh sach run gan day
+- tổng số testcase đã chạy
+- tổng số run
+- tổng số pass/fail
+- danh sách run gần đây
 
-Double-click run de mo report.
+Nhấp đúp vào run để mở report.
 
 ## 7. Report
 
-Report hien:
+Report hiển thị:
 
-- runner, machine, OS, thoi gian bat dau
-- tong testcase, pass, fail
+- runner, machine, OS, thời gian bắt đầu
+- tổng số testcase, pass, fail
 - pie chart pass/fail
 - bar chart response time
-- bang ket qua tung testcase
+- bảng kết quả từng testcase
 
-Report doc run ID tu `SelectedRunContext` khi mo tu Dashboard/History.
+Report đọc run ID từ `SelectedRunContext` khi mở từ Dashboard/History.
 
 ## 8. History
 
-History cho phep:
+History cho phép:
 
-- loc theo ngay
-- loc theo status
-- tim keyword
-- mo report
-- xoa run
+- lọc theo ngày
+- lọc theo status
+- tìm keyword
+- mở report
+- xóa run
 
-Du lieu den tu file local `runs.json`.
+Dữ liệu đến từ file cục bộ `runs.json`.
 
-## 9. Profile va logout
+## 9. Profile và đăng xuất
 
-- `Profile` hien thong tin user hien tai.
-- `Logout` clear session, reset run config va quay ve login.
+- `Profile` hiển thị thông tin user hiện tại.
+- `Logout` xóa session, reset run config và quay về màn hình đăng nhập.
 
-## 10. Meo su dung
+## 10. Mẹo sử dụng
 
-- Luon kiem tra `Base URL` sau login neu doi moi truong backend.
-- Dung `Request` de debug endpoint truoc khi tao testcase.
-- Dung `payload assertions` khi response co field dong.
-- Dung `expected response body` khi can so sanh full JSON.
-- Xem `History` sau nhieu lan run de doi chieu hoi quy.
+- Luôn kiểm tra `Base URL` sau khi đăng nhập nếu đổi môi trường backend.
+- Dùng `Request` để debug endpoint trước khi tạo testcase.
+- Dùng `payload assertions` khi response có field động.
+- Dùng `expected response body` khi cần so sánh toàn bộ JSON.
+- Xem `History` sau nhiều lần chạy để đối chiếu hồi quy.

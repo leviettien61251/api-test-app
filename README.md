@@ -69,6 +69,10 @@ mvn javafx:run
 
 ## Cau hinh database
 
+Hướng dẫn cài đặt đầy đủ: [Thiết lập PostgreSQL](docs/DATABASE_SETUP.md).
+
+Script khởi tạo cơ sở dữ liệu mới: `src/main/resources/db/setup.sql`.
+
 Mac dinh:
 
 - URL: `jdbc:postgresql://localhost:5432/api_test_app`

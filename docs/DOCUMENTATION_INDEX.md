@@ -1,36 +1,35 @@
-# Chi muc tai lieu
+# Chỉ mục tài liệu
 
-Bo tai lieu nay duoc cap nhat theo code hien tai cua `API Test App`.
+Bộ tài liệu này được cập nhật theo code hiện tại của `API Test App`.
 
-## Thu tu doc khuyen nghi
+## Thứ tự đọc khuyến nghị
 
 1. [README.md](../README.md)
 2. [TAI_LIEU_HE_THONG.md](TAI_LIEU_HE_THONG.md)
 3. [MA_TRAN_MAN_HINH.md](MA_TRAN_MAN_HINH.md)
-4. [USECASE_TONG_QUAT.md](USECASE_TONG_QUAT.md)
-5. [USECASE_PHAN_RA.md](USECASE_PHAN_RA.md)
-6. [HUONG_DAN_SU_DUNG.md](HUONG_DAN_SU_DUNG.md)
-7. [THIET_LAP_VA_VAN_HANH.md](THIET_LAP_VA_VAN_HANH.md)
-8. [ARCHITECTURE.md](ARCHITECTURE.md)
+4. [HUONG_DAN_SU_DUNG.md](HUONG_DAN_SU_DUNG.md)
+5. [THIET_LAP_VA_VAN_HANH.md](THIET_LAP_VA_VAN_HANH.md)
+6. [DATABASE_SETUP.md](DATABASE_SETUP.md)
+7. [ARCHITECTURE.md](ARCHITECTURE.md)
 
-## Vai tro tung tai lieu
+## Vai trò từng tài liệu
 
-- `README.md`: tong quan nhanh, stack, lenh build/run va link docs.
-- `TAI_LIEU_HE_THONG.md`: pham vi he thong, actor, module, persistence, runtime config va gioi han.
-- `MA_TRAN_MAN_HINH.md`: FXML/controller, trang thai navigation va ghi chu tung man hinh.
-- `USECASE_TONG_QUAT.md`: actor, he thong ngoai va use case muc cao.
-- `USECASE_PHAN_RA.md`: phan ra use case theo module UI/nghiep vu.
-- `HUONG_DAN_SU_DUNG.md`: workflow thao tac cho tester.
-- `THIET_LAP_VA_VAN_HANH.md`: yeu cau moi truong, DB, storage, troubleshooting.
-- `ARCHITECTURE.md`: package layout, luong khoi dong, luong chay testcase va service/repository.
+- `README.md`: tổng quan nhanh, stack, lệnh build/run và liên kết tài liệu.
+- `TAI_LIEU_HE_THONG.md`: phạm vi hệ thống, actor, module, persistence, runtime config và giới hạn.
+- `MA_TRAN_MAN_HINH.md`: FXML/controller, trạng thái điều hướng và ghi chú từng màn hình.
+- `USECASE_TONG_QUAT.md`: actor, hệ thống ngoài và use case mức cao.
+- `USECASE_PHAN_RA.md`: phân rã use case theo module UI/nghiệp vụ.
+- `HUONG_DAN_SU_DUNG.md`: quy trình thao tác cho tester.
+- `THIET_LAP_VA_VAN_HANH.md`: yêu cầu môi trường, DB, lưu trữ và xử lý sự cố.
+- `DATABASE_SETUP.md`: hướng dẫn cài PostgreSQL, tạo schema, seed tài khoản, cấu hình kết nối và sao lưu/phục hồi.
+- `ARCHITECTURE.md`: package layout, luồng khởi động, luồng chạy testcase và service/repository.
 
-## Diem can luu y khi doc
+## Điểm cần lưu ý khi đọc
 
-- `database.sql` la file tham khao dang tron DDL, DML va cau truy van debug; khong nen xem la migration sach.
-- Thu muc `src/main/resources/db/migrations` co cac migration bo sung cho `path_params`, `payload_assertions`,
+- Dùng `src/main/resources/db/setup.sql` để khởi tạo cơ sở dữ liệu mới. `database.sql` chỉ là file tham khảo cũ.
+- Thư mục `src/main/resources/db/migrations` có các migration bổ sung cho `path_params`, `payload_assertions`,
   `expected_response_body`.
-- `Request` hien da ap dung custom headers, Basic Auth va Bearer Token vao HTTP request.
-- `Request` co form-data UI va multipart form-data cho method khong phai `GET`/`DELETE`.
-- `Collections` va `Environments` ton tai trong repo nhung chua nam trong navigation chinh.
-- `Default run config` hien chi cho nhap `Base URL` va `Alert mode`; runner duoc lay tu session username hoac system
-  user.
+- `Request` hiện đã áp dụng custom headers, Basic Auth và Bearer Token vào HTTP request.
+- `Request` có form-data UI và multipart form-data cho method không phải `GET`/`DELETE`.
+- `Collections` và `Environments` tồn tại trong repo nhưng chưa nằm trong điều hướng chính.
+- `Default run config` hiện chỉ cho nhập `Base URL` và `Alert mode`; runner được lấy từ session username hoặc system user.
