@@ -1,3 +1,11 @@
+/* ==========================================================================
+   TESTCASE.CSS - Full Stylesheet cho Testcase Screen
+   ========================================================================== */
+
+/* ==========================================================================
+   1. LAYOUT CHÍNH - SPLITPANE & OVERLAY
+   ========================================================================== */
+
 .split-pane {
     -fx-background-color: #f1f5f9;
 }
@@ -7,6 +15,7 @@
     -fx-padding: 0 2px;
 }
 
+/* Overlay chạy test */
 .running-overlay {
     -fx-background-color: rgba(15, 23, 42, 0.45);
 }
@@ -33,7 +42,7 @@
     -fx-text-alignment: center;
 }
 
-/* ScrollPane bọc vùng giữa */
+/* ScrollPane */
 .scroll-pane {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
@@ -44,7 +53,7 @@
     -fx-background-color: transparent;
 }
 
-/* Định dạng nhãn text tiêu đề nhỏ trong các phân khu */
+/* Header text */
 .header-text {
     -fx-font-size: 11px;
     -fx-font-weight: bold;
@@ -53,26 +62,20 @@
 }
 
 /* ==========================================================================
-   2. CỘT TRÁI (LEFT PANEL): BASE URL & COLLECTIONS
+   2. CỘT TRÁI - LEFT PANEL
    ========================================================================== */
 
 .left-panel {
-    -fx-background-color: #ffffff; /* Đổi hoàn toàn sang nền trắng sáng từ HTML */
+    -fx-background-color: #ffffff;
     -fx-padding: 20px;
     -fx-border-color: transparent #e2e8f0 transparent transparent;
     -fx-border-width: 1px;
 }
 
-/* Nhãn chữ tiêu đề của Base URL */
 .left-panel .panel-sub-title {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-background-color: #ffffff;
-    -fx-background-clip: text;
-
-    -fx-text-fill: transparent;
-
-
+    -fx-text-fill: #475569;
 }
 
 .left-panel .label {
@@ -80,10 +83,9 @@
     -fx-font-size: 12px;
 }
 
-/* Ô nhập liệu Base URL phù hợp nền sáng */
 .left-panel .text-field {
     -fx-background-color: #f8fafc;
-    -fx-text-fill: #0f172a; /* Chữ màu tối sẫm, không bị mờ đen */
+    -fx-text-fill: #0f172a;
     -fx-background-radius: 6px;
     -fx-border-radius: 6px;
     -fx-border-color: #cbd5e1;
@@ -92,15 +94,14 @@
 
 .left-panel .text-field:focused {
     -fx-background-color: #ffffff;
-    -fx-border-color: #3a86ff; /* Focus màu xanh dương từ web */
+    -fx-border-color: #3a86ff;
 }
 
-/* Thanh phân tách line sáng */
 .left-panel .separator .line {
     -fx-border-color: #e2e8f0 transparent transparent transparent;
 }
 
-/* Cấu trúc cây thư mục TreeView cho nền sáng (Chữ rõ, Bỏ hover nhạt) */
+/* TreeView */
 .tree-view {
     -fx-background-color: transparent;
     -fx-padding: 5px 0;
@@ -108,39 +109,36 @@
 
 .tree-cell {
     -fx-background-color: transparent;
-    -fx-text-fill: #475569; /* Chữ mặc định màu tối rõ ràng */
+    -fx-text-fill: #475569;
     -fx-padding: 7px 10px;
     -fx-background-radius: 6px;
 }
 
-/* Node cha (Auth Module, User Module...) chữ đậm */
 .tree-cell:strong {
     -fx-font-weight: bold;
     -fx-text-fill: #334155;
 }
 
-/* BỎ HOVER NỀN TRẮNG NHẠT: Giữ chữ bình thường khi di chuột */
 .tree-cell:filled:hover {
-    -fx-background-color: transparent; /* Hoàn toàn trong suốt, không bị bọc nền xám nhạt */
-    -fx-text-fill: #0f172a; /* Chữ đậm lên một chút để nhận biết */
+    -fx-background-color: transparent;
+    -fx-text-fill: #0f172a;
 }
 
-/* Khi dòng (item) trong cây được chọn: Đổi sang Gradient Xanh biển - Xanh lá */
 .tree-cell:filled:selected {
-    -fx-background-color: linear-gradient(to right, #0284c7, #10b981); /* Từ Xanh biển (Sky 600) sang Xanh lá (Emerald 500) */
-    -fx-text-fill: #ffffff; /* Chữ trắng hoàn toàn để nổi bật */
+    -fx-background-color: linear-gradient(to right, #0284c7, #10b981);
+    -fx-text-fill: #ffffff;
     -fx-font-weight: bold;
 }
 
-/* Mũi tên của TreeView đồng bộ màu tối */
 .tree-cell .tree-toggle-button .arrow {
     -fx-background-color: #475569;
 }
 
 /* ==========================================================================
-   3. CỘT GIỮA: KHU VỰC HIỂN THỊ CHÍNH (CARDS & TABLE)
+   3. CỘT GIỮA - WORKSPACE
    ========================================================================== */
-/* Định dạng các White Card chứa dữ liệu */
+
+/* Cards */
 .card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 16px;
@@ -156,7 +154,7 @@
     -fx-font-size: 13px;
 }
 
-/* Ô hiển thị URL (Read-only) */
+/* URL Field */
 #baseUrlField {
     -fx-background-color: #f8fafc;
     -fx-text-fill: #475569;
@@ -168,7 +166,7 @@
     -fx-padding: 8px 12px;
 }
 
-/* Ô nhập Headers */
+/* Header TextArea */
 #headerTextArea {
     -fx-background-color: #f8fafc;
     -fx-control-inner-background: #f8fafc;
@@ -179,36 +177,26 @@
     -fx-border-color: #e2e8f0;
 }
 
-
-/* SỬA LỖI CHỮ ĐEN TRÊN NỀN TỐI: Biến ô nhập Body thành Dark Mode chuyên nghiệp */
+/* Body TextArea - Dark Mode */
 #bodyTextArea {
     -fx-background-color: #1e293b;
-    -fx-control-inner-background: #1e293b; /* Nền sẫm hẳn */
-    -fx-text-fill: #38bdf8; /* Chữ màu xanh neon cực dễ nhìn */
+    -fx-control-inner-background: #1e293b;
+    -fx-text-fill: #38bdf8;
     -fx-font-family: "Consolas", monospace;
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
     -fx-border-color: #334155;
 }
 
-
-
-/* Combobox cấu hình chạy */
-/* ==========================================================================
-   TÙY BIẾN HIỆU ỨNG ĐỔI MÀU CHO COMBOBOX CẤU HÌNH TRÊN WORKSPACE
-   ========================================================================== */
-
-/* 1. Trạng thái bình thường */
+/* ComboBox */
 .combo-box {
     -fx-background-color: #ffffff;
     -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
-    -fx-padding: 4px 8px; /* Tăng padding một chút cho thoáng ô bấm */
+    -fx-padding: 4px 8px;
     -fx-cursor: hand;
-    /* Hiệu ứng chuyển màu mượt mà khi tương tác */
-    -fx-transition: all 0.2s ease-in-out;
 }
 
 .combo-box .list-cell {
@@ -217,36 +205,24 @@
     -fx-background-color: transparent;
 }
 
-/* 2. HIỆU ỨNG KHI RÊ CHUỘT QUA (HOVER): Đổi viền sang màu xanh biển nhẹ */
 .combo-box:hover {
-    -fx-border-color: #0284c7; /* Đổi màu viền sang xanh da trời */
-    -fx-background-color: #f8fafc; /* Nền chuyển sang xám trắng cực mịn */
+    -fx-border-color: #0284c7;
+    -fx-background-color: #f8fafc;
 }
 
-/* 3. HIỆU ỨNG KHI ĐƯỢC CLICK CHỌN HOẶC ĐANG MỞ (FOCUSED/ARMED)
-   Ăn hiệu ứng chìm nhẹ và dải viền xanh đậm rực rỡ */
 .combo-box:focused,
 .combo-box:armed {
     -fx-background-color: #ffffff;
     -fx-border-color: #0284c7;
-    /* Đổ bóng nhẹ dạng phát quang (Glow) quanh hộp ComboBox */
     -fx-effect: dropshadow(three-pass-box, rgba(2, 132, 199, 0.15), 6, 0, 0, 0);
 }
 
-/* Tùy biến nút mũi tên nhỏ: Đổi sang màu xanh khi tương tác */
 .combo-box:hover .arrow-button .arrow,
 .combo-box:focused .arrow-button .arrow {
     -fx-background-color: #0284c7;
 }
 
-
-
-
-/* ==========================================================================
-   BẢNG DANH SÁCH THẢ XUỐNG (POPUP) CỦA COMBOBOX
-   ========================================================================== */
-
-/* Khung viền bao quanh bảng danh sách xổ xuống */
+/* ComboBox Popup */
 .combo-box .combo-box-popup .list-view {
     -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
@@ -257,28 +233,24 @@
     -fx-padding: 4px 0;
 }
 
-/* Từng dòng item bên trong (Lần lượt, Song song...) */
 .combo-box .combo-box-popup .list-cell {
     -fx-padding: 8px 12px;
     -fx-text-fill: #475569;
     -fx-background-color: transparent;
 }
 
-/* HIỆU ỨNG HOVER TỪNG DÒNG ITEM: Đổi sang nền xanh da trời loãng cực sang */
 .combo-box .combo-box-popup .list-cell:filled:hover {
-    -fx-background-color: rgba(2, 132, 199, 0.08); /* Xanh biển trong suốt siêu nhẹ */
-    -fx-text-fill: #0284c7; /* Chữ chuyển màu xanh da trời */
+    -fx-background-color: rgba(2, 132, 199, 0.08);
+    -fx-text-fill: #0284c7;
 }
 
-/* HIỆU ỨNG KHI ITEM ĐƯỢC CHỌN TRONG DANH SÁCH
-   Ăn dải màu Gradient chéo nhẹ nhàng từ xanh dương sang xanh lá */
 .combo-box .combo-box-popup .list-cell:filled:selected {
     -fx-background-color: linear-gradient(to right, rgba(2, 132, 199, 0.12), rgba(16, 185, 129, 0.12));
-    -fx-text-fill: #10b981; /* Chữ chuyển màu xanh lá */
+    -fx-text-fill: #10b981;
     -fx-font-weight: bold;
 }
 
-/* --- BẢNG DỮ LIỆU TESTCASE --- */
+/* TableView */
 .table-view {
     -fx-background-color: transparent;
     -fx-border-color: #e2e8f0;
@@ -319,8 +291,9 @@
 }
 
 /* ==========================================================================
-   4. CỘT PHẢI (RIGHT PANEL): KẾT QUẢ LOG & TỔNG KẾT
+   4. CỘT PHẢI - RIGHT PANEL
    ========================================================================== */
+
 .right-panel {
     -fx-background-color: #ffffff;
     -fx-border-color: transparent transparent transparent #e2e8f0;
@@ -332,7 +305,7 @@
     -fx-font-size: 13px;
 }
 
-/* Danh sách Log thời gian thực */
+/* ListView */
 .list-view {
     -fx-background-color: #f8fafc;
     -fx-border-color: #e2e8f0;
@@ -349,89 +322,154 @@
     -fx-padding: 4px 6px;
 }
 
-/* Hộp tổng kết trạng thái cuối cột */
+/* Summary Box */
 #summaryBox {
-    -fx-background-color: #f1f5f9 !important;
-    -fx-border-color: #e2e8f0 !important;
-    -fx-background-radius: 10px !important;
-    -fx-border-radius: 10px !important;
-    -fx-padding: 14px !important;
+    -fx-background-color: #f1f5f9;
+    -fx-border-color: #e2e8f0;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-padding: 14px;
 }
 
 /* ==========================================================================
-   5. ĐỊNH DẠNG HỆ THỐNG NÚT BẤM (BUTTONS) VỚI HIỆU ỨNG GRADIENT
+   5. HỆ THỐNG NÚT BẤM - BUTTONS WITH ELEVATION EFFECT
    ========================================================================== */
+
+/* Base Button - Áp dụng cho tất cả nút */
 .button {
     -fx-background-radius: 6px;
     -fx-padding: 8px 14px;
     -fx-font-weight: bold;
     -fx-font-size: 12.5px;
     -fx-cursor: hand;
+    -fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 6px;
+    -fx-text-fill: #495057;
+    -fx-font-family: 'Segoe UI', 'System';
 }
 
+/* HIỆU ỨNG NỔI LÊN KHI HOVER - Áp dụng cho tất cả nút */
 .button:hover {
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.12), 8, 0, 0, 2);
+    -fx-translate-y: -3px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 12, 0, 0, 5);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
 }
 
-/* Các nút nhóm xanh dương (Save, Run Selected, v.v) */
-#saveRunBtn, #runSelectedBtn, .btn-primary {
+.button:pressed {
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 4, 0, 0, 2);
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ===== NHÓM NÚT XANH DƯƠNG (Save, Run Selected) ===== */
+#saveRunBtn,
+#runSelectedBtn,
+.btn-primary {
     -fx-background-color: linear-gradient(to right, #1e62d0, #2563eb);
     -fx-text-fill: white;
+    -fx-border-color: transparent;
 }
 
-/* Nút lưu báo cáo ở góc dưới cùng bên phải (Đổ màu Gradient Tím Lam cao cấp) */
+#saveRunBtn:hover,
+#runSelectedBtn:hover,
+.btn-primary:hover {
+    -fx-background-color: linear-gradient(to right, #1a56c4, #1d4ed8);
+    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.5), 15, 0, 0, 6);
+}
+
+/* ===== NHÓM NÚT XANH LÁ (Add, Run All) ===== */
+#addTestSuiteBtn,
+#runAllBtn,
+#addTestCaseBtn {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+#addTestSuiteBtn:hover,
+#runAllBtn:hover,
+#addTestCaseBtn:hover {
+    -fx-background-color: #059669;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.5), 15, 0, 0, 6);
+}
+
+/* ===== NHÓM NÚT ĐỎ (Delete, Stop) ===== */
+#deleteTestSuiteBtn,
+#stopBtn,
+#deleteTestCaseBtn,
+#overlayStopBtn {
+    -fx-background-color: #f43f5e;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+#deleteTestSuiteBtn:hover,
+#stopBtn:hover,
+#deleteTestCaseBtn:hover,
+#overlayStopBtn:hover {
+    -fx-background-color: #e11d48;
+    -fx-effect: dropshadow(three-pass-box, rgba(244, 63, 94, 0.5), 15, 0, 0, 6);
+}
+
+/* ===== NHÓM NÚT XÁM (Edit) ===== */
+#editTestSuiteBtn,
+#editTestCaseBtn {
+    -fx-background-color: #64748b;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+#editTestSuiteBtn:hover,
+#editTestCaseBtn:hover {
+    -fx-background-color: #475569;
+    -fx-effect: dropshadow(three-pass-box, rgba(100, 116, 139, 0.5), 15, 0, 0, 6);
+}
+
+/* ===== NÚT TÍM (Cleanup) ===== */
+#editCleanupDataBtn {
+    -fx-background-color: #8e44ad;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+#editCleanupDataBtn:hover {
+    -fx-background-color: #7d3c98;
+    -fx-effect: dropshadow(three-pass-box, rgba(142, 68, 173, 0.5), 15, 0, 0, 6);
+}
+
+/* ===== NÚT LƯU BÁO CÁO (Gradient Tím-Xanh) ===== */
 #saveReportBtn {
     -fx-background-color: linear-gradient(to right, #10b981, #3b82f6);
     -fx-text-fill: white;
     -fx-padding: 10px 0;
+    -fx-border-color: transparent;
+    -fx-font-size: 13px;
 }
 
-/* Nhóm nút thêm mới (Thêm Suite, Thêm TestCase - Xanh Lá) */
-#addTestSuiteBtn, #runAllBtn, #addTestCaseBtn {
-    -fx-background-color: #10b981;
-    -fx-text-fill: white;
+#saveReportBtn:hover {
+    -fx-background-color: linear-gradient(to right, #059669, #2563eb);
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.5), 15, 0, 0, 6);
 }
 
-/* Nhóm nút Sửa (Màu xám Slate) */
-#editTestSuiteBtn, #editTestCaseBtn {
-    -fx-background-color: #64748b;
-    -fx-text-fill: white;
-}
+/* ==========================================================================
+   6. TABLEVIEW - TRẠNG THÁI TEST CASE
+   ========================================================================== */
 
-/* Nhóm nút Xóa / Dừng (Đỏ hồng cao cấp) */
-#deleteTestSuiteBtn, #stopBtn, #deleteTestCaseBtn {
-    -fx-background-color: #f43f5e;
-    -fx-text-fill: white;
-}
-
-/* Nút Cleanup Data (Tím thẫm) */
-#editCleanupDataBtn {
-    -fx-background-color: #8e44ad;
-    -fx-text-fill: white;
-}
-
-
-
-
-
-
-
-/* ==================== TABLEVIEW TESTCASE PASS FAIL STYLES  ==================== */
-
-/* Hiệu ứng hover cho table rows */
 .table-row-cell {
     -fx-background-insets: 0;
     -fx-padding: 0;
     -fx-cursor: hand;
-    -fx-transition: all 0.2s ease-in-out;
 }
 
 .table-row-cell:hover {
     -fx-background-color: #e8f4f8;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 0);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 2, 0, 0, 0);
 }
 
-/* PASS state - Xanh lá hiện đại */
+/* PASS */
 .table-row-cell:test-pass {
     -fx-background-color: linear-gradient(to right, #d4edda, #c3e6cb);
     -fx-text-fill: #155724;
@@ -444,7 +482,7 @@
     -fx-font-weight: 600;
 }
 
-/* FAIL state - Đỏ hiện đại */
+/* FAIL */
 .table-row-cell:test-fail {
     -fx-background-color: linear-gradient(to right, #f8d7da, #f5c6cb);
     -fx-text-fill: #721c24;
@@ -457,13 +495,12 @@
     -fx-font-weight: 600;
 }
 
-/* RUNNING state - Xanh dương đang chạy */
+/* RUNNING */
 .table-row-cell:test-running {
     -fx-background-color: linear-gradient(to right, #d1ecf1, #bee5eb);
     -fx-text-fill: #0c5460;
     -fx-border-color: #aee1e8;
     -fx-border-width: 0 0 1px 0;
-    -fx-animation: pulse 1.5s infinite;
 }
 
 .table-row-cell:test-running .text {
@@ -471,7 +508,7 @@
     -fx-font-style: italic;
 }
 
-/* PENDING state - Xám nhạt */
+/* PENDING */
 .table-row-cell:test-pending {
     -fx-background-color: #f8f9fa;
     -fx-text-fill: #6c757d;
@@ -479,37 +516,36 @@
     -fx-border-width: 0 0 1px 0;
 }
 
-/* ==================== LISTVIEW STYLES ==================== */
+/* ==========================================================================
+   7. LISTVIEW - TRẠNG THÁI LOG
+   ========================================================================== */
 
-/* Container cho ListView */
 .list-view {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 8;
+    -fx-background-radius: 8px;
     -fx-border-color: #dee2e6;
-    -fx-border-radius: 8;
-    -fx-border-width: 1;
-    -fx-padding: 5;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 5px;
 }
 
-/* ListCell styling */
 .list-cell {
     -fx-background-color: transparent;
-    -fx-padding: 8 12;
+    -fx-padding: 8px 12px;
     -fx-font-family: 'Segoe UI', 'System', monospace;
     -fx-font-size: 13px;
     -fx-border-color: transparent;
     -fx-border-width: 0 0 1px 0;
     -fx-border-color: #f0f0f0;
     -fx-cursor: hand;
-    -fx-transition: all 0.2s ease;
 }
 
 .list-cell:hover {
     -fx-background-color: #f8f9fa;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 2, 0, 0, 0);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 2, 0, 0, 0);
 }
 
-/* SUCCESS state - Xanh đậm đẹp */
+/* Log Success */
 .list-cell:log-success {
     -fx-text-fill: #059669;
     -fx-font-weight: 700;
@@ -521,7 +557,7 @@
     -fx-background-color: #d1fae5;
 }
 
-/* ERROR state - Đỏ đậm đẹp */
+/* Log Error */
 .list-cell:log-error {
     -fx-text-fill: #dc2626;
     -fx-font-weight: 700;
@@ -533,11 +569,14 @@
     -fx-background-color: #fee2e2;
 }
 
-/* ==================== TABLE COLUMN HEADERS ==================== */
+/* ==========================================================================
+   8. CÁC THÀNH PHẦN KHÁC
+   ========================================================================== */
 
+/* Table Column Headers */
 .column-header-background {
     -fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef);
-    -fx-background-radius: 8 8 0 0;
+    -fx-background-radius: 8px 8px 0 0;
 }
 
 .column-header {
@@ -551,39 +590,36 @@
     -fx-font-family: 'Segoe UI', 'System';
     -fx-font-size: 13px;
     -fx-text-fill: #495057;
-    -fx-padding: 8 0 8 0;
+    -fx-padding: 8px 0 8px 0;
 }
 
-/* ==================== TABLE CELL STYLES ==================== */
-
+/* Table Cells */
 .table-cell {
-    -fx-padding: 8 12;
+    -fx-padding: 8px 12px;
     -fx-font-family: 'Segoe UI', 'System';
     -fx-font-size: 13px;
     -fx-border-color: transparent;
 }
 
-/* CheckBox cell styling */
 .table-row-cell .check-box {
     -fx-cursor: hand;
 }
 
 .table-row-cell .check-box .box {
-    -fx-background-radius: 4;
-    -fx-border-radius: 4;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
 }
 
-/* ==================== SCROLLBAR STYLES ==================== */
-
+/* Scrollbar */
 .scroll-bar:vertical {
     -fx-background-color: #f8f9fa;
-    -fx-background-radius: 8;
+    -fx-background-radius: 8px;
 }
 
 .scroll-bar:vertical .thumb {
     -fx-background-color: #cbd5e1;
-    -fx-background-radius: 8;
-    -fx-padding: 4;
+    -fx-background-radius: 8px;
+    -fx-padding: 4px;
 }
 
 .scroll-bar:vertical .thumb:hover {
@@ -596,114 +632,26 @@
     -fx-padding: 0;
 }
 
-/* ==================== ANIMATIONS ==================== */
-
-@keyframes pulse {
-    0% {
-        -fx-background-color: linear-gradient(to right, #d1ecf1, #bee5eb);
-    }
-    50% {
-        -fx-background-color: linear-gradient(to right, #aee1e8, #9acfe4);
-    }
-    100% {
-        -fx-background-color: linear-gradient(to right, #d1ecf1, #bee5eb);
-    }
-}
-
-/* ==================== TOOLTIP STYLES ==================== */
-
+/* Tooltip */
 .tooltip {
     -fx-background-color: #1f2937;
     -fx-text-fill: #ffffff;
     -fx-font-size: 12px;
     -fx-font-family: 'Segoe UI', 'System';
-    -fx-background-radius: 6;
-    -fx-padding: 8 12;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 8, 0, 0, 2);
 }
 
-/* ==================== BUTTON STYLES (Optional - cho Run/Stop buttons) ==================== */
-
-.button {
-    -fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef);
-    -fx-background-radius: 6;
-    -fx-border-color: #dee2e6;
-    -fx-border-radius: 6;
-    -fx-font-weight: 600;
-    -fx-font-family: 'Segoe UI', 'System';
-    -fx-font-size: 13px;
-    -fx-text-fill: #495057;
-    -fx-cursor: hand;
-    -fx-padding: 8 16;
-    -fx-transition: all 0.2s ease;
-}
-
-.button:hover {
-    -fx-background-color: linear-gradient(to bottom, #e9ecef, #dee2e6);
-    -fx-text-fill: #212529;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 1);
-}
-
-.button:pressed {
-    -fx-background-color: linear-gradient(to bottom, #dee2e6, #ced4da);
-    -fx-translate-y: 1px;
-}
-
-/* Primary button style for Run */
-.button-primary {
-    -fx-background-color: linear-gradient(to bottom, #10b981, #059669);
-    -fx-text-fill: white;
-    -fx-border-color: #059669;
-}
-
-.button-primary:hover {
-    -fx-background-color: linear-gradient(to bottom, #059669, #047857);
-}
-
-/* Danger button style for Stop */
-.button-danger {
-    -fx-background-color: linear-gradient(to bottom, #ef4444, #dc2626);
-    -fx-text-fill: white;
-    -fx-border-color: #dc2626;
-}
-
-.button-danger:hover {
-    -fx-background-color: linear-gradient(to bottom, #dc2626, #b91c1c);
-}
-
-/* ==================== SUMMARY LABEL STYLES ==================== */
-
+/* Summary Label */
 .label-summary {
     -fx-font-family: 'Segoe UI', 'System';
     -fx-font-size: 14px;
     -fx-font-weight: 700;
     -fx-text-fill: #1f2937;
     -fx-background-color: #f3f4f6;
-    -fx-background-radius: 8;
-    -fx-padding: 10 15;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 15px;
     -fx-border-color: #e5e7eb;
-    -fx-border-radius: 8;
+    -fx-border-radius: 8px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
