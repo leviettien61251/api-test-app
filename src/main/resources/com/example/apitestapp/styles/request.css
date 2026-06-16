@@ -233,3 +233,121 @@
 .table-row-cell:selected .table-cell {
     -fx-text-fill: #1e40af;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   BỔ SUNG CHO FXML
+   ========================================================================== */
+
+/* ---- PANEL PHẢI ---- */
+.right-panel {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* ---- METHOD COMBOBOX ---- */
+.method-combobox {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 2 8;
+}
+
+.method-combobox .list-cell {
+    -fx-font-weight: bold;
+}
+
+/* ---- BODY MODE BUTTON ---- */
+.body-mode-btn {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #475569;
+    -fx-background-radius: 6;
+    -fx-padding: 6px 14px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.body-mode-btn:selected {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.3), 8, 0, 0, 2);
+}
+
+.body-mode-btn:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+.body-mode-btn:selected:hover {
+    -fx-background-color: #2563eb;
+}
+
+/* ---- RESPONSE TABS ---- */
+.response-tabs .tab-header-area .tab-header-background {
+    -fx-opacity: 0;
+}
+
+.response-tabs .tab {
+    -fx-background-color: transparent;
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+}
+
+.response-tabs .tab:selected {
+    -fx-border-color: #3b82f6;
+    -fx-border-width: 0 0 3 0;
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #3b82f6;
+}
