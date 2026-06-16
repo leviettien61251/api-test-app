@@ -1,59 +1,93 @@
-/* Tổng thể */
+/* ==========================================================================
+   TỔNG THỂ
+   ========================================================================== */
+
 .root {
     -fx-font-family: "Segoe UI", sans-serif;
     -fx-background-color: linear-gradient(to bottom, #f8fafc, #e0f2fe);
 }
 
-/* Panel bên trái */
+/* ==========================================================================
+   PANEL BÊN TRÁI
+   ========================================================================== */
+
 .left-panel {
     -fx-background-color: #ffffff;
     -fx-border-color: #e2e8f0;
     -fx-border-width: 0 1 0 0;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
 }
 
-/* Header text */
+/* ==========================================================================
+   HEADER & LABEL
+   ========================================================================== */
+
 .header-text {
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: linear-gradient(to right, #2563eb, #16a34a);
 }
 
-/* Label form */
 .label-form {
     -fx-font-size: 12px;
     -fx-text-fill: #475569;
     -fx-font-weight: bold;
 }
 
-/* Buttons */
+/* ==========================================================================
+   NÚT BẤM - BUTTONS
+   ========================================================================== */
+
+/* ---- NÚT RUN ALL (Xanh lá) ---- */
 .btn-run-all {
     -fx-background-color: linear-gradient(to right, #16a34a, #22c55e);
     -fx-text-fill: white;
     -fx-cursor: hand;
     -fx-background-radius: 6;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
 }
 
 .btn-run-all:hover {
     -fx-background-color: linear-gradient(to right, #15803d, #16a34a);
+    -fx-translate-y: -3px;
+    -fx-effect: dropshadow(three-pass-box, rgba(22, 163, 74, 0.5), 12, 0, 0, 5);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
 }
 
+.btn-run-all:pressed {
+    -fx-translate-y: 1px;
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ---- NÚT RUN SELECTED (Xanh dương) ---- */
 .btn-run-selected {
     -fx-background-color: linear-gradient(to right, #2563eb, #1e40af);
     -fx-text-fill: white;
     -fx-cursor: hand;
     -fx-background-radius: 6;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
 }
 
 .btn-run-selected:hover {
     -fx-background-color: linear-gradient(to right, #1e40af, #2563eb);
+    -fx-translate-y: -3px;
+    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.5), 12, 0, 0, 5);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
 }
 
-/* ==========================================================================
-   TÙY BIẾN NÚT SEND (GRADIENT XANH DƯƠNG - XANH LÁ) TRONG REQUEST.CSS
-   ========================================================================== */
+.btn-run-selected:pressed {
+    -fx-translate-y: 1px;
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ---- NÚT SEND (Gradient Xanh dương - Xanh lá) HIỆU ỨNG NỔI ---- */
 .btn-send {
-    /* Đổi sang cấu trúc rgba truyền thống ngăn lỗi biên dịch JavaFX */
     -fx-background-color: linear-gradient(to right, #3b82f6, #22c55e);
     -fx-text-fill: white;
     -fx-font-weight: bold;
@@ -61,38 +95,66 @@
     -fx-padding: 8px 22px;
     -fx-background-radius: 8px;
     -fx-cursor: hand;
-    /* Hiệu ứng chuyển động mượt mà khi di chuột */
-    -fx-transition: all 0.2s ease-in-out;
+    -fx-border-color: transparent;
 }
 
-/* HIỆU ỨNG CHẠM VÀO / RÊ CHUỘT QUA (HOVER) */
+/* HIỆU ỨNG NỔI LÊN KHI HOVER */
 .btn-send:hover {
-    /* Đảo dải màu tươi sáng và rực rỡ hơn hẳn để người dùng nhận biết */
     -fx-background-color: linear-gradient(to right, #3b82f6, #22c55e);
-    /* Đổ thêm bóng sáng lan tỏa nhẹ xung quanh nút */
-    -fx-effect: dropshadow(three-pass-box, rgba(34, 197, 94, 0.4), 12, 0, 0, 3);
+    -fx-translate-y: -4px; /* Nổi lên 4px */
+    -fx-effect: dropshadow(three-pass-box, rgba(34, 197, 94, 0.5), 16, 0, 0, 6);
+    -fx-scale-x: 1.05; /* Phóng to 5% */
+    -fx-scale-y: 1.05;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 1.5px;
 }
 
-/* HIỆU ỨNG KHI ẤN GIỮ CHUỘT (PRESSED) */
+/* HIỆU ỨNG KHI ẤN GIỮ CHUỘT (LÚN XUỐNG) */
 .btn-send:pressed {
-    /* Tone màu sẫm lại một chút tạo cảm giác nút bị lún xuống thật */
     -fx-background-color: linear-gradient(to right, #1d4ed8, #15803d);
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(34, 197, 94, 0.2), 8, 0, 0, 2);
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
 }
 
+/* ---- NÚT SECONDARY ---- */
 .btn-secondary {
     -fx-background-color: #f1f5f9;
     -fx-text-fill: #475569;
     -fx-background-radius: 6;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
 }
 
+.btn-secondary:hover {
+    -fx-background-color: #e2e8f0;
+    -fx-translate-y: -2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 8, 0, 0, 3);
+}
+
+.btn-secondary:pressed {
+    -fx-translate-y: 1px;
+}
+
+/* ---- NÚT LINK ---- */
 .btn-link {
     -fx-background-color: transparent;
     -fx-text-fill: #2563eb;
     -fx-underline: true;
     -fx-cursor: hand;
+    -fx-padding: 6px 12px;
 }
 
-/* Card style */
+.btn-link:hover {
+    -fx-text-fill: #1d4ed8;
+    -fx-translate-y: -1px;
+}
+
+/* ==========================================================================
+   CARD
+   ========================================================================== */
+
 .card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 12;
@@ -101,7 +163,10 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 12, 0, 0, 4);
 }
 
-/* Input & TextArea */
+/* ==========================================================================
+   INPUT & TEXTAREA
+   ========================================================================== */
+
 .input-field {
     -fx-background-color: #ffffff;
     -fx-border-color: #cbd5e1;
@@ -125,7 +190,10 @@
     -fx-border-radius: 6;
 }
 
-/* Test Results */
+/* ==========================================================================
+   TEST RESULTS
+   ========================================================================== */
+
 .test-pass {
     -fx-text-fill: #16a34a;
     -fx-background-color: #dcfce7;
@@ -142,7 +210,10 @@
     -fx-font-weight: bold;
 }
 
-/* TabPane Styling */
+/* ==========================================================================
+   TABPANE
+   ========================================================================== */
+
 .tab-pane .tab-header-area .tab-header-background {
     -fx-opacity: 0;
 }
@@ -160,36 +231,31 @@
     -fx-text-fill: #16a34a;
 }
 
+/* ==========================================================================
+   TABLEVIEW
+   ========================================================================== */
 
-
-
-
-/* Đường kẻ cho TableView */
 .table-view {
     -fx-border-color: #e2e8f0;
     -fx-border-radius: 6;
 }
 
-/* Hiển thị đường kẻ dọc giữa các cột */
 .table-view .column-header,
 .table-view .table-cell {
     -fx-border-color: #cbd5e1;
     -fx-border-width: 0 1 0 0;
 }
 
-/* Ẩn border cuối cùng của cột cuối (tránh bị trùng) */
 .table-view .column-header:last-child,
 .table-view .table-cell:last-child {
     -fx-border-width: 0;
 }
 
-/* Đường kẻ ngang giữa các hàng */
 .table-row-cell {
     -fx-border-color: #e2e8f0;
     -fx-border-width: 0 0 1 0;
 }
 
-/* Style cho header cột */
 .table-view .column-header {
     -fx-background-color: #f8fafc;
     -fx-font-weight: bold;
@@ -197,18 +263,15 @@
     -fx-padding: 10 5 10 5;
 }
 
-/* Style cho các ô dữ liệu */
 .table-view .table-cell {
     -fx-padding: 8 5 8 5;
     -fx-alignment: CENTER-LEFT;
 }
 
-/* Hover effect cho hàng */
 .table-row-cell:hover {
     -fx-background-color: #f1f5f9;
 }
 
-/* Selected row */
 .table-row-cell:selected {
     -fx-background-color: #dbeafe;
 }
@@ -216,5 +279,3 @@
 .table-row-cell:selected .table-cell {
     -fx-text-fill: #1e40af;
 }
-
-
