@@ -38,53 +38,7 @@
    NÚT BẤM - BUTTONS
    ========================================================================== */
 
-/* ---- NÚT RUN ALL (Xanh lá) ---- */
-.btn-run-all {
-    -fx-background-color: linear-gradient(to right, #16a34a, #22c55e);
-    -fx-text-fill: white;
-    -fx-cursor: hand;
-    -fx-background-radius: 6;
-    -fx-font-weight: bold;
-    -fx-padding: 8px 16px;
-}
 
-.btn-run-all:hover {
-    -fx-background-color: linear-gradient(to right, #15803d, #16a34a);
-    -fx-translate-y: -3px;
-    -fx-effect: dropshadow(three-pass-box, rgba(22, 163, 74, 0.5), 12, 0, 0, 5);
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
-}
-
-.btn-run-all:pressed {
-    -fx-translate-y: 1px;
-    -fx-scale-x: 0.97;
-    -fx-scale-y: 0.97;
-}
-
-/* ---- NÚT RUN SELECTED (Xanh dương) ---- */
-.btn-run-selected {
-    -fx-background-color: linear-gradient(to right, #2563eb, #1e40af);
-    -fx-text-fill: white;
-    -fx-cursor: hand;
-    -fx-background-radius: 6;
-    -fx-font-weight: bold;
-    -fx-padding: 8px 16px;
-}
-
-.btn-run-selected:hover {
-    -fx-background-color: linear-gradient(to right, #1e40af, #2563eb);
-    -fx-translate-y: -3px;
-    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.5), 12, 0, 0, 5);
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
-}
-
-.btn-run-selected:pressed {
-    -fx-translate-y: 1px;
-    -fx-scale-x: 0.97;
-    -fx-scale-y: 0.97;
-}
 
 /* ---- NÚT SEND (Gradient Xanh dương - Xanh lá) HIỆU ỨNG NỔI ---- */
 .btn-send {
