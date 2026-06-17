@@ -13,7 +13,7 @@
 
                 <HBox spacing="10.0" styleClass="card">
                     <children>
-                        <ComboBox fx:id="methodComboBox" styleClass="method-combobox" prefWidth="100.0"
+                        <ComboBox fx:id="methodComboBox" styleClass="method-combobox" prefWidth="120.0"
                                   promptText="GET"/>
                         <TextField fx:id="urlField" HBox.hgrow="ALWAYS" promptText="Enter request URL"
                                    styleClass="input-field"/>

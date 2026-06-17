@@ -17,6 +17,8 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -175,25 +177,79 @@ public class RequestController implements Initializable {
         });
     }
 
+    // FIX 1: handleAssert — parse status động, duration dùng regex an toàn
     private void handleAssert(String line, int statusCode, long duration, String responseBody) {
         try {
             boolean pass = false;
-            String conditionText = line.substring(6, line.contains(":") ? line.indexOf(":") : line.length()).trim();
-            String desc = line.contains(":") ? line.substring(line.indexOf(":") + 1).replace("\"", "").replace(";", "").trim() : conditionText;
 
-            if (conditionText.contains("status == 200")) {
-                pass = (statusCode == 200);
-            } else if (conditionText.contains("duration <")) {
-                int threshold = Integer.parseInt(conditionText.replaceAll("[^0-9]", ""));
+            // Tách condition và description (phần sau dấu ":")
+            // Lưu ý: "body contains" cũng có thể chứa ":", nên chỉ tách ở dấu ":" ngoài ngoặc kép
+            String conditionText;
+            String desc;
+
+            // Tìm dấu ":" không nằm trong ngoặc kép để tách condition và mô tả
+            int colonIdx = findDescriptionColon(line.substring(6)); // bỏ "assert "
+            if (colonIdx >= 0) {
+                conditionText = line.substring(6, 6 + colonIdx).trim();
+                desc = line.substring(6 + colonIdx + 1).replace("\"", "").replace(";", "").trim();
+            } else {
+                conditionText = line.substring(6).replace(";", "").trim();
+                desc = conditionText;
+            }
+
+            // --- status == <số> ---
+            Matcher statusEqMatcher = Pattern.compile("status\\s*==\\s*(\\d+)").matcher(conditionText);
+            // --- status >= <số> ---
+            Matcher statusGeMatcher = Pattern.compile("status\\s*>=\\s*(\\d+)").matcher(conditionText);
+            // --- status <= <số> ---
+            Matcher statusLeMatcher = Pattern.compile("status\\s*<=\\s*(\\d+)").matcher(conditionText);
+            // --- status != <số> ---
+            Matcher statusNeMatcher = Pattern.compile("status\\s*!=\\s*(\\d+)").matcher(conditionText);
+            // --- duration < <số> ---
+            Matcher durationMatcher = Pattern.compile("duration\\s*<\\s*(\\d+)").matcher(conditionText);
+
+            if (statusEqMatcher.find()) {
+                int expected = Integer.parseInt(statusEqMatcher.group(1));
+                pass = (statusCode == expected);
+            } else if (statusGeMatcher.find()) {
+                int expected = Integer.parseInt(statusGeMatcher.group(1));
+                pass = (statusCode >= expected);
+            } else if (statusLeMatcher.find()) {
+                int expected = Integer.parseInt(statusLeMatcher.group(1));
+                pass = (statusCode <= expected);
+            } else if (statusNeMatcher.find()) {
+                int expected = Integer.parseInt(statusNeMatcher.group(1));
+                pass = (statusCode != expected);
+            } else if (durationMatcher.find()) {
+                // FIX 2: parse số từ group(1), không dùng replaceAll("[^0-9]")
+                int threshold = Integer.parseInt(durationMatcher.group(1));
                 pass = (duration < threshold);
             } else if (conditionText.contains("body contains")) {
                 String target = conditionText.substring(conditionText.indexOf("\"") + 1, conditionText.lastIndexOf("\""));
                 pass = responseBody.contains(target);
+            } else {
+                renderTestResult(false, "Không nhận dạng được điều kiện: " + conditionText);
+                return;
             }
+
             renderTestResult(pass, desc);
         } catch (Exception ex) {
             renderTestResult(false, "Lỗi cú pháp Script: " + line);
         }
+    }
+
+    /**
+     * Tìm vị trí dấu ":" đầu tiên không nằm trong chuỗi ngoặc kép.
+     * Trả về -1 nếu không tìm thấy.
+     */
+    private int findDescriptionColon(String text) {
+        boolean inQuote = false;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c == '"') inQuote = !inQuote;
+            if (c == ':' && !inQuote) return i;
+        }
+        return -1;
     }
 
     private void handleSetFromResponse(String line, JsonElement root) {
@@ -274,14 +330,15 @@ public class RequestController implements Initializable {
                     String user = replaceVariables(authUserField.getText());
                     String pass = replaceVariables(authPasswordField.getText());
                     String credentials = user + ":" + pass;
-                    String base64 = Base64.getEncoder().encodeToString(credentials.getBytes());
+                    String base64 = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
                     builder.header("Authorization", "Basic " + base64);
                 } else if ("Bearer Token".equals(authType)) {
                     builder.header("Authorization", "Bearer " + replaceVariables(authTokenField.getText().trim()));
                 }
 
-                if (!method.equals("GET") && !method.equals("DELETE")) {
-                    RequestBody requestBody;
+                // Xây dựng body: GET không có body; DELETE mặc định không có nhưng cho phép nếu có raw content
+                RequestBody requestBody = null;
+                if (!"GET".equals(method)) {
                     if (formDataBtn.isSelected()) {
                         MultipartBody.Builder multipartBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
                         boolean hasData = false;
@@ -294,14 +351,16 @@ public class RequestController implements Initializable {
                             }
                         }
                         requestBody = hasData ? multipartBuilder.build() : RequestBody.create("", null);
-                    } else {
-                        requestBody = RequestBody.create(bodyText, mediaType);
+                    } else if (!"DELETE".equals(method) || (bodyText != null && !bodyText.isBlank())) {
+                        // DELETE chỉ đính body nếu người dùng điền nội dung
+                        requestBody = RequestBody.create(
+                                bodyText != null ? bodyText : "",
+                                mediaType
+                        );
                     }
-                    builder.method(method, requestBody);
-                } else {
-                    builder.method(method, null);
                 }
 
+                builder.method(method, requestBody);
                 return client.newCall(builder.build()).execute();
             }
         };
@@ -316,7 +375,6 @@ public class RequestController implements Initializable {
                 responseBodyTextArea.setText(formatJson(respBody));
                 headersTableView.getItems().clear();
                 response.headers().forEach(pair -> headersTableView.getItems().add(new HeaderModel(pair.getFirst(), pair.getSecond())));
-
                 runTestScripts(response.code(), duration, respBody);
             } catch (IOException ex) {
                 responseBodyTextArea.setText("Lỗi: " + ex.getMessage());
@@ -368,11 +426,15 @@ public class RequestController implements Initializable {
         } catch (Exception e) { return json; }
     }
 
+    // FIX 4: Guard null cho AppRunConfig.getBaseUrl()
     private String resolveRequestUrl(String url) {
         if (url == null || url.trim().isEmpty()) return "";
         String trimmed = url.trim();
         if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
-        String baseUrl = AppRunConfig.normalizeBaseUrl(AppRunConfig.getBaseUrl());
+
+        String baseUrl = AppRunConfig.getBaseUrl();
+        if (baseUrl == null || baseUrl.isBlank()) return trimmed; // fallback: dùng nguyên URL
+        baseUrl = AppRunConfig.normalizeBaseUrl(baseUrl);
         return trimmed.startsWith("/") ? baseUrl + trimmed : baseUrl + "/" + trimmed;
     }
 
@@ -499,12 +561,12 @@ public class RequestController implements Initializable {
             if ("key".equals(field)) {
                 row.setKey(val);
                 if (column.getTableView() == paramsTableView) syncTableToUrl();
-            }
-            else if ("value".equals(field)) {
+            } else if ("value".equals(field)) {
                 row.setValue(val);
                 if (column.getTableView() == paramsTableView) syncTableToUrl();
+            } else {
+                row.setDescription(val);
             }
-            else row.setDescription(val);
         });
     }
 
@@ -521,11 +583,14 @@ public class RequestController implements Initializable {
         String query = urlStr.substring(urlStr.indexOf("?") + 1);
         for (String pair : query.split("&")) {
             String[] kv = pair.split("=", 2);
-            if (kv.length > 0 && !kv[0].isEmpty()) paramDataList.add(new DataRowModel(kv[0], kv.length > 1 ? kv[1] : "", ""));
+            if (kv.length > 0 && !kv[0].isEmpty()) {
+                paramDataList.add(new DataRowModel(kv[0], kv.length > 1 ? kv[1] : "", ""));
+            }
         }
         if (paramDataList.isEmpty()) paramDataList.add(new DataRowModel("", "", ""));
     }
 
+    // FIX 3: URL encode params trước khi ghép vào URL
     private void syncTableToUrl() {
         if (isUpdatingTableFromUrl) return;
         isUpdatingUrlFromTable = true;
@@ -535,17 +600,27 @@ public class RequestController implements Initializable {
         StringBuilder sb = new StringBuilder();
         for (DataRowModel r : paramDataList) {
             if (r.getKey() != null && !r.getKey().isEmpty()) {
-                if (sb.length() > 0) sb.append("&");
-                sb.append(r.getKey()).append("=").append(r.getValue());
+                try {
+                    if (sb.length() > 0) sb.append("&");
+                    sb.append(URLEncoder.encode(r.getKey(), StandardCharsets.UTF_8))
+                            .append("=")
+                            .append(URLEncoder.encode(r.getValue() != null ? r.getValue() : "", StandardCharsets.UTF_8));
+                } catch (Exception ignored) {}
             }
         }
-        urlField.setText(sb.length() > 0 ? url + "?" + sb.toString() : url);
+        urlField.setText(sb.length() > 0 ? url + "?" + sb : url);
         isUpdatingUrlFromTable = false;
     }
 
+    // ========== MODEL CLASSES ==========
+
     public static class DataRowModel {
         private final SimpleStringProperty key, value, description;
-        public DataRowModel(String k, String v, String d) { this.key = new SimpleStringProperty(k); this.value = new SimpleStringProperty(v); this.description = new SimpleStringProperty(d); }
+        public DataRowModel(String k, String v, String d) {
+            this.key = new SimpleStringProperty(k);
+            this.value = new SimpleStringProperty(v);
+            this.description = new SimpleStringProperty(d);
+        }
         public String getKey() { return key.get(); } public void setKey(String v) { key.set(v); } public SimpleStringProperty keyProperty() { return key; }
         public String getValue() { return value.get(); } public void setValue(String v) { value.set(v); } public SimpleStringProperty valueProperty() { return value; }
         public String getDescription() { return description.get(); } public void setDescription(String v) { description.set(v); } public SimpleStringProperty descriptionProperty() { return description; }
