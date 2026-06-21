@@ -20,7 +20,14 @@
                         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
                     </padding>
                     <children>
-                        <Label styleClass="section-title" text="NỘI DUNG BÁO CÁO CHI TIẾT"/>
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                            <children>
+                                <Label maxWidth="Infinity" styleClass="section-title"
+                                       text="NỘI DUNG BÁO CÁO CHI TIẾT" HBox.hgrow="ALWAYS"/>
+                                <Button fx:id="btnExport" onAction="#handleExportExcel" styleClass="btn-export"
+                                        text="📥 Xuất Excel"/>
+                            </children>
+                        </HBox>
 
                         <GridPane hgap="20.0" vgap="16.0"
                                   style="-fx-background-color: #f8fafc; -fx-padding: 24; -fx-background-radius: 16; -fx-border-color: #edf2f7; -fx-border-radius: 16;">
