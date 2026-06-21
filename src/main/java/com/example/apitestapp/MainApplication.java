@@ -9,12 +9,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 public class MainApplication extends Application {
+    private static final String APP_ICON_PATH = "/com/example/apitestapp/icons/app-icon.png";
     private static Stage primaryStage;
     private static Scene scene;
 
@@ -57,6 +60,10 @@ public class MainApplication extends Application {
         stage.setTitle("API Test App");
         stage.setMinWidth(960);
         stage.setMinHeight(640);
+        stage.getIcons().add(new Image(Objects.requireNonNull(
+                MainApplication.class.getResource(APP_ICON_PATH),
+                "App icon not found: " + APP_ICON_PATH
+        ).toExternalForm()));
         stage.setScene(scene);
         stage.sizeToScene();
         stage.centerOnScreen();
