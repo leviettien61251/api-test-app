@@ -1,53 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-
-<StackPane styleClass="login-root" stylesheets="@styles/login.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apitestapp.controllers.LoginController">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+           prefHeight="640.0" prefWidth="960.0" styleClass="login-root" stylesheets="@styles/login.css" xmlns="http://javafx.com/javafx/26"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.apitestapp.controllers.LoginController">
     <children>
         <VBox maxHeight="560.0" maxWidth="380.0" spacing="18.0" styleClass="login-card" StackPane.alignment="CENTER">
             <padding>
-                <Insets bottom="30" left="30" right="30" top="30" />
+                <Insets bottom="30" left="30" right="30" top="30"/>
             </padding>
             <children>
 
 
                 <VBox alignment="CENTER" spacing="5.0">
-                    <Label styleClass="login-icon" text="🔰" />
-                    <Label styleClass="login-title" text="ĐĂNG NHẬP" />
-                    <Label styleClass="login-subtitle" text="Chào mừng bạn quay trở lại!" />
+                    <Label styleClass="login-icon" text="🔰"/>
+                    <Label styleClass="login-title" text="ĐĂNG NHẬP"/>
+                    <Label styleClass="login-subtitle" text="Chào mừng bạn quay trở lại!"/>
                 </VBox>
 
                 <VBox spacing="6.0">
-                    <Label styleClass="login-label" text="Tên đăng nhập" />
-                    <TextField fx:id="usernameField" promptText="Nhập tên đăng nhập" styleClass="login-input" />
+                    <Label styleClass="login-label" text="Tên đăng nhập"/>
+                    <TextField fx:id="usernameField" promptText="Nhập tên đăng nhập" styleClass="login-input"/>
                 </VBox>
 
                 <VBox spacing="6.0">
-                    <Label styleClass="login-label" text="Mật khẩu" />
+                    <Label styleClass="login-label" text="Mật khẩu"/>
                     <StackPane alignment="CENTER_RIGHT">
                         <children>
-                            <PasswordField fx:id="passwordField" promptText="Nhập mật khẩu" styleClass="login-input" />
+                            <PasswordField fx:id="passwordField" promptText="Nhập mật khẩu" styleClass="login-input"/>
 
-                            <TextField fx:id="passwordTextField" managed="false" promptText="Nhập mật khẩu" styleClass="login-input" visible="false" />
+                            <TextField fx:id="passwordTextField" managed="false" promptText="Nhập mật khẩu"
+                                       styleClass="login-input" visible="false"/>
 
-                            <Button fx:id="togglePasswordBtn" onAction="#togglePasswordVisibility" styleClass="password-toggle-btn" text="👁" StackPane.alignment="CENTER_RIGHT">
+                            <Button fx:id="togglePasswordBtn" onAction="#togglePasswordVisibility"
+                                    styleClass="password-toggle-btn" text="👁" StackPane.alignment="CENTER_RIGHT">
                                 <StackPane.margin>
-                                    <Insets right="10.0" />
+                                    <Insets right="10.0"/>
                                 </StackPane.margin>
                             </Button>
                         </children>
                     </StackPane>
                 </VBox>
 
-                <Label fx:id="errorLabel" styleClass="login-error" text="" />
+                <Label fx:id="errorLabel" styleClass="login-error" text=""/>
 
-                <Button maxWidth="1.7976931348623157E308" onAction="#handleLogin" styleClass="login-btn" text="ĐĂNG NHẬP" />
+                <Button maxWidth="1.7976931348623157E308" onAction="#handleLogin" styleClass="login-btn"
+                        text="ĐĂNG NHẬP"/>
 
             </children>
         </VBox>

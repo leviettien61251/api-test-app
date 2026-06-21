@@ -38,6 +38,30 @@
     -fx-text-fill: #64748b;
 }
 
+.btn-export {
+    -fx-background-color: linear-gradient(to right, #10b981, #3b82f6);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 8 16;
+    -fx-pref-height: 36px;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+}
+
+.btn-export:hover {
+    -fx-background-color: linear-gradient(to right, #10b981, #3b82f6);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-effect: dropshadow(three-pass-box, rgba(21, 138, 67, 0.3), 10, 0, 0, 2);
+}
+
+.btn-export:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
 /* --- GRID INFO & LABEL --- */
 .info-label {
     -fx-text-fill: #94a3b8;
