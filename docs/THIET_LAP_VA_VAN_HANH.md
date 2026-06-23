@@ -69,7 +69,7 @@ Ví dụ:
 
 Script khởi tạo cơ sở dữ liệu mới:
 
-- `src/main/resources/db/setup.sql`
+- `src/main/resources/db/database.sql`
 
 Migration bổ sung:
 
@@ -79,7 +79,7 @@ Migration bổ sung:
 Thứ tự thiết lập mới khuyến nghị:
 
 1. Tạo database `api_test_app`.
-2. Chạy toàn bộ `src/main/resources/db/setup.sql`.
+2. Chạy toàn bộ `src/main/resources/db/database.sql`.
 3. Đăng nhập bằng tài khoản khởi tạo trong `docs/DATABASE_SETUP.md`.
 4. Chỉ chạy migration trong thư mục `migrations` khi nâng cấp schema cũ.
 
