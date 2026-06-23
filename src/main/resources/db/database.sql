@@ -1,50 +1,5 @@
-insert into users(role_id, full_name, phone, email, password)
-values ('2', 'TESTER 4', '0980000005', 'c', 'c');
-    ('2', 'TESTER 3', '0980000004', 'b', 'b')
-    ,
-    ('2', 'TESTER 2', '0980000003', 'a', 'a')
-    ,
-('2', 'TESTER 1', '0980000001', 'tester1@tester.com', 'tester1@tester.com')
-,
-('1', 'ADMIN 1', '0980000002', 'admin1@tester.com', 'SuperSecurePassword123@');
-
-INSERT INTO roles(name, description)
-values ('admin', 'this is admin role'),
-       ('tester', 'this is tester role');
-
-insert into client_machines(user_id, machine_name, os_name, os_version, ip_address, cpu_info, ram_info, hostname)
-values (?, ?, ?, ?, ?, ?, ?, ?);
-
-SELECT *
-FROM roles;
-SELECT *
-FROM users;
-select *
-from client_machines;
-select *
-from user_test_suites;
-
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
--- ============================================
--- DROP TABLES (ngược thứ tự dependency)
--- ============================================
 
-DROP TABLE IF EXISTS test_reports CASCADE;
-DROP TABLE IF EXISTS test_assertions CASCADE;
-DROP TABLE IF EXISTS test_results CASCADE;
-DROP TABLE IF EXISTS test_runs CASCADE;
-DROP TABLE IF EXISTS user_test_cases CASCADE;
-DROP TABLE IF EXISTS user_test_suites CASCADE;
--- DROP TABLE IF EXISTS environment_variables CASCADE;
-DROP TABLE IF EXISTS test_data_sets CASCADE;
-DROP TABLE IF EXISTS test_cases CASCADE;
-DROP TABLE IF EXISTS api_endpoints CASCADE;
-DROP TABLE IF EXISTS test_suits CASCADE;
-DROP TABLE IF EXISTS folders CASCADE;
-DROP TABLE IF EXISTS collections CASCADE;
-DROP TABLE IF EXISTS client_machines CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-DROP TABLE IF EXISTS roles CASCADE;
 
 
 CREATE TABLE roles
@@ -139,3 +94,35 @@ CREATE INDEX idx_user_test_suites_owner ON user_test_suites (owner_name);
 CREATE INDEX idx_user_test_cases_user_api ON user_test_cases (user_id, api_label);
 CREATE INDEX idx_user_test_cases_owner_api ON user_test_cases (owner_name, api_label);
 CREATE INDEX idx_user_test_cases_suite_id ON user_test_cases (suite_id);
+
+INSERT INTO roles(name, description)
+values ('admin', 'this is admin role'),
+       ('tester', 'this is tester role');
+
+insert into users(role_id, full_name, phone, email, password)
+values ('2', 'TESTER 2', '0980000002', 'tester2@tester.com', 'tester2@tester.com'),
+       ('2', 'TESTER 1', '0980000001', 'tester1@tester.com', 'tester1@tester.com')
+        ,
+       ('1', 'ADMIN 1', '0980999999', 'admin1@tester.com', 'admin1@tester.com');
+
+
+-- ============================================
+-- DROP TABLES (ngược thứ tự dependency)
+-- ============================================
+
+DROP TABLE IF EXISTS test_reports CASCADE;
+DROP TABLE IF EXISTS test_assertions CASCADE;
+DROP TABLE IF EXISTS test_results CASCADE;
+DROP TABLE IF EXISTS test_runs CASCADE;
+DROP TABLE IF EXISTS user_test_cases CASCADE;
+DROP TABLE IF EXISTS user_test_suites CASCADE;
+-- DROP TABLE IF EXISTS environment_variables CASCADE;
+DROP TABLE IF EXISTS test_data_sets CASCADE;
+DROP TABLE IF EXISTS test_cases CASCADE;
+DROP TABLE IF EXISTS api_endpoints CASCADE;
+DROP TABLE IF EXISTS test_suits CASCADE;
+DROP TABLE IF EXISTS folders CASCADE;
+DROP TABLE IF EXISTS collections CASCADE;
+DROP TABLE IF EXISTS client_machines CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS roles CASCADE;
