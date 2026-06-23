@@ -420,8 +420,7 @@ public class MainController implements Initializable {
 
         // Style cho header - màu xanh đậm hơn
         dialog.getDialogPane().lookup(".header-panel").setStyle(
-                "-fx-background-color: #163a5f;" +
-                        "-fx-border-bottom: 1px solid #2a4a6f;"
+                "-fx-background-color: #163a5f;"
         );
 
         dialog.getDialogPane().lookup(".header-panel .label").setStyle(
