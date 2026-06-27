@@ -1,8 +1,10 @@
 package com.example.apitestapp.controllers;
 
+import com.example.apitestapp.config.AppSession;
 import com.example.apitestapp.config.SelectedRunContext;
 import com.example.apitestapp.models.dto.TestResult;
 import com.example.apitestapp.models.dto.TestRun;
+import com.example.apitestapp.models.entity.User;
 import com.example.apitestapp.services.RunStorage;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -12,11 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 
@@ -26,8 +24,9 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 public class ReportController implements Initializable, RefreshableView {
 
@@ -89,14 +88,24 @@ public class ReportController implements Initializable, RefreshableView {
     }
 
     private Optional<TestRun> resolveRun() {
+        List<TestRun> accessibleRuns = getAccessibleRuns();
+
+        // Ưu tiên run đang được chọn (từ History/Dashboard double-click)
         String runId = SelectedRunContext.getSelectedRunId();
         if (runId != null) {
-            Optional<TestRun> byId = runStorage.getById(runId);
+            Optional<TestRun> byId = accessibleRuns.stream()
+                    .filter(run -> runId.equals(run.getId()))
+                    .findFirst();
             if (byId.isPresent()) {
                 return byId;
             }
         }
-        return runStorage.getAllRuns().stream().findFirst();
+
+        // Không có run được chọn → lấy run mới nhất của user hiện tại
+        return accessibleRuns.stream()
+                .sorted(Comparator.comparing(TestRun::getStartedAt,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .findFirst();
     }
 
     private void bindRun(TestRun run) {
@@ -318,5 +327,26 @@ public class ReportController implements Initializable, RefreshableView {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+
+    private static String normalize(String value) {
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private List<TestRun> getAccessibleRuns() {
+        User currentUser = AppSession.getInstance().getCurrentUser();
+        List<TestRun> allRuns = runStorage.getAllRuns();
+
+        // Admin (roleId = 1) xem tất cả
+        if (currentUser != null && Integer.valueOf(1).equals(currentUser.getRoleId())) {
+            return allRuns;
+        }
+
+        // User thường: chỉ xem run của chính mình
+        String currentEmail = currentUser != null ? currentUser.getEmail() : AppSession.getUsername();
+        return allRuns.stream()
+                .filter(run -> normalize(run.getUser()).equals(normalize(currentEmail)))
+                .collect(Collectors.toList());
     }
 }

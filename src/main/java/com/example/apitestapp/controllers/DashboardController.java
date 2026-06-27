@@ -12,6 +12,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 
@@ -30,6 +31,7 @@ public class DashboardController implements Initializable, RefreshableView {
     private static final DateTimeFormatter TIME_FMT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
     private final RunStorage runStorage = RunStorage.getInstance();
+
     @FXML
     private Label lblTotalTc, lblTotalRun, lblTotalPass, lblTotalFail;
     @FXML
@@ -38,7 +40,11 @@ public class DashboardController implements Initializable, RefreshableView {
     private TableView<TestRun> historyTable;
     @FXML
     private TableColumn<TestRun, String> colTime, colUser, colMachine, colResult, colDetail;
+
     private Consumer<String> onOpenReport;
+
+
+
 
     private static String formatTime(TestRun run) {
         if (run.getStartedAt() == null) {
@@ -63,25 +69,29 @@ public class DashboardController implements Initializable, RefreshableView {
         return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 
+    //Khởi tạo controller, thiết lập bảng lịch sử và gọi refresh để load dữ liệu ban đầu
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupRecentTable();
         refresh();
     }
 
+    //Thiết lập callback để xử lý sự kiện mở báo cáo khi double-click vào một test run
     public void setOnOpenReport(Consumer<String> onOpenReport) {
         this.onOpenReport = onOpenReport;
     }
 
+
+    //Cập nhật toàn bộ dashboard bao gồm:
     @Override
     public void refresh() {
-        // Lấy danh sách run dựa trên quyền
         List<TestRun> runs = getAccessibleRuns();
 
-        // Tính tổng hợp
+        // Tính toán số liệu tổng hợp
         int totalTc = runs.stream().mapToInt(TestRun::getTotalCases).sum();
         int totalPass = runs.stream().mapToInt(TestRun::getPassedCases).sum();
         int totalFail = runs.stream().mapToInt(TestRun::getFailedCases).sum();
+        int totalSum = totalPass + totalFail;
 
         lblTotalTc.setText(String.valueOf(totalTc));
         lblTotalRun.setText(String.valueOf(runs.size()));
@@ -89,43 +99,50 @@ public class DashboardController implements Initializable, RefreshableView {
         lblTotalFail.setText(String.valueOf(totalFail));
 
         // Cập nhật biểu đồ
-        passFailChart.setData(FXCollections.observableArrayList(
-                new PieChart.Data("Pass", Math.max(totalPass, 0)),
-                new PieChart.Data("Fail", Math.max(totalFail, 0))
-        ));
+        PieChart.Data passData = new PieChart.Data("Pass", Math.max(totalPass, 0));
+        PieChart.Data failData = new PieChart.Data("Fail", Math.max(totalFail, 0));
+        passFailChart.setData(FXCollections.observableArrayList(passData, failData));
 
-        if (totalPass + totalFail == 0) {
+        if (totalSum == 0) {
             passFailChart.setTitle("Chưa có dữ liệu");
         } else {
             passFailChart.setTitle(null);
+
+            // Gán Tooltip cho các phần của biểu đồ
+            passFailChart.getData().forEach(data -> {
+                double percentage = (data.getPieValue() / totalSum) * 100;
+                String toolTipText = String.format("%s: %.1f%% (%.0f)", data.getName(), percentage, data.getPieValue());
+                Tooltip tooltip = new Tooltip(toolTipText);
+                Tooltip.install(data.getNode(), tooltip);
+            });
         }
 
-        // Lấy 8 run gần nhất
+        // Cập nhật bảng
         List<TestRun> recent = runs.stream()
                 .sorted(Comparator.comparing(TestRun::getStartedAt, Comparator.nullsLast(Comparator.reverseOrder())))
                 .limit(8)
                 .collect(Collectors.toList());
-
         historyTable.setItems(FXCollections.observableArrayList(recent));
     }
 
-    // Thêm method kiểm tra quyền xem run (giống HistoryController)
+    //Lấy danh sách test runs dựa trên quyền:
+    //Admin (roleId=1): Xem tất cả
+    //User thường: Chỉ xem các run của chính mình (dựa trên email)
     private List<TestRun> getAccessibleRuns() {
         User currentUser = AppSession.getInstance().getCurrentUser();
         List<TestRun> allRuns = runStorage.getAllRuns();
 
-        // Admin có thể xem tất cả
         if (currentUser != null && Integer.valueOf(1).equals(currentUser.getRoleId())) {
             return allRuns;
         }
 
-        // Tester chỉ xem được run của mình
         String currentEmail = currentUser != null ? currentUser.getEmail() : AppSession.getUsername();
         return allRuns.stream()
                 .filter(run -> normalize(run.getUser()).equals(normalize(currentEmail)))
                 .collect(Collectors.toList());
     }
 
+    //Cấu hình các cột và sự kiện cho bảng lịch sử:
     private void setupRecentTable() {
         colTime.setCellValueFactory(data -> new ReadOnlyStringWrapper(formatTime(data.getValue())));
         colUser.setCellValueFactory(new PropertyValueFactory<>("user"));
@@ -142,4 +159,5 @@ public class DashboardController implements Initializable, RefreshableView {
             }
         });
     }
+
 }
